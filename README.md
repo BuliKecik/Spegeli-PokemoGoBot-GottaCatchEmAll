@@ -19,6 +19,10 @@ GitHub issues will be deleted if they are not API related. PR's about improved l
 * Random Task Delays
 * Delete specific Items but keep a specific amount
 
+## ToDo
+* Evolve Pokemon
+* Auto Update the Bot
+
 ## Getting Started
 * Go to PokemonGo\RocketAPI\Console\App.config -> Edit the Settings you like 
 * Go to PokemonGo\RocketAPI\Console\Settings.cs -> Edit the Settings for delete Items
