@@ -53,17 +53,23 @@ namespace PokemonGo.RocketAPI.Logic
                 {
                     await _client.SetServer();
                     var profile = await _client.GetProfile();
+                    var inventory = await _client.GetInventory();
+                    var _currentLevelInfos = await Statistics._getcurrentLevelInfos(_client);
+
                     Logger.Normal(ConsoleColor.Yellow, "----------------------------");
                     if (_clientSettings.AuthType == AuthType.Ptc)
-                        Logger.Normal(ConsoleColor.Cyan, "PTC Account: " + _clientSettings.PtcUsername + "\n");
+                        Logger.Normal(ConsoleColor.Cyan, $"PTC Account: {_clientSettings.PtcUsername}\n");
                     //Logger.Normal(ConsoleColor.Cyan, "Password: " + _clientSettings.PtcPassword + "\n");
-                    Logger.Normal(ConsoleColor.DarkGray, "Latitude: " + _clientSettings.DefaultLatitude);
-                    Logger.Normal(ConsoleColor.DarkGray, "Longitude: " + _clientSettings.DefaultLongitude);
+                    Logger.Normal(ConsoleColor.DarkGray, $"Latitude: {_clientSettings.DefaultLatitude}");
+                    Logger.Normal(ConsoleColor.DarkGray, $"Longitude: {_clientSettings.DefaultLongitude}");
                     Logger.Normal(ConsoleColor.Yellow, "----------------------------");
                     Logger.Normal(ConsoleColor.DarkGray, "Your Account:\n");
-                    Logger.Normal(ConsoleColor.DarkGray, "Name: " + profile.Profile.Username);
-                    Logger.Normal(ConsoleColor.DarkGray, "Team: " + profile.Profile.Team);
-                    Logger.Normal(ConsoleColor.DarkGray, "Stardust: " + profile.Profile.Currency.ToArray()[1].Amount);
+                    Logger.Normal(ConsoleColor.DarkGray, $"Name: {profile.Profile.Username}");
+                    Logger.Normal(ConsoleColor.DarkGray, $"Team: {profile.Profile.Team}");
+
+                    Logger.Normal(ConsoleColor.DarkGray, $"Level: {_currentLevelInfos}");
+                    Logger.Normal(ConsoleColor.DarkGray, $"Team: {profile.Profile.Team}");
+                    Logger.Normal(ConsoleColor.DarkGray, $"Stardust: {profile.Profile.Currency.ToArray()[1].Amount}");
                     Logger.Normal(ConsoleColor.Yellow, "----------------------------");
 
                     await TransferDuplicatePokemon(false);
@@ -110,7 +116,7 @@ namespace PokemonGo.RocketAPI.Logic
                 var fortSearch = await client.SearchFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
                 _stats.addExperience(fortSearch.ExperienceAwarded);
-                _stats.updateConsoleTitle();
+                _stats.updateConsoleTitle(_client);
 
                 Logger.Normal(ConsoleColor.Cyan, $"Using Pokestop: {fortInfo.Name}");
                 Logger.Normal(ConsoleColor.Cyan, $"Received XP: {fortSearch.ExperienceAwarded}, Gems: { fortSearch.GemsAwarded}, Eggs: {fortSearch.PokemonDataEgg} Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}");
@@ -167,7 +173,7 @@ namespace PokemonGo.RocketAPI.Logic
                     _stats.getStardust(profile.Profile.Currency.ToArray()[1].Amount);
                 }
 
-                _stats.updateConsoleTitle();
+                _stats.updateConsoleTitle(_client);
 
                 Logger.Normal(ConsoleColor.Yellow, caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess ? $"We caught a {pokemon.PokemonId} with CP {encounterPokemonResponse?.WildPokemon?.PokemonData?.Cp}, used {balls_used} x {pokeball} and received XP {caughtPokemonResponse.Scores.Xp.Sum()}" : $"{pokemon.PokemonId} with CP {encounterPokemonResponse?.WildPokemon?.PokemonData?.Cp} got away while using a {pokeball}..");
 
@@ -197,7 +203,7 @@ namespace PokemonGo.RocketAPI.Logic
                 while (evolvePokemonOutProto.Result == EvolvePokemonOut.Types.EvolvePokemonStatus.PokemonEvolvedSuccess);
 
                 _stats.increasePokemonsTransfered();
-                _stats.updateConsoleTitle();
+                _stats.updateConsoleTitle(_client);
 
                 await Task.Delay(3000);
             }
@@ -227,7 +233,7 @@ namespace PokemonGo.RocketAPI.Logic
                 Logger.Normal(ConsoleColor.DarkCyan, $"Recycled {item.Count}x {(AllEnum.ItemId)item.Item_}");
 
                 _stats.addItemsRemoved(item.Count);
-                _stats.updateConsoleTitle();
+                _stats.updateConsoleTitle(_client);
 
                 await Task.Delay(500);
             }
