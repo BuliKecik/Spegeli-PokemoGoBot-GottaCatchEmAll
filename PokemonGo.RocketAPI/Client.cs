@@ -9,6 +9,8 @@ using PokemonGo.RocketAPI.Helpers;
 using PokemonGo.RocketAPI.Extensions;
 using PokemonGo.RocketAPI.Login;
 using static PokemonGo.RocketAPI.GeneratedCode.Response.Types;
+using System.Threading;
+using System.Windows.Forms;
 
 namespace PokemonGo.RocketAPI
 {
@@ -65,6 +67,12 @@ namespace PokemonGo.RocketAPI
                 var tokenResponse = await GoogleLogin.GetAccessToken();
                 _accessToken = tokenResponse.id_token;
                 _settings.GoogleRefreshToken = tokenResponse.access_token;
+                Logger.Normal($"Put RefreshToken in settings for direct login: {tokenResponse.access_token}");
+                Thread thread = new Thread(() => Clipboard.SetText(tokenResponse.access_token));
+                thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
+                thread.Start();
+                thread.Join();
+                Logger.Normal("The RefreshToken is in your Clipboard!");
             }
         }
 
@@ -233,7 +241,7 @@ namespace PokemonGo.RocketAPI
             return await _httpClient.PostProtoPayload<Request, EncounterResponse>($"https://{_apiUrl}/rpc", encounterResponse);
         }
 
-        public async Task<UseItemCaptureRequest> UseCaptureItem(ulong encounterId, AllEnum.ItemId itemId, string spawnPointGuid)
+        public async Task<UseItemCaptureRequest> UseCaptureItem(ulong encounterId, string spawnPointGuid, AllEnum.ItemId itemId)
         {
             var customRequest = new UseItemCaptureRequest
             {

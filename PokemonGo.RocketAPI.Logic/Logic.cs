@@ -8,6 +8,7 @@ using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.Extensions;
 using PokemonGo.RocketAPI.GeneratedCode;
 using PokemonGo.RocketAPI.Logic.Utils;
+using PokemonGo.RocketAPI.Helpers;
 
 namespace PokemonGo.RocketAPI.Logic
 {
@@ -28,6 +29,14 @@ namespace PokemonGo.RocketAPI.Logic
 
         public async void Execute()
         {
+            if (_clientSettings.DefaultLatitude == 0 || _clientSettings.DefaultLongitude == 0)
+            {
+                Logger.Error($"Please change first Latitude and/or Longitude because currently your using default values!");
+                Logger.Error($"Window will be auto closed in 15 seconds!");
+                await Task.Delay(15000);
+                System.Environment.Exit(1);
+            }
+
             Logger.Normal(ConsoleColor.DarkGreen, $"Starting Execute on login server: {_clientSettings.AuthType}");
 
             if (_clientSettings.AuthType == AuthType.Ptc)
@@ -79,7 +88,6 @@ namespace PokemonGo.RocketAPI.Logic
             foreach (var pokeStop in pokeStops)
             {
                 await ExecuteCatchAllNearbyPokemons(client);
-                await TransferDuplicatePokemon(true);
                 
                 var update = await client.UpdatePlayerLocation(pokeStop.Latitude, pokeStop.Longitude);
                 var fortInfo = await client.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
@@ -91,9 +99,11 @@ namespace PokemonGo.RocketAPI.Logic
                 Logger.Normal(ConsoleColor.Cyan, $"Using Pokestop: {fortInfo.Name}");
                 Logger.Normal(ConsoleColor.Cyan, $"Received XP: {fortSearch.ExperienceAwarded}, Gems: { fortSearch.GemsAwarded}, Eggs: {fortSearch.PokemonDataEgg} Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}");
 
-                await Task.Delay(8000);
+                await RandomHelper.RandomDelay(500, 1000);
+                await RecycleItems();
+
+                await RandomHelper.RandomDelay(7500,8500);
             }
-            await RecycleItems();
         }
 
         private async Task ExecuteCatchAllNearbyPokemons(Client client)
@@ -108,6 +118,7 @@ namespace PokemonGo.RocketAPI.Logic
                 var update = await client.UpdatePlayerLocation(pokemon.Latitude, pokemon.Longitude);
                 var encounterPokemonResponse = await client.EncounterPokemon(pokemon.EncounterId, pokemon.SpawnpointId);
                 var pokemonCP = encounterPokemonResponse?.WildPokemon?.PokemonData?.Cp;
+                var berry = await GetBestBerry(pokemonCP);
                 var pokeball = await GetBestBall(pokemonCP);
                 if (pokeball == MiscEnums.Item.ITEM_UNKNOWN)
                 {
@@ -119,21 +130,33 @@ namespace PokemonGo.RocketAPI.Logic
                 CatchPokemonResponse caughtPokemonResponse;
                 do
                 {
-                    if (encounterPokemonResponse?.CaptureProbability.CaptureProbability_.First() < 0.4)
-                        await UseBerry(pokemon.EncounterId, pokemon.SpawnpointId);
+                    if (berry != AllEnum.ItemId.ItemUnknown && encounterPokemonResponse?.CaptureProbability.CaptureProbability_.First() < 0.4)
+                    {
+                        var useRaspberry = await _client.UseCaptureItem(pokemon.EncounterId, pokemon.SpawnpointId, berry);
+                        Logger.Normal($"Use Rasperry {berry}");
+                        await RandomHelper.RandomDelay(500, 1000);
+                    }
+
                     caughtPokemonResponse = await client.CatchPokemon(pokemon.EncounterId, pokemon.SpawnpointId, pokemon.Latitude, pokemon.Longitude, pokeball);
                     balls_used++;
                 }
                 while (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchMissed);
 
-                foreach (int xp in caughtPokemonResponse.Scores.Xp)
-                    _stats.addExperience(xp);
                 if (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess)
+                {
+                    foreach (int xp in caughtPokemonResponse.Scores.Xp)
+                        _stats.addExperience(xp);
                     _stats.increasePokemons();
+                }
+
                 _stats.updateConsoleTitle();
 
                 Logger.Normal(ConsoleColor.Yellow, caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess ? $"We caught a {pokemon.PokemonId} with CP {encounterPokemonResponse?.WildPokemon?.PokemonData?.Cp}, used {balls_used} x {pokeball} and received XP {caughtPokemonResponse.Scores.Xp.Sum()}" : $"{pokemon.PokemonId} with CP {encounterPokemonResponse?.WildPokemon?.PokemonData?.Cp} got away while using a {pokeball}..");
-                await Task.Delay(5000);
+
+                await RandomHelper.RandomDelay(500, 1000);
+                await TransferDuplicatePokemon(true);
+
+                await RandomHelper.RandomDelay(2500, 5000);
             }
         }
 
@@ -164,7 +187,7 @@ namespace PokemonGo.RocketAPI.Logic
 
         private async Task TransferDuplicatePokemon(bool keepPokemonsThatCanEvolve = false)
         {
-            var duplicatePokemons = await _inventory.GetDuplicatePokemonToTransfer();
+            var duplicatePokemons = await _inventory.GetDuplicatePokemonToTransfer(keepPokemonsThatCanEvolve);
             if (duplicatePokemons != null && duplicatePokemons.Any())
                 Logger.Normal(ConsoleColor.DarkYellow, $"Transfering duplicate Pokemon");
 
@@ -183,7 +206,7 @@ namespace PokemonGo.RocketAPI.Logic
             foreach (var item in items)
             {
                 var transfer = await _client.RecycleItem((AllEnum.ItemId)item.Item_, item.Count);
-                Logger.Normal($"Recycled {item.Count}x {(AllEnum.ItemId)item.Item_}");
+                Logger.Normal(ConsoleColor.DarkBlue, $"Recycled {item.Count}x {(AllEnum.ItemId)item.Item_}");
 
                 _stats.addItemsRemoved(item.Count);
                 _stats.updateConsoleTitle();
@@ -223,20 +246,46 @@ namespace PokemonGo.RocketAPI.Logic
             if (masterBallsCount > 0)
                 return MiscEnums.Item.ITEM_MASTER_BALL;
 
-            return MiscEnums.Item.ITEM_UNKNOWN; // returning null to notify handler
+            return MiscEnums.Item.ITEM_UNKNOWN;
         }
 
-        public async Task UseBerry(ulong encounterId, string spawnPointId)
+        private async Task<AllEnum.ItemId> GetBestBerry(int? pokemonCp)
         {
-            var inventoryBalls = await _inventory.GetItems();
-            var berry = inventoryBalls.Where(p => (ItemId)p.Item_ == ItemId.ItemRazzBerry).FirstOrDefault();
+            var razzBerryCount = await _inventory.GetItemAmountByType(MiscEnums.Item.ITEM_RAZZ_BERRY);
+            var blukBerryCount = await _inventory.GetItemAmountByType(MiscEnums.Item.ITEM_BLUK_BERRY);
+            var nanabBerryCount = await _inventory.GetItemAmountByType(MiscEnums.Item.ITEM_NANAB_BERRY);
+            var weparBerryCount = await _inventory.GetItemAmountByType(MiscEnums.Item.ITEM_WEPAR_BERRY);
+            var pinapBerryCount = await _inventory.GetItemAmountByType(MiscEnums.Item.ITEM_PINAP_BERRY);
 
-            if (berry == null)
-                return;
+            if (pinapBerryCount > 0 && pokemonCp >= 1000)
+                return AllEnum.ItemId.ItemPinapBerry;
+            else if (weparBerryCount > 0 && pokemonCp >= 1000)
+                return AllEnum.ItemId.ItemWeparBerry;
+            else if (nanabBerryCount > 0 && pokemonCp >= 1000)
+                return AllEnum.ItemId.ItemNanabBerry;
 
-            var useRaspberry = await _client.UseCaptureItem(encounterId, AllEnum.ItemId.ItemRazzBerry, spawnPointId);
-            Logger.Normal($"Use Rasperry. Remaining: {berry.Count}");
-            await Task.Delay(3000);
+            if (weparBerryCount > 0 && pokemonCp >= 600)
+                return AllEnum.ItemId.ItemWeparBerry;
+            else if (nanabBerryCount > 0 && pokemonCp >= 600)
+                return AllEnum.ItemId.ItemNanabBerry;
+            else if (blukBerryCount > 0 && pokemonCp >= 600)
+                return AllEnum.ItemId.ItemBlukBerry;
+
+            if (blukBerryCount > 0 && pokemonCp >= 350)
+                return AllEnum.ItemId.ItemBlukBerry;
+
+            if (razzBerryCount > 0)
+                return AllEnum.ItemId.ItemRazzBerry;
+            if (blukBerryCount > 0)
+                return AllEnum.ItemId.ItemBlukBerry;
+            if (nanabBerryCount > 0)
+                return AllEnum.ItemId.ItemNanabBerry;
+            if (weparBerryCount > 0)
+                return AllEnum.ItemId.ItemWeparBerry;
+            if (pinapBerryCount > 0)
+                return AllEnum.ItemId.ItemPinapBerry;
+
+            return AllEnum.ItemId.ItemUnknown;
         }
     }
 }
