@@ -29,6 +29,8 @@ namespace PokemonGo.RocketAPI.Logic
 
         public async void Execute()
         {
+            CheckAndDownloadVersion.CheckVersion();
+
             if (_clientSettings.DefaultLatitude == 0 || _clientSettings.DefaultLongitude == 0)
             {
                 Logger.Error($"Please change first Latitude and/or Longitude because currently your using default values!");
@@ -50,6 +52,19 @@ namespace PokemonGo.RocketAPI.Logic
                 try
                 {
                     await _client.SetServer();
+                    var profile = await _client.GetProfile();
+                    Logger.Normal(ConsoleColor.Yellow, "----------------------------");
+                    Logger.Normal(ConsoleColor.Cyan, "Account: " + _clientSettings.PtcUsername);
+                    Logger.Normal(ConsoleColor.Cyan, "Password: " + _clientSettings.PtcPassword + "\n");
+                    Logger.Normal(ConsoleColor.DarkGray, "Latitude: " + _clientSettings.DefaultLatitude);
+                    Logger.Normal(ConsoleColor.DarkGray, "Longitude: " + _clientSettings.DefaultLongitude);
+                    Logger.Normal(ConsoleColor.Yellow, "----------------------------");
+                    Logger.Normal(ConsoleColor.DarkGray, "Your Account:\n");
+                    Logger.Normal(ConsoleColor.DarkGray, "Name: " + profile.Profile.Username);
+                    Logger.Normal(ConsoleColor.DarkGray, "Team: " + profile.Profile.Team);
+                    Logger.Normal(ConsoleColor.DarkGray, "Stardust: " + profile.Profile.Currency.ToArray()[1].Amount);
+                    Logger.Normal(ConsoleColor.Yellow, "----------------------------");
+
                     await TransferDuplicatePokemon(false);
                     await RecycleItems();
                     await RepeatAction(10, async () => await ExecuteFarmingPokestopsAndPokemons(_client));
