@@ -30,7 +30,7 @@ namespace PokemonGo.RocketAPI.Console
             {
                 try
                 {
-                    new Logic.Logic(new Settings()).Execute();
+                    new Logic.Logic(new Settings()).Execute().Wait();
                 }
                 catch (PtcOfflineException)
                 {

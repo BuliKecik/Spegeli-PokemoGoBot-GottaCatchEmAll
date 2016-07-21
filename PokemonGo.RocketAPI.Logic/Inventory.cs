@@ -37,34 +37,33 @@ namespace PokemonGo.RocketAPI.Logic
             return
                 templates.ItemTemplates.Select(i => i.PokemonSettings)
                     .Where(p => p != null && p?.FamilyId != PokemonFamilyId.FamilyUnset);
-        } 
-
+        }
 
         public async Task<IEnumerable<PokemonData>> GetDuplicatePokemonToTransfer(bool keepPokemonsThatCanEvolve = false)
         {
             var myPokemon = await GetPokemons();
 
-            var pokemonList = myPokemon as IList<PokemonData> ?? myPokemon.ToList();
+            var pokemonList = myPokemon.Where(p => p.DeployedFortId == 0).ToList(); //Don't evolve pokemon in gyms
             if (keepPokemonsThatCanEvolve)
             {
                 var results = new List<PokemonData>();
                 var pokemonsThatCanBeTransfered = pokemonList.GroupBy(p => p.PokemonId)
-                    .Where(x => x.Count() > 1).ToList();
+                    .Where(x => x.Count() > 2).ToList();
 
                 var myPokemonSettings = await GetPokemonSettings();
-                var pokemonSettings = myPokemonSettings as IList<PokemonSettings> ?? myPokemonSettings.ToList();
+                var pokemonSettings = myPokemonSettings.ToList();
 
                 var myPokemonFamilies = await GetPokemonFamilies();
-                var pokemonFamilies = myPokemonFamilies as PokemonFamily[] ?? myPokemonFamilies.ToArray();
+                var pokemonFamilies = myPokemonFamilies.ToArray();
 
                 foreach (var pokemon in pokemonsThatCanBeTransfered)
                 {
                     var settings = pokemonSettings.Single(x => x.PokemonId == pokemon.Key);
                     var familyCandy = pokemonFamilies.Single(x => settings.FamilyId == x.FamilyId);
-                    var amountToSkip = (familyCandy.Candy + settings.CandyToEvolve - 1)/settings.CandyToEvolve;
-
-                    if (settings.EvolutionIds.Count == 0)
+                    if (settings.CandyToEvolve == 0)
                         continue;
+
+                    var amountToSkip = (familyCandy.Candy + settings.CandyToEvolve - 1) / settings.CandyToEvolve + 2;
 
                     results.AddRange(pokemonList.Where(x => x.PokemonId == pokemon.Key && x.Favorite == 0)
                         .OrderByDescending(x => x.Cp)
@@ -76,11 +75,40 @@ namespace PokemonGo.RocketAPI.Logic
 
                 return results;
             }
-            
+
             return pokemonList
                 .GroupBy(p => p.PokemonId)
                 .Where(x => x.Count() > 1)
                 .SelectMany(p => p.Where(x => x.Favorite == 0).OrderByDescending(x => x.Cp).ThenBy(n => n.StaminaMax).Skip(1).ToList());
+        }
+
+        public async Task<IEnumerable<PokemonData>> GetPokemonToEvolve()
+        {
+            var myPokemons = await GetPokemons();
+            var pokemons = myPokemons.Where(p => p.DeployedFortId == 0).ToList(); //Don't evolve pokemon in gyms
+
+            var myPokemonSettings = await GetPokemonSettings();
+            var pokemonSettings = myPokemonSettings.ToList();
+
+            var myPokemonFamilies = await GetPokemonFamilies();
+            var pokemonFamilies = myPokemonFamilies.ToArray();
+
+            var pokemonToEvolve = new List<PokemonData>();
+            foreach (var pokemon in pokemons)
+            {
+                var settings = pokemonSettings.Single(x => x.PokemonId == pokemon.PokemonId);
+                var familyCandy = pokemonFamilies.Single(x => settings.FamilyId == x.FamilyId);
+
+                //Don't evolve if we can't evolve it
+                if (settings.EvolutionIds.Count == 0)
+                    continue;
+
+                var pokemonCandyNeededAlready = pokemonToEvolve.Count(p => pokemonSettings.Single(x => x.PokemonId == p.PokemonId).FamilyId == settings.FamilyId) * settings.CandyToEvolve;
+                if (familyCandy.Candy - pokemonCandyNeededAlready > settings.CandyToEvolve)
+                    pokemonToEvolve.Add(pokemon);
+            }
+
+            return pokemonToEvolve;
         }
 
         public async Task<IEnumerable<Item>> GetItems()

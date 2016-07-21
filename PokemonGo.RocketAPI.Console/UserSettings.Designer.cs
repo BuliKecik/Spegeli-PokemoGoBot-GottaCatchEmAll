@@ -25,6 +25,30 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Google")]
+        public string AuthType {
+            get {
+                return ((string)(this["AuthType"]));
+            }
+            set {
+                this["AuthType"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("username")]
+        public string PtcUsername {
+            get {
+                return ((string)(this["PtcUsername"]));
+            }
+            set {
+                this["PtcUsername"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string GoogleRefreshToken {
             get {
@@ -37,31 +61,19 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Ptc")]
-        public string AuthType {
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public double DefaultAltitude {
             get {
-                return ((string)(this["AuthType"]));
+                return ((double)(this["DefaultAltitude"]));
             }
             set {
-                this["AuthType"] = value;
+                this["DefaultAltitude"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Jarolon")]
-        public string PtcUsername {
-            get {
-                return ((string)(this["PtcUsername"]));
-            }
-            set {
-                this["PtcUsername"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5dfM56Rh")]
+        [global::System.Configuration.DefaultSettingValueAttribute("password")]
         public string PtcPassword {
             get {
                 return ((string)(this["PtcPassword"]));
@@ -73,7 +85,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("48.78")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public double DefaultLatitude {
             get {
                 return ((double)(this["DefaultLatitude"]));
@@ -85,7 +97,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("9.18274")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public double DefaultLongitude {
             get {
                 return ((double)(this["DefaultLongitude"]));
