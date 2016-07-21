@@ -95,12 +95,13 @@ namespace PokemonGo.RocketAPI.Logic
             {
                 var update = await client.UpdatePlayerLocation(pokemon.Latitude, pokemon.Longitude);
                 var encounterPokemonResponse = await client.EncounterPokemon(pokemon.EncounterId, pokemon.SpawnpointId);
-                var pokeball = await GetPokeBall();
+                var pokemonCP = encounterPokemonResponse?.WildPokemon?.PokemonData?.Cp;
+                var pokeball = await GetBestBall(pokemonCP);
 
                 CatchPokemonResponse caughtPokemonResponse;
                 do
                 {
-                    caughtPokemonResponse = await client.CatchPokemon(pokemon.EncounterId, pokemon.SpawnpointId, pokemon.Latitude, pokemon.Longitude, pokeball); //note: reverted from settings because this should not be part of settings but part of logic
+                    caughtPokemonResponse = await client.CatchPokemon(pokemon.EncounterId, pokemon.SpawnpointId, pokemon.Latitude, pokemon.Longitude, pokeball);
                 }
                 while (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchMissed);
 
@@ -148,7 +149,7 @@ namespace PokemonGo.RocketAPI.Logic
             }
         }
         
-        private async Task<MiscEnums.Item> GetPokeBall()
+        private async Task<MiscEnums.Item> GetBestBall(int? pokemonCP)
         {
             var inventory = await _client.GetInventory();
             var ballCollection = inventory.InventoryDelta.InventoryItems
@@ -170,19 +171,31 @@ namespace PokemonGo.RocketAPI.Logic
             var masterBallsCount = ballCollection.Where(p => p.ItemId == MiscEnums.Item.ITEM_MASTER_BALL).
                 DefaultIfEmpty(new { ItemId = MiscEnums.Item.ITEM_MASTER_BALL, Amount = 0 }).FirstOrDefault().Amount;
 
-            if (pokeBallsCount > 0)
-                return MiscEnums.Item.ITEM_POKE_BALL;
-
-            if (greatBallsCount > 0)
+            if (masterBallsCount > 0 && pokemonCP >= 1000)
+                return MiscEnums.Item.ITEM_MASTER_BALL;
+            else if (ultraBallsCount > 0 && pokemonCP >= 1000)
+                return MiscEnums.Item.ITEM_ULTRA_BALL;
+            else if (greatBallsCount > 0 && pokemonCP >= 1000)
                 return MiscEnums.Item.ITEM_GREAT_BALL;
 
+            if (ultraBallsCount > 0 && pokemonCP >= 600)
+                return MiscEnums.Item.ITEM_ULTRA_BALL;
+            else if(greatBallsCount > 0 && pokemonCP >= 600)
+                return MiscEnums.Item.ITEM_GREAT_BALL;
+
+            if (greatBallsCount > 0 && pokemonCP >= 350)
+                return MiscEnums.Item.ITEM_GREAT_BALL;
+
+            if (pokeBallsCount > 0)
+                return MiscEnums.Item.ITEM_POKE_BALL;
+            if (greatBallsCount > 0)
+                return MiscEnums.Item.ITEM_GREAT_BALL;
             if (ultraBallsCount > 0)
                 return MiscEnums.Item.ITEM_ULTRA_BALL;
-
             if (masterBallsCount > 0)
                 return MiscEnums.Item.ITEM_MASTER_BALL;
 
             return MiscEnums.Item.ITEM_POKE_BALL;
-        }        
+        }
     }
 }
