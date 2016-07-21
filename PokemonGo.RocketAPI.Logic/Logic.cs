@@ -55,7 +55,7 @@ namespace PokemonGo.RocketAPI.Logic
                     var profile = await _client.GetProfile();
                     Logger.Normal(ConsoleColor.Yellow, "----------------------------");
                     Logger.Normal(ConsoleColor.Cyan, "Account: " + _clientSettings.PtcUsername);
-                    Logger.Normal(ConsoleColor.Cyan, "Password: " + _clientSettings.PtcPassword + "\n");
+                    //Logger.Normal(ConsoleColor.Cyan, "Password: " + _clientSettings.PtcPassword + "\n");
                     Logger.Normal(ConsoleColor.DarkGray, "Latitude: " + _clientSettings.DefaultLatitude);
                     Logger.Normal(ConsoleColor.DarkGray, "Longitude: " + _clientSettings.DefaultLongitude);
                     Logger.Normal(ConsoleColor.Yellow, "----------------------------");
