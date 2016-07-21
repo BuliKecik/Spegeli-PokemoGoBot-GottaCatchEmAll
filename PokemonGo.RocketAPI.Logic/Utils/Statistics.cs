@@ -53,7 +53,7 @@ namespace PokemonGo.RocketAPI.Logic.Utils
 
         public override string ToString()
         {           
-            return string.Format("{0} - Exp/H: {1:0.0} EXP   P/H: {2:0.0} Pokemon(s)   Stardust: {3:0} Pokemon(s)   Pokemon Transfered: {4:0}   Items Removed: {5:0}", "Statistics", _totalExperience / _getSessionRuntime(), _totalPokemons / _getSessionRuntime(), _totalStardust, _totalPokemonsTransfered, _totalItemsRemoved);
+            return string.Format("{0} - Exp/H: {1:0.0} EXP   P/H: {2:0.0} Pokemon(s)   Stardust: {3:0}   Pokemon Transfered: {4:0}   Items Removed: {5:0}", "Statistics", _totalExperience / _getSessionRuntime(), _totalPokemons / _getSessionRuntime(), _totalStardust, _totalPokemonsTransfered, _totalItemsRemoved);
         }
     }
 }
