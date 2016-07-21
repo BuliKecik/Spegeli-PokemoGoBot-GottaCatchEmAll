@@ -66,9 +66,7 @@ namespace PokemonGo.RocketAPI.Logic
                     Logger.Normal(ConsoleColor.DarkGray, "Your Account:\n");
                     Logger.Normal(ConsoleColor.DarkGray, $"Name: {profile.Profile.Username}");
                     Logger.Normal(ConsoleColor.DarkGray, $"Team: {profile.Profile.Team}");
-
                     Logger.Normal(ConsoleColor.DarkGray, $"Level: {_currentLevelInfos}");
-                    Logger.Normal(ConsoleColor.DarkGray, $"Team: {profile.Profile.Team}");
                     Logger.Normal(ConsoleColor.DarkGray, $"Stardust: {profile.Profile.Currency.ToArray()[1].Amount}");
                     Logger.Normal(ConsoleColor.Yellow, "----------------------------");
 
