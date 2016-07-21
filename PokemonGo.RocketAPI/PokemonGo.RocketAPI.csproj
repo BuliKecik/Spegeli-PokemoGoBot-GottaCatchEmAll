@@ -78,6 +78,7 @@
     <Compile Include="Enums\AuthType.cs" />
     <Compile Include="Enums\MiscEnums.cs" />
     <Compile Include="Enums\RequestType.cs" />
+    <Compile Include="Exceptions\InvalidResponseException.cs" />
     <Compile Include="Exceptions\PtcOfflineException.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="GeneratedCode\AllEnum.cs" />
@@ -91,6 +92,9 @@
     <Compile Include="Helpers\S2Helper.cs" />
     <Compile Include="Helpers\Utils.cs" />
     <Compile Include="ISettings.cs" />
+    <Compile Include="Logging\ConsoleLogger.cs" />
+    <Compile Include="Logging\ILogger.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Login\GoogleLogin.cs" />
     <Compile Include="Login\PtcLogin.cs" />
     <None Include="app.config" />

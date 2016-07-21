@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Google.Protobuf;
 using PokemonGo.RocketAPI;
+using PokemonGo.RocketAPI.Exceptions;
 using PokemonGo.RocketAPI.GeneratedCode;
 
 namespace PokemonGo.RocketAPI.Extensions
@@ -14,8 +15,11 @@ namespace PokemonGo.RocketAPI.Extensions
     {
         public static async Task<TResponsePayload> PostProtoPayload<TRequest, TResponsePayload>(this HttpClient client, string url, TRequest request) where TRequest : IMessage<TRequest> where TResponsePayload : IMessage<TResponsePayload>, new()
         {
-            Console.WriteLine($"{DateTime.Now.ToString("HH:mm:ss")} requesting {typeof(TResponsePayload).Name}");
+            //Logger.Write($"Requesting {typeof(TResponsePayload).Name}");
             var response = await PostProto<TRequest>(client, url, request);
+
+            if (response.Payload.Count == 0)
+                throw new InvalidResponseException();
 
             //Decode payload
             //todo: multi-payload support

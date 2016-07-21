@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.Helpers;
+using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace PokemonGo.RocketAPI.Login
 {
@@ -22,7 +24,13 @@ namespace PokemonGo.RocketAPI.Login
         internal static async Task<TokenResponseModel> GetAccessToken()
         {
             var deviceCodeResponse = await GetDeviceCode();
-            Console.WriteLine("Please visit " + deviceCodeResponse.verification_url + " and enter " + deviceCodeResponse.user_code);
+            Logger.Normal("Please visit " + deviceCodeResponse.verification_url + " and enter " + deviceCodeResponse.user_code);
+            Thread thread = new Thread(() => Clipboard.SetText(deviceCodeResponse.user_code));
+            thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
+            thread.Start();
+            thread.Join();
+            Logger.Normal("The Token is in your Clipboard!");
+            Process.Start("https://google.com/device");
 
             //Poll until user submitted code..
             TokenResponseModel tokenResponse;
@@ -55,6 +63,7 @@ namespace PokemonGo.RocketAPI.Login
         public static async Task<TokenResponseModel> GetAccessToken(string refreshToken)
         {
             return await HttpClientHelper.PostFormEncodedAsync<TokenResponseModel>(OauthTokenEndpoint,
+                new KeyValuePair<string, string>("access_type", "offline"),
                 new KeyValuePair<string, string>("client_id", ClientId),
                 new KeyValuePair<string, string>("client_secret", ClientSecret),
                 new KeyValuePair<string, string>("refresh_token", refreshToken),

@@ -24,7 +24,7 @@ namespace PokemonGo.RocketAPI.GeneratedCode {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Cg5SZXNwb25zZS5wcm90bxIhUG9rZW1vbkdvLlJvY2tldEFQSS5HZW5lcmF0",
-            "ZWRDb2RlIr0DCghSZXNwb25zZRIQCgh1bmtub3duMRgBIAEoBRIQCgh1bmtu",
+            "ZWRDb2RlIrYFCghSZXNwb25zZRIQCgh1bmtub3duMRgBIAEoBRIQCgh1bmtu",
             "b3duMhgCIAEoAxIPCgdhcGlfdXJsGAMgASgJEkYKCHVua25vd242GAYgASgL",
             "MjQuUG9rZW1vbkdvLlJvY2tldEFQSS5HZW5lcmF0ZWRDb2RlLlJlc3BvbnNl",
             "LlVua25vd242Ej4KBGF1dGgYByABKAsyMC5Qb2tlbW9uR28uUm9ja2V0QVBJ",
@@ -34,12 +34,18 @@ namespace PokemonGo.RocketAPI.GeneratedCode {
             "QVBJLkdlbmVyYXRlZENvZGUuUmVzcG9uc2UuVW5rbm93bjYuVW5rbm93bjIa",
             "HAoIVW5rbm93bjISEAoIdW5rbm93bjEYASABKAwaPwoEQXV0aBIRCgl1bmtu",
             "b3duNzEYASABKAwSEQoJdGltZXN0YW1wGAIgASgDEhEKCXVua25vd243MxgD",
-            "IAEoDGIGcHJvdG8z"));
+            "IAEoDBr2AQocUmVjeWNsZUludmVudG9yeUl0ZW1SZXNwb25zZRJfCgZyZXN1",
+            "bHQYASABKA4yTy5Qb2tlbW9uR28uUm9ja2V0QVBJLkdlbmVyYXRlZENvZGUu",
+            "UmVzcG9uc2UuUmVjeWNsZUludmVudG9yeUl0ZW1SZXNwb25zZS5SZXN1bHQS",
+            "EQoJbmV3X2NvdW50GAIgASgFImIKBlJlc3VsdBIJCgVVTlNFVBAAEgsKB1NV",
+            "Q0NFU1MQARIbChdFUlJPUl9OT1RfRU5PVUdIX0NPUElFUxACEiMKH0VSUk9S",
+            "X0NBTk5PVF9SRUNZQ0xFX0lOQ1VCQVRPUlMQA2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::PokemonGo.RocketAPI.GeneratedCode.Response), global::PokemonGo.RocketAPI.GeneratedCode.Response.Parser, new[]{ "Unknown1", "Unknown2", "ApiUrl", "Unknown6", "Auth", "Payload", "ErrorMessage" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::PokemonGo.RocketAPI.GeneratedCode.Response.Types.Unknown6), global::PokemonGo.RocketAPI.GeneratedCode.Response.Types.Unknown6.Parser, new[]{ "Unknown1", "Unknown2" }, null, null, new pbr::GeneratedClrTypeInfo[] { new pbr::GeneratedClrTypeInfo(typeof(global::PokemonGo.RocketAPI.GeneratedCode.Response.Types.Unknown6.Types.Unknown2), global::PokemonGo.RocketAPI.GeneratedCode.Response.Types.Unknown6.Types.Unknown2.Parser, new[]{ "Unknown1" }, null, null, null)}),
-            new pbr::GeneratedClrTypeInfo(typeof(global::PokemonGo.RocketAPI.GeneratedCode.Response.Types.Auth), global::PokemonGo.RocketAPI.GeneratedCode.Response.Types.Auth.Parser, new[]{ "Unknown71", "Timestamp", "Unknown73" }, null, null, null)})
+            new pbr::GeneratedClrTypeInfo(typeof(global::PokemonGo.RocketAPI.GeneratedCode.Response.Types.Auth), global::PokemonGo.RocketAPI.GeneratedCode.Response.Types.Auth.Parser, new[]{ "Unknown71", "Timestamp", "Unknown73" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::PokemonGo.RocketAPI.GeneratedCode.Response.Types.RecycleInventoryItemResponse), global::PokemonGo.RocketAPI.GeneratedCode.Response.Types.RecycleInventoryItemResponse.Parser, new[]{ "Result", "NewCount" }, null, new[]{ typeof(global::PokemonGo.RocketAPI.GeneratedCode.Response.Types.RecycleInventoryItemResponse.Types.Result) }, null)})
           }));
     }
     #endregion
@@ -717,6 +723,150 @@ namespace PokemonGo.RocketAPI.GeneratedCode {
             }
           }
         }
+
+      }
+
+      [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+      public sealed partial class RecycleInventoryItemResponse : pb::IMessage<RecycleInventoryItemResponse> {
+        private static readonly pb::MessageParser<RecycleInventoryItemResponse> _parser = new pb::MessageParser<RecycleInventoryItemResponse>(() => new RecycleInventoryItemResponse());
+        public static pb::MessageParser<RecycleInventoryItemResponse> Parser { get { return _parser; } }
+
+        public static pbr::MessageDescriptor Descriptor {
+          get { return global::PokemonGo.RocketAPI.GeneratedCode.Response.Descriptor.NestedTypes[2]; }
+        }
+
+        pbr::MessageDescriptor pb::IMessage.Descriptor {
+          get { return Descriptor; }
+        }
+
+        public RecycleInventoryItemResponse() {
+          OnConstruction();
+        }
+
+        partial void OnConstruction();
+
+        public RecycleInventoryItemResponse(RecycleInventoryItemResponse other) : this() {
+          result_ = other.result_;
+          newCount_ = other.newCount_;
+        }
+
+        public RecycleInventoryItemResponse Clone() {
+          return new RecycleInventoryItemResponse(this);
+        }
+
+        /// <summary>Field number for the "result" field.</summary>
+        public const int ResultFieldNumber = 1;
+        private global::PokemonGo.RocketAPI.GeneratedCode.Response.Types.RecycleInventoryItemResponse.Types.Result result_ = 0;
+        public global::PokemonGo.RocketAPI.GeneratedCode.Response.Types.RecycleInventoryItemResponse.Types.Result Result {
+          get { return result_; }
+          set {
+            result_ = value;
+          }
+        }
+
+        /// <summary>Field number for the "new_count" field.</summary>
+        public const int NewCountFieldNumber = 2;
+        private int newCount_;
+        public int NewCount {
+          get { return newCount_; }
+          set {
+            newCount_ = value;
+          }
+        }
+
+        public override bool Equals(object other) {
+          return Equals(other as RecycleInventoryItemResponse);
+        }
+
+        public bool Equals(RecycleInventoryItemResponse other) {
+          if (ReferenceEquals(other, null)) {
+            return false;
+          }
+          if (ReferenceEquals(other, this)) {
+            return true;
+          }
+          if (Result != other.Result) return false;
+          if (NewCount != other.NewCount) return false;
+          return true;
+        }
+
+        public override int GetHashCode() {
+          int hash = 1;
+          if (Result != 0) hash ^= Result.GetHashCode();
+          if (NewCount != 0) hash ^= NewCount.GetHashCode();
+          return hash;
+        }
+
+        public override string ToString() {
+          return pb::JsonFormatter.ToDiagnosticString(this);
+        }
+
+        public void WriteTo(pb::CodedOutputStream output) {
+          if (Result != 0) {
+            output.WriteRawTag(8);
+            output.WriteEnum((int) Result);
+          }
+          if (NewCount != 0) {
+            output.WriteRawTag(16);
+            output.WriteInt32(NewCount);
+          }
+        }
+
+        public int CalculateSize() {
+          int size = 0;
+          if (Result != 0) {
+            size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Result);
+          }
+          if (NewCount != 0) {
+            size += 1 + pb::CodedOutputStream.ComputeInt32Size(NewCount);
+          }
+          return size;
+        }
+
+        public void MergeFrom(RecycleInventoryItemResponse other) {
+          if (other == null) {
+            return;
+          }
+          if (other.Result != 0) {
+            Result = other.Result;
+          }
+          if (other.NewCount != 0) {
+            NewCount = other.NewCount;
+          }
+        }
+
+        public void MergeFrom(pb::CodedInputStream input) {
+          uint tag;
+          while ((tag = input.ReadTag()) != 0) {
+            switch(tag) {
+              default:
+                input.SkipLastField();
+                break;
+              case 8: {
+                result_ = (global::PokemonGo.RocketAPI.GeneratedCode.Response.Types.RecycleInventoryItemResponse.Types.Result) input.ReadEnum();
+                break;
+              }
+              case 16: {
+                NewCount = input.ReadInt32();
+                break;
+              }
+            }
+          }
+        }
+
+        #region Nested types
+        /// <summary>Container for nested types declared in the RecycleInventoryItemResponse message type.</summary>
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public static partial class Types {
+          public enum Result {
+            [pbr::OriginalName("UNSET")] Unset = 0,
+            [pbr::OriginalName("SUCCESS")] Success = 1,
+            [pbr::OriginalName("ERROR_NOT_ENOUGH_COPIES")] ErrorNotEnoughCopies = 2,
+            [pbr::OriginalName("ERROR_CANNOT_RECYCLE_INCUBATORS")] ErrorCannotRecycleIncubators = 3,
+          }
+
+        }
+        #endregion
 
       }
 
