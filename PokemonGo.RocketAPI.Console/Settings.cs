@@ -24,6 +24,7 @@ namespace PokemonGo.RocketAPI.Console
                 //Items to Recylce but keep X amount
                 return new[]
                 {
+                    new KeyValuePair<ItemId, int>(ItemId.ItemPokeBall, 150),
                     new KeyValuePair<ItemId, int>(ItemId.ItemPotion, 5),
                     new KeyValuePair<ItemId, int>(ItemId.ItemSuperPotion, 5),
                     new KeyValuePair<ItemId, int>(ItemId.ItemHyperPotion, 5),
