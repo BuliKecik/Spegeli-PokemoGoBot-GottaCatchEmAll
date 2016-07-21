@@ -95,7 +95,7 @@ namespace PokemonGo.RocketAPI.Logic
             {
                 var update = await client.UpdatePlayerLocation(pokemon.Latitude, pokemon.Longitude);
                 var encounterPokemonResponse = await client.EncounterPokemon(pokemon.EncounterId, pokemon.SpawnpointId);
-                var pokeball = await GetPokeBall(client);
+                var pokeball = await GetPokeBall();
 
                 CatchPokemonResponse caughtPokemonResponse;
                 do
@@ -148,9 +148,9 @@ namespace PokemonGo.RocketAPI.Logic
             }
         }
         
-        public async Task<MiscEnums.Item> GetPokeBall(Client client)
+        private async Task<MiscEnums.Item> GetPokeBall()
         {
-            var inventory = await client.GetInventory();
+            var inventory = await _client.GetInventory();
             var ballCollection = inventory.InventoryDelta.InventoryItems
                    .Select(i => i.InventoryItemData?.Item)
                    .Where(p => p != null)
