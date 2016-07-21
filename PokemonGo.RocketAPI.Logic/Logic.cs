@@ -54,7 +54,8 @@ namespace PokemonGo.RocketAPI.Logic
                     await _client.SetServer();
                     var profile = await _client.GetProfile();
                     Logger.Normal(ConsoleColor.Yellow, "----------------------------");
-                    Logger.Normal(ConsoleColor.Cyan, "Account: " + _clientSettings.PtcUsername);
+                    if (_clientSettings.AuthType == AuthType.Ptc)
+                        Logger.Normal(ConsoleColor.Cyan, "PTC Account: " + _clientSettings.PtcUsername + "\n");
                     //Logger.Normal(ConsoleColor.Cyan, "Password: " + _clientSettings.PtcPassword + "\n");
                     Logger.Normal(ConsoleColor.DarkGray, "Latitude: " + _clientSettings.DefaultLatitude);
                     Logger.Normal(ConsoleColor.DarkGray, "Longitude: " + _clientSettings.DefaultLongitude);
@@ -162,6 +163,8 @@ namespace PokemonGo.RocketAPI.Logic
                     foreach (int xp in caughtPokemonResponse.Scores.Xp)
                         _stats.addExperience(xp);
                     _stats.increasePokemons();
+                    var profile = await _client.GetProfile();
+                    _stats.getStardust(profile.Profile.Currency.ToArray()[1].Amount);
                 }
 
                 _stats.updateConsoleTitle();
