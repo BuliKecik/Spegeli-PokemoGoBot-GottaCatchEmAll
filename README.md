@@ -19,12 +19,9 @@ GitHub issues will be deleted if they are not API related. PR's about improved l
 * Random Task Delays
 * Delete specific Items but keep a specific amount
 
-* Evolve pokemons
-* Auto Updates
-
 ## Getting Started
 
-Go to PokemonGo\RocketAPI\Console\App.config -> Edit the Settings you like 
-Go to PokemonGo\RocketAPI\Console\Settings.cs -> Edit the Settings for delete Items
-
--> Build and Run (CTRL+F5)
+*Go to PokemonGo\RocketAPI\Console\App.config -> Edit the Settings you like 
+*Go to PokemonGo\RocketAPI\Console\Settings.cs -> Edit the Settings for delete Items
+*
+*-> Build and Run (CTRL+F5)
