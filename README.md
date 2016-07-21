@@ -1,6 +1,12 @@
 # Pokemon-Go-Rocket-API
 
+![alt tag](https://github.com/Spegeli/Pokemon-Go-Rocket-API/Screenshot.png)
+
 # Pokemon Go Client API Library in C# #
+
+General chat: https://discord.gg/5CMa3CY
+
+GitHub issues will be deleted if they are not API related. PR's about improved logic is welcome.
 
 Example:
 
