@@ -50,7 +50,7 @@ namespace PokemonGo.RocketAPI.Logic
                 try
                 {
                     await _client.SetServer();
-                    await TransferDuplicatePokemon(true);
+                    await TransferDuplicatePokemon(false);
                     await RecycleItems();
                     await RepeatAction(10, async () => await ExecuteFarmingPokestopsAndPokemons(_client));
 
@@ -154,7 +154,7 @@ namespace PokemonGo.RocketAPI.Logic
                 Logger.Normal(ConsoleColor.Yellow, caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess ? $"We caught a {pokemon.PokemonId} with CP {encounterPokemonResponse?.WildPokemon?.PokemonData?.Cp}, used {balls_used} x {pokeball} and received XP {caughtPokemonResponse.Scores.Xp.Sum()}" : $"{pokemon.PokemonId} with CP {encounterPokemonResponse?.WildPokemon?.PokemonData?.Cp} got away while using a {pokeball}..");
 
                 await RandomHelper.RandomDelay(500, 1000);
-                await TransferDuplicatePokemon(true);
+                await TransferDuplicatePokemon(false);
 
                 await RandomHelper.RandomDelay(2500, 5000);
             }
@@ -206,7 +206,7 @@ namespace PokemonGo.RocketAPI.Logic
             foreach (var item in items)
             {
                 var transfer = await _client.RecycleItem((AllEnum.ItemId)item.Item_, item.Count);
-                Logger.Normal(ConsoleColor.DarkBlue, $"Recycled {item.Count}x {(AllEnum.ItemId)item.Item_}");
+                Logger.Normal(ConsoleColor.DarkCyan, $"Recycled {item.Count}x {(AllEnum.ItemId)item.Item_}");
 
                 _stats.addItemsRemoved(item.Count);
                 _stats.updateConsoleTitle();
