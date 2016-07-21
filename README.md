@@ -2,49 +2,29 @@
 
 ![alt tag](https://github.com/Spegeli/Pokemon-Go-Rocket-API/blob/master/Screenshot.png)
 
+A Pokemon Go bot in C#
+
 # Pokemon Go Client API Library in C# #
 
 General chat: https://discord.gg/5CMa3CY
 
 GitHub issues will be deleted if they are not API related. PR's about improved logic is welcome.
 
-Example:
+## Features
+* PTC Login / Google
+* Farm Pokestops
+* Farm all Pokemon in neighbourhood
+* Transfer Pokemon
+* Use best Pokeball & Berry (depending on Pokemon CP)
+* Random Task Delays
+* Delete specific Items but keep a specific amount
 
-```
-var client = new Client(Settings.DefaultLatitude, Settings.DefaultLongitude);
+* Evolve pokemons
+* Auto Updates
 
-await client.LoginPtc("FeroxRev", "Sekret");
-var serverResponse = await client.GetServer();
-var profile = await client.GetProfile();
-var settings = await client.GetSettings();
-var mapObjects = await client.GetMapObjects();
-var inventory = await client.GetInventory();
+## Getting Started
 
-await ExecuteFarmingPokestops(client);
-await ExecuteCatchAllNearbyPokemons(client);
-```
+Go to PokemonGo\RocketAPI\Console\App.config -> Edit the Settings you like 
+Go to PokemonGo\RocketAPI\Console\Settings.cs -> Edit the Settings for delete Items
 
-General chat: https://discord.gg/xPCyNau
-
-Features
-
-Note: There is a list of feature requests [here](https://github.com/FeroxRev/Pokemon-Go-Rocket-API/wiki/Feature-requests).
-
-```
-#PTC Login / Google
-#Get Map Objects and Inventory
-#Search for gyms/pokestops/spawns
-#Farm pokestops
-#Farm all pokemons in neighbourhood
-#Transfer pokemon
-#Evolve pokemon
-#Recycle items
-```
-
-Todo
-
-```
-#Gotta catch them all
-#Map Enums
-```
-
+-> Build and Run (CTRL+F5)
