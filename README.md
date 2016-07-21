@@ -1,6 +1,6 @@
 # Pokemon-Go-Rocket-API
 
-![alt tag](https://github.com/Spegeli/Pokemon-Go-Rocket-API/Screenshot.png)
+![alt tag](https://github.com/Spegeli/Pokemon-Go-Rocket-API/blob/master/Screenshot.png)
 
 # Pokemon Go Client API Library in C# #
 
