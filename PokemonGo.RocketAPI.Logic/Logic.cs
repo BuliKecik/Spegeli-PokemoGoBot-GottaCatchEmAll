@@ -16,12 +16,14 @@ namespace PokemonGo.RocketAPI.Logic
         private readonly Client _client;
         private readonly ISettings _clientSettings;
         private readonly Inventory _inventory;
+        private BotStats _botStats;
 
         public Logic(ISettings clientSettings)
         {
             _clientSettings = clientSettings;
             _client = new Client(_clientSettings);
             _inventory = new Inventory(_client);
+            _botStats = new BotStats();
         }
 
         public async void Execute()
@@ -79,6 +81,9 @@ namespace PokemonGo.RocketAPI.Logic
                 //var fortInfo = await client.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
                 var fortSearch = await client.SearchFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
+                _botStats.addExperience(fortSearch.ExperienceAwarded);
+                System.Console.Title = _botStats.ToString();
+
                 Logger.Write($"Farmed XP: {fortSearch.ExperienceAwarded}, Gems: { fortSearch.GemsAwarded}, Eggs: {fortSearch.PokemonDataEgg} Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}", LogLevel.Info);
 
                 await Task.Delay(15000);
@@ -105,6 +110,12 @@ namespace PokemonGo.RocketAPI.Logic
                     caughtPokemonResponse = await client.CatchPokemon(pokemon.EncounterId, pokemon.SpawnpointId, pokemon.Latitude, pokemon.Longitude, pokeball);
                 }
                 while (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchMissed);
+
+                foreach (int xp in caughtPokemonResponse.Scores.Xp)
+                    _botStats.addExperience(xp);
+                if (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess)
+                    _botStats.addPokemon(1);
+                System.Console.Title = _botStats.ToString();
 
                 Logger.Write(caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess ? $"We caught a {pokemon.PokemonId} with CP {encounterPokemonResponse?.WildPokemon?.PokemonData?.Cp} using a {pokeball}" : $"{pokemon.PokemonId} with CP {encounterPokemonResponse?.WildPokemon?.PokemonData?.Cp} got away while using a {pokeball}..", LogLevel.Info);
                 await Task.Delay(15000);
