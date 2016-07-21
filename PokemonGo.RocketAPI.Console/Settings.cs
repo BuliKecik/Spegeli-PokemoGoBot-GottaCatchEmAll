@@ -21,11 +21,15 @@ namespace PokemonGo.RocketAPI.Console
         {
             get
             {
-                //Type and amount to keep
+                //Items to Recylce but keep X amount
                 return new[]
                 {
-                    new KeyValuePair<ItemId, int>(ItemId.ItemPokeBall, 50),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemGreatBall, 50)
+                    new KeyValuePair<ItemId, int>(ItemId.ItemPotion, 5),
+                    new KeyValuePair<ItemId, int>(ItemId.ItemSuperPotion, 5),
+                    new KeyValuePair<ItemId, int>(ItemId.ItemHyperPotion, 5),
+                    new KeyValuePair<ItemId, int>(ItemId.ItemMaxPotion, 5),
+                    new KeyValuePair<ItemId, int>(ItemId.ItemRevive, 5),
+                    new KeyValuePair<ItemId, int>(ItemId.ItemRazzBerry, 5)
                 };
             }
 
