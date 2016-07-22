@@ -59,19 +59,22 @@ namespace PokemonGo.RocketAPI
         public async Task DoGoogleLogin()
         {
             _authType = AuthType.Google;
+
+            GoogleLogin.TokenResponseModel tokenResponse = null;
             if (_settings.GoogleRefreshToken != string.Empty)
             {
-                var tokenResponse = await GoogleLogin.GetAccessToken(_settings.GoogleRefreshToken);
-                AccessToken = tokenResponse.id_token;
+                tokenResponse = await GoogleLogin.GetAccessToken(_settings.GoogleRefreshToken);
+                AccessToken = tokenResponse?.id_token;
             }
 
             if (AccessToken == null)
             {
                 var deviceCode = await GoogleLogin.GetDeviceCode();
-                var tokenResponse = await GoogleLogin.GetAccessToken(deviceCode);
-                AccessToken = tokenResponse.id_token;
-                _settings.GoogleRefreshToken = tokenResponse.access_token;
+                tokenResponse = await GoogleLogin.GetAccessToken(deviceCode);
+                _settings.GoogleRefreshToken = tokenResponse?.refresh_token;
+                AccessToken = tokenResponse?.id_token;
             }
+
         }
 
         /// <summary>
@@ -252,7 +255,7 @@ namespace PokemonGo.RocketAPI
             return await _httpClient.PostProtoPayload<Request, EncounterResponse>($"https://{_apiUrl}/rpc", encounterResponse);
         }
 
-        public async Task<UseItemCaptureRequest> UseCaptureItem(ulong encounterId, string spawnPointGuid, AllEnum.ItemId itemId)
+        public async Task<UseItemCaptureRequest> UseCaptureItem(ulong encounterId, AllEnum.ItemId itemId, string spawnPointGuid)
         {
             var customRequest = new UseItemCaptureRequest
             {
