@@ -176,23 +176,23 @@ namespace PokemonGo.RocketAPI.Logic
             CatchPokemonResponse caughtPokemonResponse;
             do
             {
-                var berry = await GetBestBerry(encounter?.WildPokemon);
-                if (berry != AllEnum.ItemId.ItemUnknown && encounter?.CaptureProbability.CaptureProbability_.First() < 0.35)
+                var bestBerry = await GetBestBerry(encounter?.WildPokemon);
+                if (bestBerry != AllEnum.ItemId.ItemUnknown && encounter?.CaptureProbability.CaptureProbability_.First() < 0.35)
                 {
-                    var useRaspberry = await _client.UseCaptureItem(pokemon.EncounterId, pokemon.SpawnpointId, berry);
-                    Logger.Normal($"Use Rasperry {berry}");
+                    var useRaspberry = await _client.UseCaptureItem(pokemon.EncounterId, bestBerry, pokemon.SpawnpointId);
+                    Logger.Normal($"Use Rasperry {bestBerry}");
                     await RandomHelper.RandomDelay(500, 1000);
                 }
 
-                var pokeball = await GetBestBall(encounter?.WildPokemon);
-                if (pokeball == MiscEnums.Item.ITEM_UNKNOWN)
+                var bestPokeball = await GetBestBall(encounter?.WildPokemon);
+                if (bestPokeball == MiscEnums.Item.ITEM_UNKNOWN)
                 {
                     Logger.Normal($"You don't own any Pokeballs :( - We missed a {pokemon.PokemonId} with CP {encounter?.WildPokemon?.PokemonData?.Cp}");
                     return;
                 }
 
                 var distance = Navigation.DistanceBetween2Coordinates(_client.CurrentLat, _client.CurrentLng, pokemon.Latitude, pokemon.Longitude);
-                caughtPokemonResponse = await _client.CatchPokemon(pokemon.EncounterId, pokemon.SpawnpointId, pokemon.Latitude, pokemon.Longitude, pokeball);
+                caughtPokemonResponse = await _client.CatchPokemon(pokemon.EncounterId, pokemon.SpawnpointId, pokemon.Latitude, pokemon.Longitude, bestPokeball);
 
                 if (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess)
                 {
@@ -205,8 +205,8 @@ namespace PokemonGo.RocketAPI.Logic
                 _stats.updateConsoleTitle(_client);
                 Logger.Normal(ConsoleColor.Yellow,
                     caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess
-                    ? $"We caught a {pokemon.PokemonId} with CP {encounter?.WildPokemon?.PokemonData?.Cp} and CaptureProbability: {encounter?.CaptureProbability.CaptureProbability_.First()}, used {pokeball} in {Math.Round(distance)}m distance and received XP {caughtPokemonResponse.Scores.Xp.Sum()}"
-                    : $"{pokemon.PokemonId} with CP {encounter?.WildPokemon?.PokemonData?.Cp} CaptureProbability: {encounter?.CaptureProbability.CaptureProbability_.First()} in {Math.Round(distance)}m distance {caughtPokemonResponse.Status} while using a {pokeball}.."
+                    ? $"We caught a {pokemon.PokemonId} with CP {encounter?.WildPokemon?.PokemonData?.Cp} and CaptureProbability: {encounter?.CaptureProbability.CaptureProbability_.First()}, used {bestPokeball} in {Math.Round(distance)}m distance and received XP {caughtPokemonResponse.Scores.Xp.Sum()}"
+                    : $"{pokemon.PokemonId} with CP {encounter?.WildPokemon?.PokemonData?.Cp} CaptureProbability: {encounter?.CaptureProbability.CaptureProbability_.First()} in {Math.Round(distance)}m distance {caughtPokemonResponse.Status} while using a {bestPokeball}.."
                     );
                 await RandomHelper.RandomDelay(1750, 2250);
             }
@@ -228,7 +228,7 @@ namespace PokemonGo.RocketAPI.Logic
                 Logger.Normal(
                     evolvePokemonOutProto.Result == EvolvePokemonOut.Types.EvolvePokemonStatus.PokemonEvolvedSuccess
                         ? $"Evolved {pokemon.PokemonId} successfully for {evolvePokemonOutProto.ExpAwarded} xp"
-                        : $"Failed to evolve {pokemon.PokemonId}. EvolvePokemonOutProto.Result was {evolvePokemonOutProto.Result}, stopping evolving {pokemon.PokemonId}",
+                        : $"Failed to evolve {pokemon.PokemonId}. EvolvePokemonOutProto.Result was {evolvePokemonOutProto.Result}, stopping evolving {pokemon.PokemonId}"
                     );
 
                 await Task.Delay(3000);
@@ -275,6 +275,7 @@ namespace PokemonGo.RocketAPI.Logic
                                     || (MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_MASTER_BALL
                                     || (MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_ULTRA_BALL
                                     || (MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_GREAT_BALL).GroupBy(i => ((MiscEnums.Item)i.Item_)).ToList();
+            if (balls.Count == 0) return MiscEnums.Item.ITEM_UNKNOWN;
 
             var pokeBalls = balls.Any(g => g.Key == MiscEnums.Item.ITEM_POKE_BALL);
             var greatBalls = balls.Any(g => g.Key == MiscEnums.Item.ITEM_GREAT_BALL);
@@ -301,7 +302,6 @@ namespace PokemonGo.RocketAPI.Logic
             if (greatBalls && pokemonCp >= 350)
                 return MiscEnums.Item.ITEM_GREAT_BALL;
 
-            //return MiscEnums.Item.ITEM_UNKNOWN;
             return balls.OrderBy(g => g.Key).First().Key;
         }
 
