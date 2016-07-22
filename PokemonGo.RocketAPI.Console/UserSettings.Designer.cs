@@ -85,7 +85,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Ptc")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Google")]
         public string AuthType {
             get {
                 return ((string)(this["AuthType"]));
@@ -97,31 +97,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Jarolon")]
-        public string PtcUsername {
-            get {
-                return ((string)(this["PtcUsername"]));
-            }
-            set {
-                this["PtcUsername"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5dfM56Rh")]
-        public string PtcPassword {
-            get {
-                return ((string)(this["PtcPassword"]));
-            }
-            set {
-                this["PtcPassword"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("48.78")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public double DefaultLatitude {
             get {
                 return ((double)(this["DefaultLatitude"]));
@@ -133,7 +109,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("9.18274")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public double DefaultLongitude {
             get {
                 return ((double)(this["DefaultLongitude"]));
@@ -145,7 +121,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool EvolveAllPokemonWithEnoughCandy {
             get {
                 return ((bool)(this["EvolveAllPokemonWithEnoughCandy"]));
@@ -164,6 +140,42 @@ namespace PokemonGo.RocketAPI.Console {
             }
             set {
                 this["TransferDuplicatePokemon"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("username")]
+        public string PtcUsername {
+            get {
+                return ((string)(this["PtcUsername"]));
+            }
+            set {
+                this["PtcUsername"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("password")]
+        public string PtcPassword {
+            get {
+                return ((string)(this["PtcPassword"]));
+            }
+            set {
+                this["PtcPassword"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UsePokemonToNotCatchFilter {
+            get {
+                return ((bool)(this["UsePokemonToNotCatchFilter"]));
+            }
+            set {
+                this["UsePokemonToNotCatchFilter"] = value;
             }
         }
     }

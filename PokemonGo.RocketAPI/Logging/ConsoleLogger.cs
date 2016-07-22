@@ -1,4 +1,9 @@
-﻿using System;
+﻿#region
+
+using System;
+
+#endregion
+
 
 namespace PokemonGo.RocketAPI.Logging
 {

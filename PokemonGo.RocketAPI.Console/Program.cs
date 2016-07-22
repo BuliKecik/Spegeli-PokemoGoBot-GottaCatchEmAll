@@ -1,28 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Reflection;
-using System.Text.RegularExpressions;
+﻿#region
+
+using System;
 using System.Threading;
 using System.Threading.Tasks;
-using AllEnum;
-using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.Exceptions;
-using PokemonGo.RocketAPI.Extensions;
-using PokemonGo.RocketAPI.GeneratedCode;
-using System.Net.Http;
-using System.Text;
-using Google.Protobuf;
-using PokemonGo.RocketAPI.Helpers;
+
+#endregion
+
 
 namespace PokemonGo.RocketAPI.Console
 {
-    class Program
+    internal class Program
     {
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Logger.SetLogger(new Logging.ConsoleLogger(LogLevel.Info));
 
@@ -34,7 +25,10 @@ namespace PokemonGo.RocketAPI.Console
                 }
                 catch (PtcOfflineException)
                 {
-                    Logger.Normal("PTC Servers are probably down OR your credentials are wrong. Try google");
+                    Logger.Error("PTC Servers are probably down OR your credentials are wrong. Try google");
+                    Logger.Error("Trying again in 60 seconds...");
+                    Thread.Sleep(60000);
+                    new Logic.Logic(new Settings()).Execute().Wait();
                 }
                 catch (Exception ex)
                 {

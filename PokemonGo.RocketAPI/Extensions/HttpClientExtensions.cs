@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿#region
+
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using Google.Protobuf;
-using PokemonGo.RocketAPI;
 using PokemonGo.RocketAPI.Exceptions;
 using PokemonGo.RocketAPI.GeneratedCode;
+
+#endregion
+
 
 namespace PokemonGo.RocketAPI.Extensions
 {

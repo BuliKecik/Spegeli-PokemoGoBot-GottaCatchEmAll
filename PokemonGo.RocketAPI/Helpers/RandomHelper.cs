@@ -1,8 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#region
+
+using System;
 using System.Threading.Tasks;
+
+#endregion
+
 
 namespace PokemonGo.RocketAPI.Helpers
 {

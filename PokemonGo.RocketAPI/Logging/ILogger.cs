@@ -1,4 +1,9 @@
-﻿namespace PokemonGo.RocketAPI.Logging
+﻿#region
+
+#endregion
+
+
+namespace PokemonGo.RocketAPI.Logging
 {
 	/// <summary>
 	/// All loggers must implement this interface.

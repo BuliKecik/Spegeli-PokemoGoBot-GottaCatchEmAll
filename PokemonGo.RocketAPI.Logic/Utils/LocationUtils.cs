@@ -1,9 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿#region
+
+using System;
 using static PokemonGo.RocketAPI.Logic.Navigation;
+
+#endregion
+
 
 namespace PokemonGo.RocketAPI.Logic.Utils
 {

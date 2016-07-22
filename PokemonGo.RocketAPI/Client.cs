@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -11,8 +13,9 @@ using PokemonGo.RocketAPI.Helpers;
 using PokemonGo.RocketAPI.Extensions;
 using PokemonGo.RocketAPI.Login;
 using static PokemonGo.RocketAPI.GeneratedCode.Response.Types;
-using System.Threading;
-using System.Windows.Forms;
+
+#endregion
+
 
 namespace PokemonGo.RocketAPI
 {
@@ -32,12 +35,26 @@ namespace PokemonGo.RocketAPI
         public Client(ISettings settings)
         {
             Settings = settings;
-            //SetCoordinates(Settings.DefaultLatitude, Settings.DefaultLongitude, Settings.DefaultAltitude);
-            if (File.Exists(Directory.GetCurrentDirectory() + "\\Coords.txt"))
+            if (File.Exists(Directory.GetCurrentDirectory() + "\\Coords.txt") && File.ReadAllText(Directory.GetCurrentDirectory() + "\\Coords.txt").Contains(":"))
             {
-                string latlngFromFile = File.ReadAllText(Directory.GetCurrentDirectory() + "\\Coords.txt");
-                String[] latlng = latlngFromFile.Split(':');
-                SetCoordinates(Convert.ToDouble(latlng[0]), Convert.ToDouble(latlng[1]), Settings.DefaultAltitude);
+                var latlngFromFile = File.ReadAllText(Directory.GetCurrentDirectory() + "\\Coords.txt");
+                var latlng = latlngFromFile.Split(':');
+                if (latlng[0].Length != 0 && latlng[1].Length != 0)
+                {
+                    try
+                    {
+                        SetCoordinates(Convert.ToDouble(latlng[0]), Convert.ToDouble(latlng[1]), Settings.DefaultAltitude);
+                    }
+                    catch (FormatException)
+                    {
+                        Logger.Error($"Coordinates in \"Coords.txt\" file is invalid, using the default coordinates ");
+                        SetCoordinates(Settings.DefaultLatitude, Settings.DefaultLongitude, Settings.DefaultAltitude);
+                    }
+                }
+                else
+                {
+                    SetCoordinates(Settings.DefaultLatitude, Settings.DefaultLongitude, Settings.DefaultAltitude);
+                }
             }
             else
             {
@@ -90,6 +107,7 @@ namespace PokemonGo.RocketAPI
                 var deviceCode = await GoogleLogin.GetDeviceCode();
                 tokenResponse = await GoogleLogin.GetAccessToken(deviceCode);
                 Settings.GoogleRefreshToken = tokenResponse?.refresh_token;
+                //Logger.Normal("Refreshtoken " + tokenResponse?.refresh_token + " saved");
                 AccessToken = tokenResponse?.id_token;
             }
 

@@ -1,13 +1,14 @@
-﻿using System;
+﻿#region
+
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using PokemonGo.RocketAPI.Exceptions;
 using PokemonGo.RocketAPI.Helpers;
+
+#endregion
 
 namespace PokemonGo.RocketAPI.Login
 {

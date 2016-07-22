@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿#region
+
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Google.Protobuf;
 using PokemonGo.RocketAPI.Enums;
-using PokemonGo.RocketAPI.Extensions;
 using PokemonGo.RocketAPI.GeneratedCode;
-using PokemonGo.RocketAPI.Helpers;
+
+#endregion
+
 
 namespace PokemonGo.RocketAPI.Helpers
 {

@@ -1,9 +1,13 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
+
+#endregion
+
 
 namespace PokemonGo.RocketAPI.Helpers
 {

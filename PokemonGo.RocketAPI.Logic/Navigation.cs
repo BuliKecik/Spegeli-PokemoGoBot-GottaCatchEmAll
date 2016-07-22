@@ -1,8 +1,13 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using PokemonGo.RocketAPI.GeneratedCode;
 using PokemonGo.RocketAPI.Logic.Utils;
+
+#endregion
+
 
 namespace PokemonGo.RocketAPI.Logic
 {
