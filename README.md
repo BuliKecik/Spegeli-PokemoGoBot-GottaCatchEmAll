@@ -15,7 +15,7 @@ Chat about this Repository via Discord: https://discord.gg/VsVrjgr
 * Use Humanlike Walking with 10 km/h (instead of Teleport)
 * Farm Pokestops
 * Farm all Pokemon near your
-* Transfer duplicate Pokemon (keep the best of everyone and ignores favorite marked Pokemon)
+* Transfer duplicate Pokemon (keep the best of everyone) (ignore favorite marked) (ignore Pokemons from NotToTransfer list configurable via Settings.cs)
 * Evolve Pokemon (only on StartUp) (Pokemon Type configurable via Settings.cs)
 * Use best Pokeball & Berry (depending on Pokemon CP)
 * Random Task Delays
