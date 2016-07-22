@@ -77,6 +77,8 @@ namespace PokemonGo.RocketAPI.Logic
                     var profile = await _client.GetProfile();
                     var _currentLevelInfos = await Statistics._getcurrentLevelInfos(_inventory);
 
+                    _stats.updateConsoleTitle(_inventory);
+
                     Logger.Normal(ConsoleColor.Yellow, "----------------------------");
                     if (_clientSettings.AuthType == AuthType.Ptc)
                         Logger.Normal(ConsoleColor.Cyan, $"PTC Account: {_clientSettings.PtcUsername}\n");
@@ -206,8 +208,8 @@ namespace PokemonGo.RocketAPI.Logic
                 _stats.updateConsoleTitle(_inventory);
                 Logger.Normal(ConsoleColor.Yellow,
                     caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess
-                    ? $"We caught a {pokemon.PokemonId} with CP {encounter?.WildPokemon?.PokemonData?.Cp} and CaptureProbability: {encounter?.CaptureProbability.CaptureProbability_.First()}, used {bestPokeball} in {Math.Round(distance)}m distance and received XP {caughtPokemonResponse.Scores.Xp.Sum()}"
-                    : $"{pokemon.PokemonId} with CP {encounter?.WildPokemon?.PokemonData?.Cp} CaptureProbability: {encounter?.CaptureProbability.CaptureProbability_.First()} in {Math.Round(distance)}m distance {caughtPokemonResponse.Status} while using a {bestPokeball}.."
+                    ? $"We caught a {pokemon.PokemonId} with CP {encounter?.WildPokemon?.PokemonData?.Cp} and CaptureProbability: {encounter?.CaptureProbability.CaptureProbability_.First()}, used {bestPokeball} and received XP {caughtPokemonResponse.Scores.Xp.Sum()}"
+                    : $"{pokemon.PokemonId} with CP {encounter?.WildPokemon?.PokemonData?.Cp} CaptureProbability: {encounter?.CaptureProbability.CaptureProbability_.First()} {caughtPokemonResponse.Status} while using a {bestPokeball}.."
                     );
                 await RandomHelper.RandomDelay(1750, 2250);
             }
