@@ -71,10 +71,11 @@ namespace PokemonGo.RocketAPI.Logic
                 {
                     await _client.SetServer();
 
-                    var inventory = await _client.GetInventory();
-                    var playerStats = inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData).FirstOrDefault(i => i.PlayerStats != null);
+                    //var inventory = await _client.GetInventory();
+                    //var playerStats = inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData).FirstOrDefault(i => i.PlayerStats != null);
+
                     var profile = await _client.GetProfile();
-                    var _currentLevelInfos = await Statistics._getcurrentLevelInfos(_client);
+                    var _currentLevelInfos = await Statistics._getcurrentLevelInfos(_inventory);
 
                     Logger.Normal(ConsoleColor.Yellow, "----------------------------");
                     if (_clientSettings.AuthType == AuthType.Ptc)
@@ -141,7 +142,7 @@ namespace PokemonGo.RocketAPI.Logic
                 var fortSearch = await _client.SearchFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
                 _stats.addExperience(fortSearch.ExperienceAwarded);
-                _stats.updateConsoleTitle(_client);
+                _stats.updateConsoleTitle(_inventory);
 
                 Logger.Normal(ConsoleColor.Cyan, $"Using Pokestop: {fortInfo.Name} in {Math.Round(distance)}m distance");
                 Logger.Normal(ConsoleColor.Cyan, $"Received XP: {fortSearch.ExperienceAwarded}, Gems: { fortSearch.GemsAwarded}, Eggs: {fortSearch.PokemonDataEgg} Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}");
@@ -202,7 +203,7 @@ namespace PokemonGo.RocketAPI.Logic
                     var profile = await _client.GetProfile();
                     _stats.getStardust(profile.Profile.Currency.ToArray()[1].Amount);
                 }
-                _stats.updateConsoleTitle(_client);
+                _stats.updateConsoleTitle(_inventory);
                 Logger.Normal(ConsoleColor.Yellow,
                     caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess
                     ? $"We caught a {pokemon.PokemonId} with CP {encounter?.WildPokemon?.PokemonData?.Cp} and CaptureProbability: {encounter?.CaptureProbability.CaptureProbability_.First()}, used {bestPokeball} in {Math.Round(distance)}m distance and received XP {caughtPokemonResponse.Scores.Xp.Sum()}"
@@ -245,6 +246,10 @@ namespace PokemonGo.RocketAPI.Logic
             {
                 var bestPokemonOfType = await _inventory.GetHighestCPofType(duplicatePokemon);
                 var transfer = await _client.TransferPokemon(duplicatePokemon.Id);
+
+                _stats.increasePokemonsTransfered();
+                _stats.updateConsoleTitle(_inventory);
+
                 Logger.Normal(ConsoleColor.DarkYellow, $"Transfer {duplicatePokemon.PokemonId} with {duplicatePokemon.Cp} CP (Best: {bestPokemonOfType})");
                 await Task.Delay(500);
             }
@@ -260,7 +265,7 @@ namespace PokemonGo.RocketAPI.Logic
                 Logger.Normal(ConsoleColor.DarkCyan, $"Recycled {item.Count}x {(AllEnum.ItemId)item.Item_}");
 
                 _stats.addItemsRemoved(item.Count);
-                _stats.updateConsoleTitle(_client);
+                _stats.updateConsoleTitle(_inventory);
 
                 await Task.Delay(500);
             }
@@ -272,9 +277,9 @@ namespace PokemonGo.RocketAPI.Logic
 
             var items = await _inventory.GetItems();
             var balls = items.Where(i => (MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_POKE_BALL
-                                    || (MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_MASTER_BALL
-                                    || (MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_ULTRA_BALL
-                                    || (MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_GREAT_BALL).GroupBy(i => ((MiscEnums.Item)i.Item_)).ToList();
+                                      || (MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_MASTER_BALL
+                                      || (MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_ULTRA_BALL
+                                      || (MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_GREAT_BALL).GroupBy(i => ((MiscEnums.Item)i.Item_)).ToList();
             if (balls.Count == 0) return MiscEnums.Item.ITEM_UNKNOWN;
 
             var pokeBalls = balls.Any(g => g.Key == MiscEnums.Item.ITEM_POKE_BALL);
@@ -309,6 +314,14 @@ namespace PokemonGo.RocketAPI.Logic
         {
             var pokemonCp = pokemon?.PokemonData?.Cp;
 
+            var items = await _inventory.GetItems();
+            var berries = items.Where(i => (AllEnum.ItemId)i.Item_ == AllEnum.ItemId.ItemRazzBerry
+                                        || (AllEnum.ItemId)i.Item_ == AllEnum.ItemId.ItemBlukBerry
+                                        || (AllEnum.ItemId)i.Item_ == AllEnum.ItemId.ItemNanabBerry
+                                        || (AllEnum.ItemId)i.Item_ == AllEnum.ItemId.ItemWeparBerry
+                                        || (AllEnum.ItemId)i.Item_ == AllEnum.ItemId.ItemPinapBerry).GroupBy(i => ((AllEnum.ItemId)i.Item_)).ToList();
+            if (berries.Count == 0) return AllEnum.ItemId.ItemUnknown;
+
             var razzBerryCount = await _inventory.GetItemAmountByType(MiscEnums.Item.ITEM_RAZZ_BERRY);
             var blukBerryCount = await _inventory.GetItemAmountByType(MiscEnums.Item.ITEM_BLUK_BERRY);
             var nanabBerryCount = await _inventory.GetItemAmountByType(MiscEnums.Item.ITEM_NANAB_BERRY);
@@ -332,18 +345,7 @@ namespace PokemonGo.RocketAPI.Logic
             if (blukBerryCount > 0 && pokemonCp >= 350)
                 return AllEnum.ItemId.ItemBlukBerry;
 
-            if (razzBerryCount > 0)
-                return AllEnum.ItemId.ItemRazzBerry;
-            if (blukBerryCount > 0)
-                return AllEnum.ItemId.ItemBlukBerry;
-            if (nanabBerryCount > 0)
-                return AllEnum.ItemId.ItemNanabBerry;
-            if (weparBerryCount > 0)
-                return AllEnum.ItemId.ItemWeparBerry;
-            if (pinapBerryCount > 0)
-                return AllEnum.ItemId.ItemPinapBerry;
-
-            return AllEnum.ItemId.ItemUnknown;
+            return berries.OrderBy(g => g.Key).First().Key;
         }
     }
 }
