@@ -143,7 +143,7 @@ namespace PokemonGo.RocketAPI.Logic
                 await TransferDuplicatePokemon();
 
                 var distance = Navigation.DistanceBetween2Coordinates(_client.CurrentLat, _client.CurrentLng, pokeStop.Latitude, pokeStop.Longitude);
-                var update = await _navigation.HumanLikeWalking(new Navigation.Location(pokeStop.Latitude, pokeStop.Longitude), _clientSettings.WalkingSpeedInKilometerPerHour);
+                var update = await _navigation.HumanLikeWalking(new Navigation.Location(pokeStop.Latitude, pokeStop.Longitude), _clientSettings.WalkingSpeedInKilometerPerHour, ExecuteCatchAllNearbyPokemons);
                 var fortInfo = await _client.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
                 var fortSearch = await _client.SearchFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
@@ -153,7 +153,7 @@ namespace PokemonGo.RocketAPI.Logic
                 Logger.Normal(ConsoleColor.Cyan, $"Using Pokestop: {fortInfo.Name} in {Math.Round(distance)}m distance");
                 Logger.Normal(ConsoleColor.Cyan, $"Received XP: {fortSearch.ExperienceAwarded}, Gems: { fortSearch.GemsAwarded}, Eggs: {fortSearch.PokemonDataEgg} Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}");
 
-                await RandomHelper.RandomDelay(750,1000);
+                await RandomHelper.RandomDelay(500,1000);
                 await RecycleItems();
             }
         }
@@ -168,7 +168,7 @@ namespace PokemonGo.RocketAPI.Logic
             foreach (var pokemon in pokemons)
             {
                 var distance = Navigation.DistanceBetween2Coordinates(_client.CurrentLat, _client.CurrentLng, pokemon.Latitude, pokemon.Longitude);
-                await Task.Delay(distance > 100 ? 15000 : 500);
+                await Task.Delay(distance > 100 ? 5000 : 500);
 
                 var encounter = await _client.EncounterPokemon(pokemon.EncounterId, pokemon.SpawnpointId);
 
@@ -177,7 +177,7 @@ namespace PokemonGo.RocketAPI.Logic
                 else
                     Logger.Normal($"Encounter problem: {encounter?.Status}");
             }
-            await RandomHelper.RandomDelay(8000, 9000);
+            await RandomHelper.RandomDelay(500, 1000);
         }
 
         private async Task CatchEncounter(EncounterResponse encounter, MapPokemon pokemon)
