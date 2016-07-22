@@ -16,9 +16,13 @@ namespace PokemonGo.RocketAPI
         float KeepMinIVPercentage { get; }
         int KeepMinCP { get; }
         double WalkingSpeedInKilometerPerHour { get; }
+        bool EvolveAllPokemonWithEnoughCandy { get; }
+        bool TransferDuplicatePokemon { get; }
 
         ICollection<KeyValuePair<AllEnum.ItemId, int>> ItemRecycleFilter { get; set; }
 
         ICollection<AllEnum.PokemonId> PokemonsToEvolve { get; }
+
+        ICollection<AllEnum.PokemonId> PokemonsNotToTransfer { get; }
     }
 }

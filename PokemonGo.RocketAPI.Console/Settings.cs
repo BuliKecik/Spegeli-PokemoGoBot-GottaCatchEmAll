@@ -22,6 +22,8 @@ namespace PokemonGo.RocketAPI.Console
         public float KeepMinIVPercentage => UserSettings.Default.KeepMinIVPercentage;
         public int KeepMinCP => UserSettings.Default.KeepMinCP;
         public double WalkingSpeedInKilometerPerHour => UserSettings.Default.WalkingSpeedInKilometerPerHour;
+        public bool EvolveAllPokemonWithEnoughCandy => UserSettings.Default.EvolveAllPokemonWithEnoughCandy;
+        public bool TransferDuplicatePokemon => UserSettings.Default.TransferDuplicatePokemon;
 
         public string GoogleRefreshToken
         {
@@ -136,6 +138,28 @@ namespace PokemonGo.RocketAPI.Console
                 throw new NotImplementedException();
             }
         }
-                           
+
+        public ICollection<PokemonId> PokemonsNotToTransfer
+        {
+            get
+            {
+                //Type of pokemons not to transfer
+                return new[]
+            {
+                    PokemonId.Dragonite,
+                    PokemonId.Charizard,
+                    PokemonId.Zapdos,
+                    PokemonId.Snorlax,
+                    PokemonId.Alakhazam,
+                    PokemonId.Mew,
+                    PokemonId.Mewtwo
+                };
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
     }
 }

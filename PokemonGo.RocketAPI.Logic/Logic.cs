@@ -92,8 +92,8 @@ namespace PokemonGo.RocketAPI.Logic
                     Logger.Normal(ConsoleColor.DarkGray, $"Stardust: {profile.Profile.Currency.ToArray()[1].Amount}");
                     Logger.Normal(ConsoleColor.Yellow, "----------------------------");
 
-                    await EvolveAllPokemonWithEnoughCandy(_clientSettings.PokemonsToEvolve);
-                    await TransferDuplicatePokemon();
+                    if (_clientSettings.EvolveAllPokemonWithEnoughCandy) await EvolveAllPokemonWithEnoughCandy(_clientSettings.PokemonsToEvolve);
+                    if (_clientSettings.TransferDuplicatePokemon) await TransferDuplicatePokemon();
                     await RecycleItems();
                     await ExecuteFarmingPokestopsAndPokemons();
 
@@ -140,7 +140,8 @@ namespace PokemonGo.RocketAPI.Logic
             foreach (var pokeStop in pokeStops)
             {
                 await ExecuteCatchAllNearbyPokemons();
-                await TransferDuplicatePokemon();
+                if (_clientSettings.EvolveAllPokemonWithEnoughCandy) await EvolveAllPokemonWithEnoughCandy(_clientSettings.PokemonsToEvolve);
+                if (_clientSettings.TransferDuplicatePokemon) await TransferDuplicatePokemon();
 
                 var distance = Navigation.DistanceBetween2Coordinates(_client.CurrentLat, _client.CurrentLng, pokeStop.Latitude, pokeStop.Longitude);
                 var update = await _navigation.HumanLikeWalking(new Navigation.Location(pokeStop.Latitude, pokeStop.Longitude), _clientSettings.WalkingSpeedInKilometerPerHour, ExecuteCatchAllNearbyPokemons);
