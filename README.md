@@ -18,6 +18,9 @@ GitHub issues will be deleted if they are not API related. PR's about improved l
 * Use best Pokeball & Berry (depending on Pokemon CP)
 * Random Task Delays
 * Delete specific Items but keep a specific amount
+* Statistic in the Header:
+* ![alt tag](https://github.com/Spegeli/Pokemon-Go-Rocket-API/blob/master/StatisticScreenshot.png)
+
 
 ## ToDo
 * Evolve Pokemon
