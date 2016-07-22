@@ -151,8 +151,9 @@ namespace PokemonGo.RocketAPI.Logic
                 _stats.addExperience(fortSearch.ExperienceAwarded);
                 _stats.updateConsoleTitle(_inventory);
 
-                Logger.Normal(ConsoleColor.Cyan, $"Using Pokestop: {fortInfo.Name} in {Math.Round(distance)}m distance");
-                Logger.Normal(ConsoleColor.Cyan, $"Received XP: {fortSearch.ExperienceAwarded}, Gems: { fortSearch.GemsAwarded}, Eggs: {fortSearch.PokemonDataEgg} Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}");
+                Logger.Normal(ConsoleColor.Cyan, $"(POKESTOP) Name: {fortInfo.Name} in {Math.Round(distance)}m distance");
+                if (fortSearch.ExperienceAwarded > 0)
+                    Logger.Normal(ConsoleColor.Cyan, $"(POKESTOP) XP: {fortSearch.ExperienceAwarded}, Gems: { fortSearch.GemsAwarded}, Eggs: {fortSearch.PokemonDataEgg} Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}");
 
                 await RandomHelper.RandomDelay(500,1000);
                 await RecycleItems();
@@ -187,18 +188,20 @@ namespace PokemonGo.RocketAPI.Logic
             do
             {
                 var bestBerry = await GetBestBerry(encounter?.WildPokemon);
+                var inventoryBerries = await _inventory.GetItems();
+                var berries = inventoryBerries.Where(p => (ItemId)p.Item_ == bestBerry).FirstOrDefault(); ;
                 var probability = encounter?.CaptureProbability?.CaptureProbability_?.FirstOrDefault();
                 if (bestBerry != AllEnum.ItemId.ItemUnknown && probability.HasValue && probability.Value < 0.35)
                 {
                     var useRaspberry = await _client.UseCaptureItem(pokemon.EncounterId, bestBerry, pokemon.SpawnpointId);
-                    Logger.Normal($"Use Rasperry {bestBerry}");
+                    Logger.Normal($"(BERRY) {bestBerry} used, remaining: {berries.Count}");
                     await RandomHelper.RandomDelay(500, 1000);
                 }
 
                 var bestPokeball = await GetBestBall(encounter?.WildPokemon);
                 if (bestPokeball == MiscEnums.Item.ITEM_UNKNOWN)
                 {
-                    Logger.Normal($"You don't own any Pokeballs :( - We missed a {pokemon.PokemonId} with CP {encounter?.WildPokemon?.PokemonData?.Cp}");
+                    Logger.Normal($"(POKEBATTLE) You don't own any Pokeballs :( - We missed a {pokemon.PokemonId} with CP {encounter?.WildPokemon?.PokemonData?.Cp}");
                     return;
                 }
 
@@ -216,8 +219,8 @@ namespace PokemonGo.RocketAPI.Logic
                 _stats.updateConsoleTitle(_inventory);
                 Logger.Normal(ConsoleColor.Yellow,
                     caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess
-                    ? $"We caught a {pokemon.PokemonId} with CP {encounter?.WildPokemon?.PokemonData?.Cp} ({CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData).ToString("0.00")}% perfect) and CaptureProbability: {encounter?.CaptureProbability.CaptureProbability_.First()}, used {bestPokeball} and received XP {caughtPokemonResponse.Scores.Xp.Sum()}"
-                    : $"{pokemon.PokemonId} with CP {encounter?.WildPokemon?.PokemonData?.Cp} CaptureProbability: {encounter?.CaptureProbability.CaptureProbability_.First()} {caughtPokemonResponse.Status} while using a {bestPokeball}.."
+                    ? $"(POKEBATTLE) We caught a {pokemon.PokemonId} with CP {encounter?.WildPokemon?.PokemonData?.Cp} ({CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData).ToString("0.00")}% perfect) and CaptureProbability: {encounter?.CaptureProbability.CaptureProbability_.First()}, used {bestPokeball} and received XP {caughtPokemonResponse.Scores.Xp.Sum()}"
+                    : $"(POKEBATTLE) {pokemon.PokemonId} with CP {encounter?.WildPokemon?.PokemonData?.Cp} CaptureProbability: {encounter?.CaptureProbability.CaptureProbability_.First()} {caughtPokemonResponse.Status} while using a {bestPokeball}.."
                     );
                 await RandomHelper.RandomDelay(1750, 2250);
             }
@@ -227,14 +230,17 @@ namespace PokemonGo.RocketAPI.Logic
         private async Task EvolveAllPokemonWithEnoughCandy(IEnumerable<PokemonId> filter = null)
         {
             var pokemonToEvolve = await _inventory.GetPokemonToEvolve(filter);
+            if (pokemonToEvolve != null && pokemonToEvolve.Any())
+                Logger.Normal($"(EVOLVE) {pokemonToEvolve.Count()} Pokemon:");
+
             foreach (var pokemon in pokemonToEvolve)
             {
                 var evolvePokemonOutProto = await _client.EvolvePokemon((ulong)pokemon.Id);
 
                 Logger.Normal(
                     evolvePokemonOutProto.Result == EvolvePokemonOut.Types.EvolvePokemonStatus.PokemonEvolvedSuccess
-                        ? $"Evolved {pokemon.PokemonId} successfully for {evolvePokemonOutProto.ExpAwarded} xp"
-                        : $"Failed to evolve {pokemon.PokemonId}. EvolvePokemonOutProto.Result was {evolvePokemonOutProto.Result}, stopping evolving {pokemon.PokemonId}"
+                        ? $"(EVOLVE) {pokemon.PokemonId} successfully for {evolvePokemonOutProto.ExpAwarded} xp"
+                        : $"(EVOLVE) Failed: {pokemon.PokemonId}. EvolvePokemonOutProto.Result was {evolvePokemonOutProto.Result}, stopping evolving {pokemon.PokemonId}"
                     );
 
                 await Task.Delay(3000);
@@ -244,8 +250,9 @@ namespace PokemonGo.RocketAPI.Logic
         private async Task TransferDuplicatePokemon(bool keepPokemonsThatCanEvolve = false)
         {
             var duplicatePokemons = await _inventory.GetDuplicatePokemonToTransfer(keepPokemonsThatCanEvolve, _clientSettings.PokemonsNotToTransfer);
-            if (duplicatePokemons != null && duplicatePokemons.Any())
-                Logger.Normal(ConsoleColor.DarkYellow, $"Transfering duplicate Pokemon");
+            // Currently not returns the correct value
+            //if (duplicatePokemons != null && duplicatePokemons.Any())
+            //    Logger.Normal(ConsoleColor.DarkYellow, $"(TRANSFER) {duplicatePokemons.Count()} Pokemon:");
 
             foreach (var duplicatePokemon in duplicatePokemons)
             {
@@ -258,7 +265,7 @@ namespace PokemonGo.RocketAPI.Logic
                 _stats.increasePokemonsTransfered();
                 _stats.updateConsoleTitle(_inventory);
 
-                Logger.Normal(ConsoleColor.DarkYellow, $"Transfer {duplicatePokemon.PokemonId} with {duplicatePokemon.Cp} CP (Best: {bestPokemonOfType})");
+                Logger.Normal(ConsoleColor.DarkYellow, $"(TRANSFER) {duplicatePokemon.PokemonId} with {duplicatePokemon.Cp} CP (Best: {bestPokemonOfType})");
                 await Task.Delay(500);
             }
         }
@@ -266,11 +273,13 @@ namespace PokemonGo.RocketAPI.Logic
         private async Task RecycleItems()
         {
             var items = await _inventory.GetItemsToRecycle(_clientSettings);
+            if (items != null && items.Any())
+                Logger.Normal(ConsoleColor.DarkCyan, $"(RECYCLE) {items.Count()} Items:");
 
             foreach (var item in items)
             {
                 var transfer = await _client.RecycleItem((AllEnum.ItemId)item.Item_, item.Count);
-                Logger.Normal(ConsoleColor.DarkCyan, $"Recycled {item.Count}x {(AllEnum.ItemId)item.Item_}");
+                Logger.Normal(ConsoleColor.DarkCyan, $"(RECYCLED) {item.Count}x {(AllEnum.ItemId)item.Item_}");
 
                 _stats.addItemsRemoved(item.Count);
                 _stats.updateConsoleTitle(_inventory);
@@ -362,7 +371,7 @@ namespace PokemonGo.RocketAPI.Logic
             var playerStat = playerStats.FirstOrDefault();
             if (playerStat != null)
             {
-                var message = $"Player level {playerStat.Level:0} - ({(playerStat.Experience - playerStat.PrevLevelXp):0} / {(playerStat.NextLevelXp - playerStat.PrevLevelXp):0})";
+                var message = $"Character Level {playerStat.Level:0} - ({(playerStat.Experience - playerStat.PrevLevelXp):0} / {(playerStat.NextLevelXp - playerStat.PrevLevelXp):0})";
                 System.Console.Title = message;
                 Logger.Normal(message);
             }

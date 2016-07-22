@@ -41,6 +41,7 @@ namespace PokemonGo.RocketAPI.Login
                 new KeyValuePair<string, string>("scope", "openid email https://www.googleapis.com/auth/userinfo.email"));
 
             Logger.Normal($"Please visit {deviceCode.verification_url} and enter {deviceCode.user_code}");
+            await Task.Delay(2000);
             Thread thread = new Thread(() => Clipboard.SetText(deviceCode.user_code));
             thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
             thread.Start();
