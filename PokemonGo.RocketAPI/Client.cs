@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -32,7 +33,17 @@ namespace PokemonGo.RocketAPI
         public Client(ISettings settings)
         {
             Settings = settings;
-            SetCoordinates(Settings.DefaultLatitude, Settings.DefaultLongitude, Settings.DefaultAltitude);
+            //SetCoordinates(Settings.DefaultLatitude, Settings.DefaultLongitude, Settings.DefaultAltitude);
+            if (File.Exists(Directory.GetCurrentDirectory() + "\\Coords.txt"))
+            {
+                string latlngFromFile = File.ReadAllText(Directory.GetCurrentDirectory() + "\\Coords.txt");
+                String[] latlng = latlngFromFile.Split(':');
+                SetCoordinates(Convert.ToDouble(latlng[0]), Convert.ToDouble(latlng[1]), Settings.DefaultAltitude);
+            }
+            else
+            {
+                SetCoordinates(Settings.DefaultLatitude, Settings.DefaultLongitude, Settings.DefaultAltitude);
+            }
 
             //Setup HttpClient and create default headers
             HttpClientHandler handler = new HttpClientHandler()
@@ -50,11 +61,18 @@ namespace PokemonGo.RocketAPI
                 "application/x-www-form-urlencoded");
         }
 
+        public void SaveLatLng(double lat, double lng)
+        {
+            string latlng = lat.ToString() + ":" + lng.ToString();
+            File.WriteAllText(Directory.GetCurrentDirectory() + "\\Coords.txt", latlng);
+        }
+
         private void SetCoordinates(double lat, double lng, double altitude)
         {
             CurrentLat = lat;
             CurrentLng = lng;
             CurrentAltitude = altitude;
+            SaveLatLng(lat, lng);
         }
 
         public async Task DoGoogleLogin()

@@ -33,7 +33,7 @@ namespace PokemonGo.RocketAPI.Logic
 
         public async Task Execute()
         {
-            CheckAndDownloadVersion.CheckVersion();
+            Git.CheckVersion();
 
             if (_clientSettings.DefaultLatitude == 0 || _clientSettings.DefaultLongitude == 0)
             {
