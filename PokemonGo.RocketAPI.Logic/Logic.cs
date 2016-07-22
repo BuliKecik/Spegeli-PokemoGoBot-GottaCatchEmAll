@@ -133,6 +133,7 @@ namespace PokemonGo.RocketAPI.Logic
             foreach (var pokeStop in pokeStops)
             {
                 await ExecuteCatchAllNearbyPokemons();
+                await TransferDuplicatePokemon();
 
                 var distance = Navigation.DistanceBetween2Coordinates(_client.CurrentLat, _client.CurrentLng, pokeStop.Latitude, pokeStop.Longitude);
                 var update = await _client.UpdatePlayerLocation(pokeStop.Latitude, pokeStop.Longitude, _clientSettings.DefaultAltitude);
@@ -269,36 +270,39 @@ namespace PokemonGo.RocketAPI.Logic
         {
             var pokemonCp = pokemon?.PokemonData?.Cp;
 
-            var pokeBallsCount = await _inventory.GetItemAmountByType(MiscEnums.Item.ITEM_POKE_BALL);
-            var greatBallsCount = await _inventory.GetItemAmountByType(MiscEnums.Item.ITEM_GREAT_BALL);
-            var ultraBallsCount = await _inventory.GetItemAmountByType(MiscEnums.Item.ITEM_ULTRA_BALL);
-            var masterBallsCount = await _inventory.GetItemAmountByType(MiscEnums.Item.ITEM_MASTER_BALL);
+            var items = await _inventory.GetItems();
+            var balls = items.Where(i => (MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_POKE_BALL
+                                    || (MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_MASTER_BALL
+                                    || (MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_ULTRA_BALL
+                                    || (MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_GREAT_BALL).GroupBy(i => ((MiscEnums.Item)i.Item_)).ToList();
 
-            if (masterBallsCount > 0 && pokemonCp >= 1000)
+            var pokeBalls = balls.Any(g => g.Key == MiscEnums.Item.ITEM_POKE_BALL);
+            var greatBalls = balls.Any(g => g.Key == MiscEnums.Item.ITEM_GREAT_BALL);
+            var ultraBalls = balls.Any(g => g.Key == MiscEnums.Item.ITEM_ULTRA_BALL);
+            var masterBalls = balls.Any(g => g.Key == MiscEnums.Item.ITEM_MASTER_BALL);
+
+            if (masterBalls && pokemonCp >= 1500)
                 return MiscEnums.Item.ITEM_MASTER_BALL;
-            else if (ultraBallsCount > 0 && pokemonCp >= 1000)
+            else if (ultraBalls && pokemonCp >= 1500)
                 return MiscEnums.Item.ITEM_ULTRA_BALL;
-            else if (greatBallsCount > 0 && pokemonCp >= 1000)
+            else if (greatBalls && pokemonCp >= 1500)
                 return MiscEnums.Item.ITEM_GREAT_BALL;
 
-            if (ultraBallsCount > 0 && pokemonCp >= 600)
+            if (ultraBalls && pokemonCp >= 1000)
                 return MiscEnums.Item.ITEM_ULTRA_BALL;
-            else if (greatBallsCount > 0 && pokemonCp >= 600)
+            else if (greatBalls && pokemonCp >= 1000)
                 return MiscEnums.Item.ITEM_GREAT_BALL;
 
-            if (greatBallsCount > 0 && pokemonCp >= 350)
-                return MiscEnums.Item.ITEM_GREAT_BALL;
-
-            if (pokeBallsCount > 0)
-                return MiscEnums.Item.ITEM_POKE_BALL;
-            if (greatBallsCount > 0)
-                return MiscEnums.Item.ITEM_GREAT_BALL;
-            if (ultraBallsCount > 0)
+            if (ultraBalls && pokemonCp >= 600)
                 return MiscEnums.Item.ITEM_ULTRA_BALL;
-            if (masterBallsCount > 0)
-                return MiscEnums.Item.ITEM_MASTER_BALL;
+            else if (greatBalls && pokemonCp >= 600)
+                return MiscEnums.Item.ITEM_GREAT_BALL;
 
-            return MiscEnums.Item.ITEM_UNKNOWN;
+            if (greatBalls && pokemonCp >= 350)
+                return MiscEnums.Item.ITEM_GREAT_BALL;
+
+            //return MiscEnums.Item.ITEM_UNKNOWN;
+            return balls.OrderBy(g => g.Key).First().Key;
         }
 
         private async Task<AllEnum.ItemId> GetBestBerry(WildPokemon pokemon)
