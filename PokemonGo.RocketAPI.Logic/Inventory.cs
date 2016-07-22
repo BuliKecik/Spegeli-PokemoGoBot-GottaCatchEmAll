@@ -49,11 +49,16 @@ namespace PokemonGo.RocketAPI.Logic
 
         }
 
-        public async Task<IEnumerable<PokemonData>> GetDuplicatePokemonToTransfer(bool keepPokemonsThatCanEvolve = false)
+        public async Task<IEnumerable<PokemonData>> GetDuplicatePokemonToTransfer(bool keepPokemonsThatCanEvolve = false, IEnumerable<PokemonId> filter = null)
         {
             var myPokemon = await GetPokemons();
 
             var pokemonList = myPokemon.Where(p => p.DeployedFortId == 0).ToList(); //Don't evolve pokemon in gyms
+            if (filter != null)
+            {
+                pokemonList = pokemonList.Where(p => !filter.Contains(p.PokemonId)).ToList();
+            }
+
             if (keepPokemonsThatCanEvolve)
             {
                 var results = new List<PokemonData>();
