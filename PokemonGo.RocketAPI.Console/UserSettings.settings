@@ -32,10 +32,10 @@
     <Setting Name="DefaultLongitude" Type="System.Double" Scope="User">
       <Value Profile="(Default)">9.18274</Value>
     </Setting>
-    <Setting Name="EvolveAllPokemonWithEnoughCandy" Type="System.String" Scope="User">
+    <Setting Name="EvolveAllPokemonWithEnoughCandy" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="TransferDuplicatePokemon" Type="System.String" Scope="User">
+    <Setting Name="TransferDuplicatePokemon" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>

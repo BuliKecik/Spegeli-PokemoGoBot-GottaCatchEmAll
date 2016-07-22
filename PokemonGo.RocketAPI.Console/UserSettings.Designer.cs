@@ -146,9 +146,9 @@ namespace PokemonGo.RocketAPI.Console {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public string EvolveAllPokemonWithEnoughCandy {
+        public bool EvolveAllPokemonWithEnoughCandy {
             get {
-                return ((string)(this["EvolveAllPokemonWithEnoughCandy"]));
+                return ((bool)(this["EvolveAllPokemonWithEnoughCandy"]));
             }
             set {
                 this["EvolveAllPokemonWithEnoughCandy"] = value;
@@ -158,9 +158,9 @@ namespace PokemonGo.RocketAPI.Console {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public string TransferDuplicatePokemon {
+        public bool TransferDuplicatePokemon {
             get {
-                return ((string)(this["TransferDuplicatePokemon"]));
+                return ((bool)(this["TransferDuplicatePokemon"]));
             }
             set {
                 this["TransferDuplicatePokemon"] = value;
