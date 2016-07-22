@@ -13,7 +13,12 @@ namespace PokemonGo.RocketAPI
         string GoogleRefreshToken { get; set; }
         string PtcPassword { get; }
         string PtcUsername { get; }
+        float KeepMinIVPercentage { get; }
+        int KeepMinCP { get; }
+        double WalkingSpeedInKilometerPerHour { get; }
 
-        ICollection<KeyValuePair<AllEnum.ItemId, int>> itemRecycleFilter { get; set; }
+        ICollection<KeyValuePair<AllEnum.ItemId, int>> ItemRecycleFilter { get; set; }
+
+        ICollection<AllEnum.PokemonId> PokemonsToEvolve { get; }
     }
 }

@@ -21,7 +21,7 @@ namespace PokemonGo.RocketAPI.Login
         private const string ClientId = "848232511240-73ri3t7plvk96pj4f85uj8otdat2alem.apps.googleusercontent.com";
         private const string ClientSecret = "NCjF1TLi2CcY6t5mt0ZveuL7";
 
-        internal static async Task<TokenResponseModel> GetAccessToken(DeviceCodeModel deviceCode)
+        public static async Task<TokenResponseModel> GetAccessToken(DeviceCodeModel deviceCode)
         {
             //Poll until user submitted code..
             TokenResponseModel tokenResponse;

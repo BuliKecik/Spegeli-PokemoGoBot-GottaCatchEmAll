@@ -11,14 +11,29 @@ namespace PokemonGo.RocketAPI.Console
 {
     public class Settings : ISettings
     {
-        public AuthType AuthType => (AuthType)Enum.Parse(typeof(AuthType), UserSettings.Default.AuthType);
+        //public AuthType AuthType => (AuthType)Enum.Parse(typeof(AuthType), UserSettings.Default.AuthType);
+        public AuthType AuthType => (AuthType)Enum.Parse(typeof(AuthType), UserSettings.Default.AuthType, true);
         public string PtcUsername => UserSettings.Default.PtcUsername;
         public string PtcPassword => UserSettings.Default.PtcPassword;
         public double DefaultLatitude => UserSettings.Default.DefaultLatitude;
         public double DefaultLongitude => UserSettings.Default.DefaultLongitude;
         public double DefaultAltitude => UserSettings.Default.DefaultAltitude;
 
-        ICollection<KeyValuePair<ItemId, int>> ISettings.itemRecycleFilter
+        public float KeepMinIVPercentage => UserSettings.Default.KeepMinIVPercentage;
+        public int KeepMinCP => UserSettings.Default.KeepMinCP;
+        public double WalkingSpeedInKilometerPerHour => UserSettings.Default.WalkingSpeedInKilometerPerHour;
+
+        public string GoogleRefreshToken
+        {
+            get { return UserSettings.Default.GoogleRefreshToken; }
+            set
+            {
+                UserSettings.Default.GoogleRefreshToken = value;
+                UserSettings.Default.Save();
+            }
+        }
+
+        ICollection<KeyValuePair<ItemId, int>> ISettings.ItemRecycleFilter
         {
             get
             {
@@ -64,21 +79,63 @@ namespace PokemonGo.RocketAPI.Console
                      new KeyValuePair<ItemId, int>(ItemId.ItemItemStorageUpgrade, 100),
                 };
             }
-
             set
             {
                 throw new NotImplementedException();
             }
         }
 
-        public string GoogleRefreshToken
+        public ICollection<PokemonId> PokemonsToEvolve
         {
-            get { return UserSettings.Default.GoogleRefreshToken; }
+            get
+            {
+                //Type of pokemons to evolve
+                return new[]
+                {
+                    PokemonId.Rattata,
+                    PokemonId.Spearow,
+                    PokemonId.Ekans,
+                    PokemonId.Pikachu,
+                    PokemonId.Sandshrew,
+                    PokemonId.Clefable,
+                    PokemonId.Vulpix,
+                    PokemonId.Jigglypuff,
+                    PokemonId.Zubat,
+                    PokemonId.Paras,
+                    PokemonId.Venonat,
+                    PokemonId.Diglett,
+                    PokemonId.Meowth,
+                    PokemonId.Psyduck,
+                    PokemonId.Mankey,
+                    PokemonId.Growlithe,
+                    PokemonId.Tentacool,
+                    PokemonId.Ponyta,
+                    PokemonId.Slowpoke,
+                    PokemonId.Magnemite,
+                    PokemonId.Doduo,
+                    PokemonId.Seel,
+                    PokemonId.Grimer,
+                    PokemonId.Shellder,
+                    PokemonId.Drowzee,
+                    PokemonId.Krabby,
+                    PokemonId.Voltorb,
+                    PokemonId.Exeggcute,
+                    PokemonId.Cubone,
+                    PokemonId.Koffing,
+                    PokemonId.Rhyhorn,
+                    PokemonId.Horsea,
+                    PokemonId.Goldeen,
+                    PokemonId.Staryu,
+                    PokemonId.Omanyte,
+                    PokemonId.Kabuto,
+                    PokemonId.Dratini
+                };
+            }
             set
             {
-                UserSettings.Default.GoogleRefreshToken = value;
-                UserSettings.Default.Save();
+                throw new NotImplementedException();
             }
         }
+                           
     }
 }
