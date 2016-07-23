@@ -337,12 +337,12 @@ namespace PokemonGo.RocketAPI.Logic
         {
             var items = await _inventory.GetItemsToRecycle(_clientSettings);
             if (items != null && items.Any())
-                Logger.Normal(ConsoleColor.DarkCyan, $"(RECYCLE) {items.Count()} Items:");
+                Logger.Normal(ConsoleColor.DarkMagenta, $"(RECYCLE) {items.Count()} Items:");
 
             foreach (var item in items)
             {
                 var transfer = await _client.RecycleItem((ItemId)item.Item_, item.Count);
-                Logger.Normal(ConsoleColor.DarkCyan, $"(RECYCLED) {item.Count}x {(ItemId)item.Item_}");
+                Logger.Normal(ConsoleColor.DarkMagenta, $"(RECYCLED) {item.Count}x {(ItemId)item.Item_}");
 
                 _stats.addItemsRemoved(item.Count);
                 _stats.updateConsoleTitle(_inventory);
