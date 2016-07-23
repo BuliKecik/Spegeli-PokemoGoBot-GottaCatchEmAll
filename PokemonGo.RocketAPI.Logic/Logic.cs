@@ -198,17 +198,17 @@ namespace PokemonGo.RocketAPI.Logic
                 if (_clientSettings.EvolveAllPokemonWithEnoughCandy) await EvolveAllPokemonWithEnoughCandy(_clientSettings.PokemonsToEvolve);
                 if (_clientSettings.TransferDuplicatePokemon) await TransferDuplicatePokemon();
 
-                var distance = Navigation.DistanceBetween2Coordinates(_client.CurrentLat, _client.CurrentLng, pokeStop.Latitude, pokeStop.Longitude);
                 var update = await _navigation.HumanLikeWalking(new Navigation.Location(pokeStop.Latitude, pokeStop.Longitude), _clientSettings.WalkingSpeedInKilometerPerHour, ExecuteCatchAllNearbyPokemons);
+                var distance = Navigation.DistanceBetween2Coordinates(_client.CurrentLat, _client.CurrentLng, pokeStop.Latitude, pokeStop.Longitude);
                 var fortInfo = await _client.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
                 var fortSearch = await _client.SearchFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
                 _stats.addExperience(fortSearch.ExperienceAwarded);
                 _stats.updateConsoleTitle(_inventory);
 
-                Logger.Normal(ConsoleColor.Cyan, $"(POKESTOP) Name: {fortInfo.Name} in {Math.Round(distance)}m distance");
+                Logger.Normal(ConsoleColor.Cyan, $"(POKESTOP) Name: {fortInfo.Name} in {distance:0.##} m distance");
                 if (fortSearch.ExperienceAwarded > 0)
-                    Logger.Normal(ConsoleColor.Cyan, $"(POKESTOP) XP: {fortSearch.ExperienceAwarded}, Gems: { fortSearch.GemsAwarded}, Eggs: {fortSearch.PokemonDataEgg} Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}");
+                    Logger.Normal(ConsoleColor.Cyan, $"(POKESTOP) XP: {fortSearch.ExperienceAwarded}, Gems: {fortSearch.GemsAwarded}, Eggs: {fortSearch.PokemonDataEgg} Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}");
 
                 await RandomHelper.RandomDelay(50, 200);
                 await RecycleItems();
