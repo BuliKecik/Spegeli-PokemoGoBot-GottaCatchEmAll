@@ -210,7 +210,7 @@ namespace PokemonGo.RocketAPI.Logic
                 if (fortSearch.ExperienceAwarded > 0)
                     Logger.Normal(ConsoleColor.Cyan, $"(POKESTOP) XP: {fortSearch.ExperienceAwarded}, Gems: { fortSearch.GemsAwarded}, Eggs: {fortSearch.PokemonDataEgg} Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}");
 
-                await RandomHelper.RandomDelay(500,1000);
+                await RandomHelper.RandomDelay(50, 200);
                 await RecycleItems();
             }
         }
@@ -233,7 +233,7 @@ namespace PokemonGo.RocketAPI.Logic
             foreach (var pokemon in pokemons)
             {
                 var distance = Navigation.DistanceBetween2Coordinates(_client.CurrentLat, _client.CurrentLng, pokemon.Latitude, pokemon.Longitude);
-                await Task.Delay(distance > 100 ? 5000 : 500);
+                await Task.Delay(distance > 100 ? 1000 : 100);
 
                 var encounter = await _client.EncounterPokemon(pokemon.EncounterId, pokemon.SpawnpointId);
 
@@ -242,7 +242,7 @@ namespace PokemonGo.RocketAPI.Logic
                 else
                     Logger.Normal($"Encounter problem: {encounter.Status}");
             }
-            await RandomHelper.RandomDelay(500, 1000);
+            await RandomHelper.RandomDelay(50, 200);
         }
 
         private async Task CatchEncounter(EncounterResponse encounter, MapPokemon pokemon)
@@ -258,7 +258,7 @@ namespace PokemonGo.RocketAPI.Logic
                 {
                     var useRaspberry = await _client.UseCaptureItem(pokemon.EncounterId, bestBerry, pokemon.SpawnpointId);
                     Logger.Normal($"(BERRY) {bestBerry} used, remaining: {berries.Count}");
-                    await RandomHelper.RandomDelay(500, 1000);
+                    await RandomHelper.RandomDelay(50, 200);
                 }
 
                 var bestPokeball = await GetBestBall(encounter?.WildPokemon);
@@ -285,7 +285,7 @@ namespace PokemonGo.RocketAPI.Logic
                     ? $"(POKEBATTLE) Caught {pokemon.PokemonId} (CP {encounter?.WildPokemon?.PokemonData?.Cp} | {Math.Round(CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData)).ToString("0.00")} % perfect) | Chance: {(float)((int)(encounter?.CaptureProbability?.CaptureProbability_.First() * 100)) / 100} | {Math.Round(distance)}m distance | with {bestPokeball} and received XP {caughtPokemonResponse.Scores.Xp.Sum()}"
                     : $"(POKEBATTLE) Missed/Escaped {pokemon.PokemonId} (CP {encounter?.WildPokemon?.PokemonData?.Cp} | {Math.Round(CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData)).ToString("0.00")} % perfect) | Chance: {(float)((int)(encounter?.CaptureProbability?.CaptureProbability_.First() * 100)) / 100} {caughtPokemonResponse.Status} | {Math.Round(distance)}m distance | using a {bestPokeball}.."
                     );
-                await RandomHelper.RandomDelay(1750, 2250);
+                await RandomHelper.RandomDelay(750, 1250);
             }
             while (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchMissed || caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchEscape);
         }
@@ -306,7 +306,7 @@ namespace PokemonGo.RocketAPI.Logic
                         : $"(EVOLVE) Failed: {pokemon.PokemonId}. EvolvePokemonOutProto.Result was {evolvePokemonOutProto.Result}, stopping evolving {pokemon.PokemonId}"
                     );
 
-                await Task.Delay(3000);
+                await Task.Delay(1000);
             }
         }
 
@@ -329,7 +329,7 @@ namespace PokemonGo.RocketAPI.Logic
 
                 var bestPokemonOfType = await _inventory.GetHighestPokemonOfTypeByCP(duplicatePokemon);
                 Logger.Normal(ConsoleColor.DarkYellow, $"(TRANSFER) {duplicatePokemon.PokemonId} (CP {duplicatePokemon.Cp} | {CalculatePokemonPerfection(duplicatePokemon).ToString("0.00")} % perfect) | (Best: {bestPokemonOfType.Cp} CP | {CalculatePokemonPerfection(bestPokemonOfType).ToString("0.00")} % perfect)");
-                await Task.Delay(500);
+                await Task.Delay(100);
             }
         }
 
@@ -347,7 +347,7 @@ namespace PokemonGo.RocketAPI.Logic
                 _stats.addItemsRemoved(item.Count);
                 _stats.updateConsoleTitle(_inventory);
 
-                await Task.Delay(500);
+                await Task.Delay(100);
             }
         }
 
