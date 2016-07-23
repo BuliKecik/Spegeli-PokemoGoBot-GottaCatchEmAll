@@ -510,7 +510,7 @@ namespace PokemonGo.RocketAPI.Logic
                 }
                 catch
                 {
-                    Logger.Error("Datei offen?!");
+                    Logger.Error("Export all Pokemons to CSV not possible. File seems be in use!");
                 }
             }
         }
