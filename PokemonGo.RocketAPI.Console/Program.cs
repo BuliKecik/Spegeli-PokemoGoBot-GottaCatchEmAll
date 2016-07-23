@@ -4,6 +4,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using PokemonGo.RocketAPI.Exceptions;
+using PokemonGo.RocketAPI.Logging;
 
 #endregion
 
@@ -23,7 +24,7 @@ namespace PokemonGo.RocketAPI.Console
                     Environment.Exit(1);
                 };
 
-            Logger.SetLogger(new Logging.ConsoleLogger(LogLevel.Info));
+            Logger.SetLogger();
 
             Task.Run(() =>
             {
@@ -33,19 +34,19 @@ namespace PokemonGo.RocketAPI.Console
                 }
                 catch (PtcOfflineException)
                 {
-                    Logger.Error("PTC Servers are probably down OR your credentials are wrong. Try google");
-                    Logger.Error("Trying again in 60 seconds...");
+                    Logger.Write("PTC Servers are probably down OR your credentials are wrong. Try google", LogLevel.Error);
+                    Logger.Write("Trying again in 60 seconds...");
                     Thread.Sleep(60000);
                     new Logic.Logic(new Settings()).Execute().Wait();
                 }
                 catch (AccountNotVerifiedException)
                 {
-                    Logger.Error("Account not verified. - Exiting");
+                    Logger.Write("Account not verified. - Exiting");
                     Environment.Exit(0);
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"Unhandled exception: {ex}");
+                    Logger.Write($"Unhandled exception: {ex}", LogLevel.Error);
                     new Logic.Logic(new Settings()).Execute().Wait();
                 }
             });

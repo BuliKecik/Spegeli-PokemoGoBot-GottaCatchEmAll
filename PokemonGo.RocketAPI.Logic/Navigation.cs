@@ -5,6 +5,7 @@ using System.Device.Location;
 using System.Threading.Tasks;
 using PokemonGo.RocketAPI.GeneratedCode;
 using PokemonGo.RocketAPI.Logic.Utils;
+using PokemonGo.RocketAPI.Logging;
 
 #endregion
 
@@ -29,7 +30,7 @@ namespace PokemonGo.RocketAPI.Logic
 
             var sourceLocation = new GeoCoordinate(_client.CurrentLat, _client.CurrentLng);
             var distanceToTarget = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
-            Logger.Normal(ConsoleColor.DarkCyan, $"(NAVIGATION) Distance to target location: {distanceToTarget:0.##} meters. Will take {distanceToTarget / speedInMetersPerSecond:0.##} seconds!");
+            Logger.Write($"Distance to target location: {distanceToTarget:0.##} meters. Will take {distanceToTarget / speedInMetersPerSecond:0.##} seconds!", LogLevel.Navigation);
 
             var nextWaypointBearing = LocationUtils.DegreeBearing(sourceLocation, targetLocation);
             var nextWaypointDistance = speedInMetersPerSecond;
@@ -52,7 +53,7 @@ namespace PokemonGo.RocketAPI.Logic
                 {
                     if (speedInMetersPerSecond > SpeedDownTo)
                     {
-                        Logger.Normal(ConsoleColor.DarkCyan, $"(NAVIGATION) We are within 40 meters of the target. Speeding down to 10 km/h to not pass the target.");
+                        Logger.Write($"We are within 40 meters of the target. Speeding down to 10 km/h to not pass the target.", LogLevel.Navigation);
                         speedInMetersPerSecond = SpeedDownTo;
                     }
                 }

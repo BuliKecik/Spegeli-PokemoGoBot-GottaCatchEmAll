@@ -1,5 +1,6 @@
 ﻿#region
 
+using PokemonGo.RocketAPI.Logging;
 using System;
 using System.Net;
 using System.Reflection;
@@ -28,13 +29,13 @@ namespace PokemonGo.RocketAPI.Helpers
                         $"{match.Groups[1]}.{match.Groups[2]}.{match.Groups[3]}.{match.Groups[4]}");
                 if (gitVersion <= Assembly.GetExecutingAssembly().GetName().Version)
                 {
-                    Logger.Normal(
+                    Logger.Write(
                         "Awesome! You have already got the newest version! " +
-                        Assembly.GetExecutingAssembly().GetName().Version);
+                        Assembly.GetExecutingAssembly().GetName().Version, LogLevel.Info);
                     return;
                 }
 
-                Logger.Normal(ConsoleColor.DarkGreen, "TThere is a new Version available: https://github.com/Spegeli/Pokemon-Go-Rocket-API");
+                Logger.Write("There is a new Version available: https://github.com/Spegeli/Pokemon-Go-Rocket-API", LogLevel.Info);
                 Thread.Sleep(1000);
             }
             catch (Exception)

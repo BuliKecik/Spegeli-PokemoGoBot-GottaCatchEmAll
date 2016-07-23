@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.GeneratedCode;
+using PokemonGo.RocketAPI.Logging;
 
 #endregion
 
@@ -124,11 +125,12 @@ namespace PokemonGo.RocketAPI.Console
             if (!File.Exists(path + filename + ".txt"))
             {
                 string pokemonName = Properties.Resources.ResourceManager.GetString(filename);
-                Logger.Normal($"File: {filename} not found, creating new...");
+                Logger.Write($"File: {filename} not found, creating new...", LogLevel.Warning);
                 File.WriteAllText(path + filename + ".txt", pokemonName);
             }
             if (File.Exists(path + filename + ".txt"))
             {
+                Logger.Write($"Loading File: Configs\\{filename}", LogLevel.Info);
                 string[] _locallist = File.ReadAllLines(path + filename + ".txt");
                 foreach (string pokemonName in _locallist)
                 {

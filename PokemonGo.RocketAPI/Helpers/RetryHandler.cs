@@ -1,5 +1,6 @@
 #region
 
+using PokemonGo.RocketAPI.Logging;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -35,7 +36,7 @@ namespace PokemonGo.RocketAPI.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error($"[#{i} of {MaxRetries}] retry request {request.RequestUri} - Error: {ex}");
+                    Logger.Write($"[#{i} of {MaxRetries}] retry request {request.RequestUri} - Error: {ex}", LogLevel.Error);
                     if (i >= MaxRetries) throw;
                     await Task.Delay(1000, cancellationToken);
                 }

@@ -19,6 +19,7 @@ namespace PokemonGo.RocketAPI.Logic.Utils
         public static int TotalStardust;
         public static string CurrentLevelInfos;
         public static int Currentlevel = -1;
+        public static string PlayerName;
 
         public static DateTime InitSessionDateTime = DateTime.Now;
         public static TimeSpan Duration = DateTime.Now - InitSessionDateTime;
@@ -37,6 +38,11 @@ namespace PokemonGo.RocketAPI.Logic.Utils
                 //output = $"{stat.Level} (LvLUp in {_hours}hours // EXP required: {_ep})";
             }
             return output;
+        }
+
+        public void SetUsername(GetPlayerResponse profile)
+        {
+            PlayerName = profile.Profile.Username ?? "";
         }
 
         public static double _getSessionRuntime()
@@ -84,8 +90,8 @@ namespace PokemonGo.RocketAPI.Logic.Utils
         {
             return
                 string.Format(
-                    "Runtime {0} - Lvl: {1:0} | EXP/H: {2:0} | P/H: {3:0} | Stardust: {4:0} | Transfered: {5:0} | Items Recycled: {6:0}",
-                    _getSessionRuntimeInTimeFormat(), CurrentLevelInfos, TotalExperience / _getSessionRuntime(),
+                    "{0} - Runtime {1} - Lvl: {2:0} | EXP/H: {3:0} | P/H: {4:0} | Stardust: {5:0} | Transfered: {6:0} | Items Recycled: {7:0}",
+                    PlayerName, _getSessionRuntimeInTimeFormat(), CurrentLevelInfos, TotalExperience / _getSessionRuntime(),
                     TotalPokemons / _getSessionRuntime(), TotalStardust, TotalPokemonsTransfered, TotalItemsRemoved);
         }
 
