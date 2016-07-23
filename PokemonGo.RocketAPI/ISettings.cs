@@ -2,6 +2,8 @@
 
 using PokemonGo.RocketAPI.Enums;
 using System.Collections.Generic;
+using PokemonGo.RocketAPI.GeneratedCode;
+using AllEnum;
 
 #endregion
 
@@ -25,12 +27,12 @@ namespace PokemonGo.RocketAPI
         bool UsePokemonToNotCatchFilter { get; }
         int KeepMinDuplicatePokemon { get; }
 
-        ICollection<KeyValuePair<AllEnum.ItemId, int>> ItemRecycleFilter { get; set; }
+        ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter { get; }
 
-        ICollection<AllEnum.PokemonId> PokemonsToEvolve { get; }
+        ICollection<PokemonId> PokemonsToEvolve { get; }
 
-        ICollection<AllEnum.PokemonId> PokemonsNotToTransfer { get; }
+        ICollection<PokemonId> PokemonsNotToTransfer { get; }
 
-        ICollection<AllEnum.PokemonId> PokemonsNotToCatch { get; }
+        ICollection<PokemonId> PokemonsNotToCatch { get; }
     }
 }

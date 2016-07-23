@@ -239,7 +239,7 @@ namespace PokemonGo.RocketAPI.Logic
                 if (encounter.Status == EncounterResponse.Types.Status.EncounterSuccess)
                     await CatchEncounter(encounter, pokemon);
                 else
-                    Logger.Normal($"Encounter problem: {encounter?.Status}");
+                    Logger.Normal($"Encounter problem: {encounter.Status}");
             }
             await RandomHelper.RandomDelay(500, 1000);
         }
@@ -253,7 +253,7 @@ namespace PokemonGo.RocketAPI.Logic
                 var inventoryBerries = await _inventory.GetItems();
                 var berries = inventoryBerries.Where(p => (ItemId)p.Item_ == bestBerry).FirstOrDefault(); ;
                 var probability = encounter?.CaptureProbability?.CaptureProbability_?.FirstOrDefault();
-                if (bestBerry != AllEnum.ItemId.ItemUnknown && probability.HasValue && probability.Value < 0.35)
+                if (bestBerry != AllEnum.ItemId.ItemUnknown && probability.HasValue && probability.Value < 0.35 && CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData) >= _clientSettings.KeepMinIVPercentage)
                 {
                     var useRaspberry = await _client.UseCaptureItem(pokemon.EncounterId, bestBerry, pokemon.SpawnpointId);
                     Logger.Normal($"(BERRY) {bestBerry} used, remaining: {berries.Count}");
@@ -281,8 +281,8 @@ namespace PokemonGo.RocketAPI.Logic
                 _stats.updateConsoleTitle(_inventory);
                 Logger.Normal(ConsoleColor.Yellow,
                     caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess
-                    ? $"(POKEBATTLE) {pokemon.PokemonId} (CP {encounter?.WildPokemon?.PokemonData?.Cp}) ({Math.Round(CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData)).ToString("0.00")}% perfection) | Chance: {Math.Round(Convert.ToDouble(encounter?.CaptureProbability.CaptureProbability_.First()))} | {Math.Round(distance)}m distance | with {bestPokeball} and received XP {caughtPokemonResponse.Scores.Xp.Sum()}"
-                    : $"(POKEBATTLE) {pokemon.PokemonId} (CP {encounter?.WildPokemon?.PokemonData?.Cp}) | Chance: {Math.Round(Convert.ToDouble(encounter?.CaptureProbability?.CaptureProbability_.First()))} {caughtPokemonResponse.Status} | {Math.Round(distance)}m distance | using a {bestPokeball}.."
+                    ? $"(POKEBATTLE) Caught {pokemon.PokemonId} (CP {encounter?.WildPokemon?.PokemonData?.Cp} | {Math.Round(CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData)).ToString("0.00")} % perfect) | Chance: {(float)((int)(encounter?.CaptureProbability?.CaptureProbability_.First() * 100)) / 100} | {Math.Round(distance)}m distance | with {bestPokeball} and received XP {caughtPokemonResponse.Scores.Xp.Sum()}"
+                    : $"(POKEBATTLE) Missed/Escaped {pokemon.PokemonId} (CP {encounter?.WildPokemon?.PokemonData?.Cp} | {Math.Round(CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData)).ToString("0.00")} % perfect) | Chance: {(float)((int)(encounter?.CaptureProbability?.CaptureProbability_.First() * 100)) / 100} {caughtPokemonResponse.Status} | {Math.Round(distance)}m distance | using a {bestPokeball}.."
                     );
                 await RandomHelper.RandomDelay(1750, 2250);
             }
@@ -326,7 +326,7 @@ namespace PokemonGo.RocketAPI.Logic
                 _stats.increasePokemonsTransfered();
                 _stats.updateConsoleTitle(_inventory);
 
-                PokemonData bestPokemonOfType = await _inventory.GetHighestPokemonOfTypeByCP(duplicatePokemon);
+                var bestPokemonOfType = await _inventory.GetHighestPokemonOfTypeByCP(duplicatePokemon);
                 Logger.Normal(ConsoleColor.DarkYellow, $"(TRANSFER) {duplicatePokemon.PokemonId} (CP {duplicatePokemon.Cp} | {CalculatePokemonPerfection(duplicatePokemon).ToString("0.00")} % perfect) | (Best: {bestPokemonOfType.Cp} CP | {CalculatePokemonPerfection(bestPokemonOfType).ToString("0.00")} % perfect)");
                 await Task.Delay(500);
             }
@@ -340,8 +340,8 @@ namespace PokemonGo.RocketAPI.Logic
 
             foreach (var item in items)
             {
-                var transfer = await _client.RecycleItem((AllEnum.ItemId)item.Item_, item.Count);
-                Logger.Normal(ConsoleColor.DarkCyan, $"(RECYCLED) {item.Count}x {(AllEnum.ItemId)item.Item_}");
+                var transfer = await _client.RecycleItem((ItemId)item.Item_, item.Count);
+                Logger.Normal(ConsoleColor.DarkCyan, $"(RECYCLED) {item.Count}x {item.Item_}");
 
                 _stats.addItemsRemoved(item.Count);
                 _stats.updateConsoleTitle(_inventory);
@@ -429,7 +429,7 @@ namespace PokemonGo.RocketAPI.Logic
             return berries.OrderBy(g => g.Key).First().Key;
         }
 
-        private async Task DisplayPlayerLevelInTitle()
+        private async Task DisplayPlayerLevelInTitle(bool updateOnly = false)
         {
             _playerProfile = _playerProfile.Profile != null ? _playerProfile : await _client.GetProfile();
             var playerName = _playerProfile.Profile.Username ?? "";
@@ -438,11 +438,13 @@ namespace PokemonGo.RocketAPI.Logic
             if (playerStat != null)
             {
                 var message =
-                    $"Character Level {playerName} {playerStat.Level:0} - ({playerStat.Experience - playerStat.PrevLevelXp:0} / {playerStat.NextLevelXp - playerStat.PrevLevelXp:0} XP)";
+                    $" {playerName} | Level {playerStat.Level:0} - ({playerStat.Experience - playerStat.PrevLevelXp:0} / {playerStat.NextLevelXp - playerStat.PrevLevelXp:0} XP)";
                 Console.Title = message;
-                Logger.Normal(message);
+                if (updateOnly == false)
+                    Logger.Normal(message);
             }
-            await Task.Delay(5000);
+            if (updateOnly == false)
+                await Task.Delay(5000);
         }
 
         private async Task DisplayHighests()

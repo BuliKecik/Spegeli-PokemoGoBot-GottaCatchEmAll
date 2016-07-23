@@ -25,7 +25,7 @@ namespace PokemonGo.RocketAPI.Logic
             var inventory = await _client.GetInventory();
             return
                 inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.Pokemon)
-                    .Where(p => p != null && p?.PokemonId > 0);
+                    .Where(p => p != null && p.PokemonId > 0);
         }
         
         public async Task<IEnumerable<PokemonFamily>> GetPokemonFamilies()
@@ -33,7 +33,7 @@ namespace PokemonGo.RocketAPI.Logic
             var inventory = await _client.GetInventory();
             return
                 inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.PokemonFamily)
-                    .Where(p => p != null && p?.FamilyId != PokemonFamilyId.FamilyUnset);
+                    .Where(p => p != null && p.FamilyId != PokemonFamilyId.FamilyUnset);
         }
 
         public async Task<IEnumerable<PokemonSettings>> GetPokemonSettings()
@@ -41,7 +41,7 @@ namespace PokemonGo.RocketAPI.Logic
             var templates = await _client.GetItemTemplates();
             return
                 templates.ItemTemplates.Select(i => i.PokemonSettings)
-                    .Where(p => p != null && p?.FamilyId != PokemonFamilyId.FamilyUnset);
+                    .Where(p => p != null && p.FamilyId != PokemonFamilyId.FamilyUnset);
         }
 
         public async Task<IEnumerable<PokemonData>> GetHighestsCP(int limit)
@@ -64,7 +64,7 @@ namespace PokemonGo.RocketAPI.Logic
         {
             var myPokemon = await GetPokemons();
             var pokemons = myPokemon.ToList();
-            return pokemons.OrderByDescending(x => Logic.CalculatePokemonPerfection(x)).Take(limit);
+            return pokemons.OrderByDescending(Logic.CalculatePokemonPerfection).Take(limit);
         }
 
         public async Task<IEnumerable<PokemonData>> GetDuplicatePokemonToTransfer(bool keepPokemonsThatCanEvolve = false, int KeepMinDuplicatePokemon = 1, IEnumerable<PokemonId> filter = null)

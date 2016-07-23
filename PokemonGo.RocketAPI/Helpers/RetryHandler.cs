@@ -36,12 +36,8 @@ namespace PokemonGo.RocketAPI.Helpers
                 catch (Exception ex)
                 {
                     Logger.Error($"[#{i} of {MaxRetries}] retry request {request.RequestUri} - Error: {ex}");
-                    if (i < MaxRetries)
-                    {
-                        await Task.Delay(1000);
-                        continue;
-                    }
-                    throw;
+                    if (i >= MaxRetries) throw;
+                    await Task.Delay(1000, cancellationToken);
                 }
             }
             return null;

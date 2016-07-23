@@ -42,55 +42,74 @@ namespace PokemonGo.RocketAPI.Console
             }
         }
 
-        ICollection<KeyValuePair<ItemId, int>> ISettings.ItemRecycleFilter
+        public ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter => new[]
+        {
+            new KeyValuePair<ItemId, int>(ItemId.ItemUnknown, 0),
+            new KeyValuePair<ItemId, int>(ItemId.ItemPokeBall, 20),
+            new KeyValuePair<ItemId, int>(ItemId.ItemGreatBall, 20),
+            new KeyValuePair<ItemId, int>(ItemId.ItemUltraBall, 50),
+            new KeyValuePair<ItemId, int>(ItemId.ItemMasterBall, 100),
+
+            new KeyValuePair<ItemId, int>(ItemId.ItemPotion, 0),
+            new KeyValuePair<ItemId, int>(ItemId.ItemSuperPotion, 0),
+            new KeyValuePair<ItemId, int>(ItemId.ItemHyperPotion, 20),
+            new KeyValuePair<ItemId, int>(ItemId.ItemMaxPotion, 50),
+
+            new KeyValuePair<ItemId, int>(ItemId.ItemRevive, 10),
+            new KeyValuePair<ItemId, int>(ItemId.ItemMaxRevive, 50),
+
+            new KeyValuePair<ItemId, int>(ItemId.ItemLuckyEgg, 200),
+
+            new KeyValuePair<ItemId, int>(ItemId.ItemIncenseOrdinary, 100),
+            new KeyValuePair<ItemId, int>(ItemId.ItemIncenseSpicy, 100),
+            new KeyValuePair<ItemId, int>(ItemId.ItemIncenseCool, 100),
+            new KeyValuePair<ItemId, int>(ItemId.ItemIncenseFloral, 100),
+
+            new KeyValuePair<ItemId, int>(ItemId.ItemTroyDisk, 100),
+            new KeyValuePair<ItemId, int>(ItemId.ItemXAttack, 100),
+            new KeyValuePair<ItemId, int>(ItemId.ItemXDefense, 100),
+            new KeyValuePair<ItemId, int>(ItemId.ItemXMiracle, 100),
+
+            new KeyValuePair<ItemId, int>(ItemId.ItemRazzBerry, 20),
+            new KeyValuePair<ItemId, int>(ItemId.ItemBlukBerry, 10),
+            new KeyValuePair<ItemId, int>(ItemId.ItemNanabBerry, 10),
+            new KeyValuePair<ItemId, int>(ItemId.ItemWeparBerry, 30),
+            new KeyValuePair<ItemId, int>(ItemId.ItemPinapBerry, 30),
+
+            new KeyValuePair<ItemId, int>(ItemId.ItemSpecialCamera, 100),
+            new KeyValuePair<ItemId, int>(ItemId.ItemIncubatorBasicUnlimited, 100),
+            new KeyValuePair<ItemId, int>(ItemId.ItemIncubatorBasic, 100),
+            new KeyValuePair<ItemId, int>(ItemId.ItemPokemonStorageUpgrade, 100),
+            new KeyValuePair<ItemId, int>(ItemId.ItemItemStorageUpgrade, 100),
+        };
+
+        public ICollection<PokemonId> PokemonsToEvolve
         {
             get
             {
-                //Items to Recylce but keep X amount
-                return new[]
-                {
-                    new KeyValuePair<ItemId, int>(ItemId.ItemUnknown, 0),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemPokeBall, 20),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemGreatBall, 20),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemUltraBall, 50),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemMasterBall, 100),
-
-                    new KeyValuePair<ItemId, int>(ItemId.ItemPotion, 0),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemSuperPotion, 0),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemHyperPotion, 20),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemMaxPotion, 50),
-
-                    new KeyValuePair<ItemId, int>(ItemId.ItemRevive, 10),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemMaxRevive, 50),
-
-                    new KeyValuePair<ItemId, int>(ItemId.ItemLuckyEgg, 200),
-
-                    new KeyValuePair<ItemId, int>(ItemId.ItemIncenseOrdinary, 100),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemIncenseSpicy, 100),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemIncenseCool, 100),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemIncenseFloral, 100),
-
-                    new KeyValuePair<ItemId, int>(ItemId.ItemTroyDisk, 100),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemXAttack, 100),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemXDefense, 100),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemXMiracle, 100),
-
-                    new KeyValuePair<ItemId, int>(ItemId.ItemRazzBerry, 20),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemBlukBerry, 10),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemNanabBerry, 10),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemWeparBerry, 30),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemPinapBerry, 30),
-
-                    new KeyValuePair<ItemId, int>(ItemId.ItemSpecialCamera, 100),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemIncubatorBasicUnlimited, 100),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemIncubatorBasic, 100),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemPokemonStorageUpgrade, 100),
-                    new KeyValuePair<ItemId, int>(ItemId.ItemItemStorageUpgrade, 100),
-                };
+                //Type of pokemons to evolve
+                _pokemonsToEvolve = _pokemonsToEvolve ?? LoadPokemonList("PokemonsToEvolve");
+                return _pokemonsToEvolve;
             }
-            set
+        }
+
+        public ICollection<PokemonId> PokemonsNotToTransfer
+        {
+            get
             {
-                throw new NotImplementedException();
+                //Type of pokemons not to transfer
+                _pokemonsNotToTransfer = _pokemonsNotToTransfer ?? LoadPokemonList("PokemonsNotToTransfer");
+                return _pokemonsNotToTransfer;
+            }
+        }
+
+        public ICollection<PokemonId> PokemonsNotToCatch
+        {
+            get
+            {
+                //Type of pokemons not to catch
+                _pokemonsNotToCatch = _pokemonsNotToCatch ?? LoadPokemonList("PokemonsNotToCatch");
+                return _pokemonsNotToCatch;
             }
         }
 
@@ -119,36 +138,5 @@ namespace PokemonGo.RocketAPI.Console
             }
             return result;
         }
-
-        public ICollection<PokemonId> PokemonsToEvolve
-        {
-            get
-            {
-                //Type of pokemons to evolve
-                _pokemonsToEvolve = _pokemonsToEvolve != null ? _pokemonsToEvolve : LoadPokemonList("PokemonsToEvolve");
-                return _pokemonsToEvolve;
-            }
-        }
-
-        public ICollection<PokemonId> PokemonsNotToTransfer
-        {
-            get
-            {
-                //Type of pokemons not to transfer
-                _pokemonsNotToTransfer = _pokemonsNotToTransfer != null ? _pokemonsNotToTransfer : LoadPokemonList("PokemonsNotToTransfer");
-                return _pokemonsNotToTransfer;
-            }
-        }
-
-        public ICollection<PokemonId> PokemonsNotToCatch
-        {
-            get
-            {
-                //Type of pokemons not to catch
-                _pokemonsNotToCatch = _pokemonsNotToCatch != null ? _pokemonsNotToCatch : LoadPokemonList("PokemonsNotToCatch");
-                return _pokemonsNotToCatch;
-            }
-        }
-
     }
 }

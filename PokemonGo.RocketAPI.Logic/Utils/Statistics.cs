@@ -79,9 +79,9 @@ namespace PokemonGo.RocketAPI.Logic.Utils
             return string.Format("{0} - LvL: {1:0}    EXP/H: {2:0.0} EXP   P/H: {3:0.0} Pokemon(s)   Stardust: {4:0}   Pokemon Transfered: {5:0}   Items Removed: {6:0}", "Statistics", _currentLevelInfos, _totalExperience / _getSessionRuntime(), _totalPokemons / _getSessionRuntime(), _totalStardust, _totalPokemonsTransfered, _totalItemsRemoved);
         }
 
-        public static int GetXpDiff(int Level)
+        public static int GetXpDiff(int level)
         {
-            switch (Level)
+            switch (level)
             {
                 case 1:
                     return 0;
