@@ -82,7 +82,7 @@ namespace PokemonGo.RocketAPI.Logic.Utils
 
         public override string ToString()
         {           
-            return string.Format("SessionRuntime {0} - LvL: {1:0} | EXP/H: {2:0.0} | P/H: {3:0.0} | Stardust: {4:0} | Pokemon Transfered: {5:0} | Items Removed: {6:0}",  _getSessionRuntimeInTimeFormat(), _currentLevelInfos, _totalExperience / _getSessionRuntime(), _totalPokemons / _getSessionRuntime(), _totalStardust, _totalPokemonsTransfered, _totalItemsRemoved);
+            return string.Format("SessionRuntime {0} - LvL: {1:0} | EXP/H: {2:0} | P/H: {3:0} | Stardust: {4:0} | Pokemon Transfered: {5:0} | Items Removed: {6:0}",  _getSessionRuntimeInTimeFormat(), _currentLevelInfos, _totalExperience / _getSessionRuntime(), _totalPokemons / _getSessionRuntime(), _totalStardust, _totalPokemonsTransfered, _totalItemsRemoved);
         }
 
         public static int GetXpDiff(int level)

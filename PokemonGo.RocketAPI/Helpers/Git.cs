@@ -34,9 +34,7 @@ namespace PokemonGo.RocketAPI.Helpers
                     return;
                 }
 
-
-                Logger.Normal(
-                    "There is a new Version available: https://github.com/Spegeli/Pokemon-Go-Rocket-API");
+                Logger.Normal(ConsoleColor.DarkGreen, "TThere is a new Version available: https://github.com/Spegeli/Pokemon-Go-Rocket-API");
                 Thread.Sleep(1000);
             }
             catch (Exception)
