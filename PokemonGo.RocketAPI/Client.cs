@@ -46,12 +46,12 @@ namespace PokemonGo.RocketAPI
             {
                 var latlngFromFile = File.ReadAllText(path + filename);
                 var latlng = latlngFromFile.Split(':');
-                if (latlng[0].Length != 0 && latlng[1].Length != 0 && latlng[0] != "NaN" && latlng[1] != "NaN")
+                double latitude, longitude;
+                if ((latlng[0].Length > 0 && double.TryParse(latlng[0], out latitude) && latitude >= -90.0 && latitude <= 90.0) && (latlng[1].Length > 0 && double.TryParse(latlng[1], out longitude) && longitude >= -180.0 && longitude <= 180.0))
                 {
                     try
                     {
-                        SetCoordinates(Convert.ToDouble(latlng[0]), Convert.ToDouble(latlng[1]),
-                            Settings.DefaultAltitude);
+                        SetCoordinates(latitude, longitude, Settings.DefaultAltitude);
                     }
                     catch (FormatException)
                     {
@@ -66,6 +66,7 @@ namespace PokemonGo.RocketAPI
             }
             else
             {
+                Logger.Normal("Missing \"Configs\\Coords.txt\", using default settings for coordinates.");
                 SetCoordinates(Settings.DefaultLatitude, Settings.DefaultLongitude, Settings.DefaultAltitude);
             }
 
