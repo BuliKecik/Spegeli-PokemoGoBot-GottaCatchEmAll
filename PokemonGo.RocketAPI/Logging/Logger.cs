@@ -1,7 +1,8 @@
 ﻿#region
 
-using PokemonGo.RocketAPI.Logging;
 using System;
+using System.IO;
+using PokemonGo.RocketAPI.Logging;
 
 #endregion
 
@@ -35,16 +36,25 @@ namespace PokemonGo.RocketAPI
     /// </summary>
     public static class Logger
 	{
-		private static ILogger logger;
+        static string _currentFile = string.Empty;
+        static string path = Directory.GetCurrentDirectory() + "\\Logs\\";
 
-		/// <summary>
-		/// Set the logger. All future requests to <see cref="Write(string, LogLevel)"/> will use that logger, any old will be unset.
-		/// </summary>
-		/// <param name="logger"></param>
-		public static void SetLogger(ILogger logger)
+        private static ILogger logger;
+
+        /// <summary>
+        /// Set the logger. All future requests to <see cref="Write(string, LogLevel)"/> will use that logger, any old will be unset.
+        /// </summary>
+        /// <param name="logger"></param>
+        public static void SetLogger(ILogger logger)
 		{
 			Logger.logger = logger;
-		}
+            if (!Directory.Exists(path))
+            {
+                DirectoryInfo di = Directory.CreateDirectory(path);
+            }
+            _currentFile = DateTime.Now.ToString("yyyy-MM-dd - HH.mm.ss");
+            Log($"Initializing Rocket logger @ {DateTime.Now}...");
+        }
 
         /// <summary>
         /// write message to log window and file
@@ -52,7 +62,10 @@ namespace PokemonGo.RocketAPI
         /// <param name="message">message text</param>
         public static void Normal(string message)
         {
+            if (logger == null)
+                return;
             logger.Write(message);
+            Log(String.Concat($"[{DateTime.Now.ToString("HH:mm:ss")}] ", message));
         }
 
         /// <summary>
@@ -68,6 +81,7 @@ namespace PokemonGo.RocketAPI
             System.Console.ForegroundColor = color;
             logger.Write(message);
             System.Console.ForegroundColor = originalColor;
+            Log(String.Concat($"[{DateTime.Now.ToString("HH:mm:ss")}] ", message));
         }
 
         /// <summary>
@@ -83,8 +97,18 @@ namespace PokemonGo.RocketAPI
             System.Console.ForegroundColor = ConsoleColor.Red;
             logger.Write(message);
             System.Console.ForegroundColor = originalColor;
+            Log(String.Concat($"[{DateTime.Now.ToString("HH:mm:ss")}] ", message));
         }
 
+        private static void Log(string message)
+        {
+            // maybe do a new log rather than appending?
+            using (StreamWriter log = File.AppendText(path + _currentFile + ".txt"))
+            {
+                log.WriteLine(message);
+                log.Flush();
+            }
+        }
     }
 
 	public enum LogLevel

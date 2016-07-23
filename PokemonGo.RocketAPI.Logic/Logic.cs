@@ -424,7 +424,7 @@ namespace PokemonGo.RocketAPI.Logic
         private async Task DisplayPlayerLevelInTitle()
         {
             _playerProfile = _playerProfile.Profile != null ? _playerProfile : await _client.GetProfile();
-            var playerName = _playerProfile.Profile.Username != null ? _playerProfile.Profile.Username : "";
+            var playerName = _playerProfile.Profile.Username ?? "";
             var playerStats = await _inventory.GetPlayerStats();
             var playerStat = playerStats.FirstOrDefault();
             if (playerStat != null)
