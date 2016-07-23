@@ -22,10 +22,10 @@
 </Value>
     </Setting>
     <Setting Name="DefaultLatitude" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)">48.78</Value>
     </Setting>
     <Setting Name="DefaultLongitude" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)">9.18274</Value>
     </Setting>
     <Setting Name="EvolveAllPokemonWithEnoughCandy" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -34,13 +34,16 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="PtcUsername" Type="System.String" Scope="User">
-      <Value Profile="(Default)">username</Value>
+      <Value Profile="(Default)">Jarolon</Value>
     </Setting>
     <Setting Name="PtcPassword" Type="System.String" Scope="User">
-      <Value Profile="(Default)">password</Value>
+      <Value Profile="(Default)">5dfM56Rh</Value>
     </Setting>
     <Setting Name="UsePokemonToNotCatchFilter" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="KeepMinDuplicatePokemon" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1</Value>
     </Setting>
   </Settings>
 </SettingsFile>

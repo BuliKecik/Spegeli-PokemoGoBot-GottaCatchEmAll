@@ -23,6 +23,7 @@ namespace PokemonGo.RocketAPI
         bool EvolveAllPokemonWithEnoughCandy { get; }
         bool TransferDuplicatePokemon { get; }
         bool UsePokemonToNotCatchFilter { get; }
+        int KeepMinDuplicatePokemon { get; }
 
         ICollection<KeyValuePair<AllEnum.ItemId, int>> ItemRecycleFilter { get; set; }
 
