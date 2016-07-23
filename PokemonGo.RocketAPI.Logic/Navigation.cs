@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using System.Device.Location;
 using System.Threading.Tasks;
 using PokemonGo.RocketAPI.GeneratedCode;
 using PokemonGo.RocketAPI.Logic.Utils;
@@ -21,24 +22,12 @@ namespace PokemonGo.RocketAPI.Logic
             _client = client;
         }
 
-        public static double DistanceBetween2Coordinates(double lat1, double lng1, double lat2, double lng2)
-        {
-            const double rEarth = 6378137;
-            var dLat = (lat2 - lat1) * Math.PI / 180;
-            var dLon = (lng2 - lng1) * Math.PI / 180;
-            var alpha = Math.Sin(dLat / 2) * Math.Sin(dLat / 2)
-                        + Math.Cos(lat1 * Math.PI / 180) * Math.Cos(lat2 * Math.PI / 180)
-                        * Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
-            var d = 2 * rEarth * Math.Atan2(Math.Sqrt(alpha), Math.Sqrt(1 - alpha));
-            return d;
-        }
-
-        public async Task<PlayerUpdateResponse> HumanLikeWalking(Location targetLocation,
+        public async Task<PlayerUpdateResponse> HumanLikeWalking(GeoCoordinate targetLocation,
             double walkingSpeedInKilometersPerHour, Func<Task> functionExecutedWhileWalking)
         {
             var speedInMetersPerSecond = walkingSpeedInKilometersPerHour / 3.6;
 
-            var sourceLocation = new Location(_client.CurrentLat, _client.CurrentLng);
+            var sourceLocation = new GeoCoordinate(_client.CurrentLat, _client.CurrentLng);
             var distanceToTarget = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
             Logger.Normal(ConsoleColor.DarkCyan, $"(NAVIGATION) Distance to target location: {distanceToTarget:0.##} meters. Will take {distanceToTarget / speedInMetersPerSecond:0.##} seconds!");
 
@@ -59,7 +48,7 @@ namespace PokemonGo.RocketAPI.Logic
                 var millisecondsUntilGetUpdatePlayerLocationResponse =
                     (DateTime.Now - requestSendDateTime).TotalMilliseconds;
 
-                sourceLocation = new Location(_client.CurrentLat, _client.CurrentLng);
+                sourceLocation = new GeoCoordinate(_client.CurrentLat, _client.CurrentLng);
                 var currentDistanceToTarget = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
 
                 if (currentDistanceToTarget < 40)
@@ -87,28 +76,16 @@ namespace PokemonGo.RocketAPI.Logic
             return result;
         }
 
-        public class Location
-        {
-            public Location(double latitude, double longitude)
-            {
-                Latitude = latitude;
-                Longitude = longitude;
-            }
-
-            public double Latitude { get; set; }
-            public double Longitude { get; set; }
-        }
-
         public static FortData[] pathByNearestNeighbour(FortData[] pokeStops)
         {
             for (var i = 1; i < pokeStops.Length - 1; i++)
             {
                 var closest = i + 1;
-                var cloestDist = LocationUtils.CalculateDistanceInMeters(new Location(pokeStops[i].Latitude, pokeStops[i].Longitude), new Location(pokeStops[closest].Latitude, pokeStops[closest].Longitude));
+                var cloestDist = LocationUtils.CalculateDistanceInMeters(pokeStops[i].Latitude, pokeStops[i].Longitude, pokeStops[closest].Latitude, pokeStops[closest].Longitude);
                 for (var j = closest; j < pokeStops.Length; j++)
                 {
                     var initialDist = cloestDist;
-                    var newDist = LocationUtils.CalculateDistanceInMeters(new Location(pokeStops[i].Latitude, pokeStops[i].Longitude), new Location(pokeStops[j].Latitude, pokeStops[j].Longitude));
+                    var newDist = LocationUtils.CalculateDistanceInMeters(pokeStops[i].Latitude, pokeStops[i].Longitude, pokeStops[j].Latitude, pokeStops[j].Longitude);
                     if (initialDist > newDist)
                     {
                         cloestDist = newDist;
