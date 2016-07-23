@@ -3,7 +3,6 @@
 using PokemonGo.RocketAPI.Enums;
 using System.Collections.Generic;
 using PokemonGo.RocketAPI.GeneratedCode;
-using AllEnum;
 
 #endregion
 

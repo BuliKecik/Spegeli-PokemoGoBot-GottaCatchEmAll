@@ -38,9 +38,15 @@ namespace PokemonGo.RocketAPI.Console
                     Thread.Sleep(60000);
                     new Logic.Logic(new Settings()).Execute().Wait();
                 }
+                catch (AccountNotVerifiedException)
+                {
+                    Logger.Error("Account not verified. - Exiting");
+                    Environment.Exit(0);
+                }
                 catch (Exception ex)
                 {
                     Logger.Error($"Unhandled exception: {ex}");
+                    new Logic.Logic(new Settings()).Execute().Wait();
                 }
             });
              System.Console.ReadLine();

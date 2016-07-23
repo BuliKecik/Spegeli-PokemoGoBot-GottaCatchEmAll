@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using System.IO;
 
 #endregion
 
@@ -14,6 +15,5 @@ namespace PokemonGo.RocketAPI.Helpers
             var bytes = BitConverter.GetBytes(value);
             return BitConverter.ToUInt64(bytes, 0);
         }
-
     }
 }

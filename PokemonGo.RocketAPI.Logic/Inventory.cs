@@ -1,13 +1,13 @@
 ﻿#region
 
-using System.Collections.Concurrent;
-using System;
-using System.Threading;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AllEnum;
+using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.GeneratedCode;
+using System.Collections.Concurrent;
+using System;
+using System.Threading;
 
 #endregion
 
@@ -17,60 +17,15 @@ namespace PokemonGo.RocketAPI.Logic
     public class Inventory
     {
         private readonly Client _client;
+        public static DateTime _lastRefresh;
+        public static GetInventoryResponse _cachedInventory;
 
         public Inventory(Client client)
         {
             _client = client;
         }
 
-        public async Task<IEnumerable<PokemonData>> GetPokemons()
-        {
-            var inventory = await _client.GetInventory();
-            return
-                inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.Pokemon)
-                    .Where(p => p != null && p.PokemonId > 0);
-        }
-        
-        public async Task<IEnumerable<PokemonFamily>> GetPokemonFamilies()
-        {
-            var inventory = await _client.GetInventory();
-            return
-                inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.PokemonFamily)
-                    .Where(p => p != null && p.FamilyId != PokemonFamilyId.FamilyUnset);
-        }
-
-        public async Task<IEnumerable<PokemonSettings>> GetPokemonSettings()
-        {
-            var templates = await _client.GetItemTemplates();
-            return
-                templates.ItemTemplates.Select(i => i.PokemonSettings)
-                    .Where(p => p != null && p.FamilyId != PokemonFamilyId.FamilyUnset);
-        }
-
-        public async Task<IEnumerable<PokemonData>> GetHighestsCP(int limit)
-        {
-            var myPokemon = await GetPokemons();
-            var pokemons = myPokemon.ToList();
-            return pokemons.OrderByDescending(x => x.Cp).ThenBy(n => n.StaminaMax).Take(limit);
-        }
-
-        public async Task<PokemonData> GetHighestPokemonOfTypeByCP(PokemonData pokemon)
-        {
-            var myPokemon = await GetPokemons();
-            var pokemons = myPokemon.ToList();
-            return pokemons.Where(x => x.PokemonId == pokemon.PokemonId)
-                            .OrderByDescending(x => x.Cp)
-                            .First();
-        }
-
-        public async Task<IEnumerable<PokemonData>> GetHighestsPerfect(int limit)
-        {
-            var myPokemon = await GetPokemons();
-            var pokemons = myPokemon.ToList();
-            return pokemons.OrderByDescending(Logic.CalculatePokemonPerfection).Take(limit);
-        }
-
-        public async Task<IEnumerable<PokemonData>> GetDuplicatePokemonToTransfer(bool keepPokemonsThatCanEvolve = false, int KeepMinDuplicatePokemon = 1, IEnumerable<PokemonId> filter = null)
+        public async Task<IEnumerable<PokemonData>> GetDuplicatePokemonToTransfer(bool keepPokemonsThatCanEvolve = false, IEnumerable<PokemonId> filter = null)
         {
             var myPokemon = await GetPokemons();
 
@@ -119,9 +74,95 @@ namespace PokemonGo.RocketAPI.Logic
                     p =>
                         p.OrderByDescending(x => x.Cp)
                          .ThenBy(n => n.StaminaMax)
-                         .Skip(KeepMinDuplicatePokemon)
+                         .Skip(_client.Settings.KeepMinDuplicatePokemon)
                          .ToList());
         }
+
+        public async Task<IEnumerable<PokemonData>> GetHighestsCP(int limit)
+        {
+            var myPokemon = await GetPokemons();
+            var pokemons = myPokemon.ToList();
+            return pokemons.OrderByDescending(x => x.Cp).ThenBy(n => n.StaminaMax).Take(limit);
+        }
+
+        public async Task<IEnumerable<PokemonData>> GetHighestsPerfect(int limit)
+        {
+            var myPokemon = await GetPokemons();
+            var pokemons = myPokemon.ToList();
+            return pokemons.OrderByDescending(PokemonInfo.CalculatePokemonPerfection).Take(limit);
+        }
+
+        public async Task<PokemonData> GetHighestPokemonOfTypeByCP(PokemonData pokemon)
+        {
+            var myPokemon = await GetPokemons();
+            var pokemons = myPokemon.ToList();
+            return pokemons.Where(x => x.PokemonId == pokemon.PokemonId)
+                .OrderByDescending(x => x.Cp)
+                .FirstOrDefault();
+        }
+
+        public async Task<int> GetItemAmountByType(MiscEnums.Item type)
+        {
+            var pokeballs = await GetItems();
+            return pokeballs.FirstOrDefault(i => (MiscEnums.Item)i.Item_ == type)?.Count ?? 0;
+        }
+
+        public async Task<IEnumerable<Item>> GetItems()
+        {
+            var inventory = await getCachedInventory(_client);
+            return inventory.InventoryDelta.InventoryItems
+                .Select(i => i.InventoryItemData?.Item)
+                .Where(p => p != null);
+        }
+
+        public async Task<IEnumerable<Item>> GetItemsToRecycle(ISettings settings)
+        {
+            var myItems = await GetItems();
+
+            return myItems
+                .Where(x => settings.ItemRecycleFilter.Any(f => f.Key == (ItemId)x.Item_ && x.Count > f.Value))
+                .Select(
+                    x =>
+                        new Item
+                        {
+                            Item_ = x.Item_,
+                            Count = x.Count - settings.ItemRecycleFilter.Single(f => f.Key == (ItemId)x.Item_).Value,
+                            Unseen = x.Unseen
+                        });
+        }
+
+        public async Task<IEnumerable<PlayerStats>> GetPlayerStats()
+        {
+            var inventory = await getCachedInventory(_client);
+            return inventory.InventoryDelta.InventoryItems
+                .Select(i => i.InventoryItemData?.PlayerStats)
+                .Where(p => p != null);
+        }
+
+        public async Task<IEnumerable<PokemonFamily>> GetPokemonFamilies()
+        {
+            var inventory = await getCachedInventory(_client);
+            return
+                inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.PokemonFamily)
+                    .Where(p => p != null && p.FamilyId != PokemonFamilyId.FamilyUnset);
+        }
+
+        public async Task<IEnumerable<PokemonData>> GetPokemons()
+        {
+            var inventory = await getCachedInventory(_client);
+            return
+                inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.Pokemon)
+                    .Where(p => p != null && p.PokemonId > 0);
+        }
+
+        public async Task<IEnumerable<PokemonSettings>> GetPokemonSettings()
+        {
+            var templates = await _client.GetItemTemplates();
+            return
+                templates.ItemTemplates.Select(i => i.PokemonSettings)
+                    .Where(p => p != null && p.FamilyId != PokemonFamilyId.FamilyUnset);
+        }
+
 
         public async Task<IEnumerable<PokemonData>> GetPokemonToEvolve(IEnumerable<PokemonId> filter = null)
         {
@@ -152,49 +193,39 @@ namespace PokemonGo.RocketAPI.Logic
                 var pokemonCandyNeededAlready =
                     pokemonToEvolve.Count(
                         p => pokemonSettings.Single(x => x.PokemonId == p.PokemonId).FamilyId == settings.FamilyId) *
-                    settings.CandyToEvolve; if (familyCandy.Candy - pokemonCandyNeededAlready > settings.CandyToEvolve)
+                    settings.CandyToEvolve;
+                if (familyCandy.Candy - pokemonCandyNeededAlready > settings.CandyToEvolve)
                     pokemonToEvolve.Add(pokemon);
             }
 
             return pokemonToEvolve;
         }
 
-        public async Task<IEnumerable<PlayerStats>> GetPlayerStats()
+        public static async Task<GetInventoryResponse> getCachedInventory(Client _client)
         {
-            var inventory = await _client.GetInventory();
-            return inventory.InventoryDelta.InventoryItems
-                .Select(i => i.InventoryItemData?.PlayerStats)
-                .Where(p => p != null);
+            var now = DateTime.UtcNow;
+            SemaphoreSlim ss = new SemaphoreSlim(10);
+
+            if (_lastRefresh != null && _lastRefresh.AddSeconds(30).Ticks > now.Ticks)
+            {
+                return _cachedInventory;
+            }
+            else
+            {
+                await ss.WaitAsync();
+                try
+                {
+                    _lastRefresh = now;
+                    _cachedInventory = await _client.GetInventory();
+                    return _cachedInventory;
+                }
+                finally
+                {
+                    ss.Release();
+                }
+            }
+
         }
 
-        public async Task<IEnumerable<Item>> GetItems()
-        {
-            var inventory = await _client.GetInventory();
-            return inventory.InventoryDelta.InventoryItems
-                .Select(i => i.InventoryItemData?.Item)
-                .Where(p => p != null);
-        }
-
-        public async Task<int> GetItemAmountByType(MiscEnums.Item type)
-        {
-            var pokeballs = await GetItems();
-            return pokeballs.FirstOrDefault(i => (MiscEnums.Item)i.Item_ == type)?.Count ?? 0;
-        }
-
-        public async Task<IEnumerable<Item>> GetItemsToRecycle(ISettings settings)
-        {
-            var myItems = await GetItems();
-
-            return myItems
-                .Where(x => settings.ItemRecycleFilter.Any(f => f.Key == (ItemId)x.Item_ && x.Count > f.Value))
-                .Select(
-                    x =>
-                        new Item
-                        {
-                            Item_ = x.Item_,
-                            Count = x.Count - settings.ItemRecycleFilter.Single(f => f.Key == (ItemId)x.Item_).Value,
-                            Unseen = x.Unseen
-                        });
-        }
     }
 }

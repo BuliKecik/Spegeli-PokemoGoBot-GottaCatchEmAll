@@ -299,7 +299,7 @@ namespace PokemonGo.RocketAPI
             return await _httpClient.PostProtoPayload<Request, EncounterResponse>($"https://{_apiUrl}/rpc", encounterResponse);
         }
 
-        public async Task<UseItemCaptureRequest> UseCaptureItem(ulong encounterId, AllEnum.ItemId itemId, string spawnPointGuid)
+        public async Task<UseItemCaptureRequest> UseCaptureItem(ulong encounterId, ItemId itemId, string spawnPointGuid)
         {
             var customRequest = new UseItemCaptureRequest
             {
@@ -383,11 +383,11 @@ namespace PokemonGo.RocketAPI
             return await _httpClient.PostProtoPayload<Request, GetInventoryResponse>($"https://{_apiUrl}/rpc", inventoryRequest);
         }
 
-        public async Task<RecycleInventoryItemResponse> RecycleItem(AllEnum.ItemId itemId, int amount)
+        public async Task<RecycleInventoryItemResponse> RecycleItem(ItemId itemId, int amount)
         {
             var customRequest = new RecycleInventoryItem
             {
-                ItemId = (AllEnum.ItemId)Enum.Parse(typeof(AllEnum.ItemId), itemId.ToString()),
+                ItemId = (ItemId)Enum.Parse(typeof(ItemId), itemId.ToString()),
                 Count = amount
             };
 

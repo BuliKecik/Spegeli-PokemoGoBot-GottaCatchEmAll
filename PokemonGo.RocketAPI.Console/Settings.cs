@@ -1,11 +1,11 @@
 ﻿#region
 
-using PokemonGo.RocketAPI.Enums;
 using System;
-using System.IO;
-using System.Reflection;
 using System.Collections.Generic;
-using AllEnum;
+using System.IO;
+using PokemonGo.RocketAPI.Enums;
+using PokemonGo.RocketAPI.GeneratedCode;
+
 #endregion
 
 
