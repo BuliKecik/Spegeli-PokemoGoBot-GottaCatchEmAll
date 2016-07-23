@@ -72,43 +72,51 @@ namespace PokemonGo.RocketAPI.Logic
 
                     await PostLoginExecute();
                 }
-                catch (AccessTokenExpiredException)
+                catch (AccessTokenExpiredException ex)
                 {
                     Logger.Error($"Access token expired");
+                    Logger.Error($"{ex}");
                 }
-                catch (TaskCanceledException)
+                catch (TaskCanceledException ex)
                 {
                     Logger.Error("Task Canceled Exception - Restarting");
+                    Logger.Error($"{ex}");
                     await Execute();
                 }
-                catch (UriFormatException)
+                catch (UriFormatException ex)
                 {
                     Logger.Error("UriFormatException - Restarting");
+                    Logger.Error($"{ex}");
                     await Execute();
                 }
-                catch (ArgumentOutOfRangeException)
+                catch (ArgumentOutOfRangeException ex)
                 {
                     Logger.Error("ArgumentOutOfRangeException - Restarting");
+                    Logger.Error($"{ex}");
                     await Execute();
                 }
-                catch (ArgumentNullException)
+                catch (ArgumentNullException ex)
                 {
                     Logger.Error("ArgumentNullException - Restarting");
+                    Logger.Error($"{ex}");
                     await Execute();
                 }
-                catch (NullReferenceException)
+                catch (NullReferenceException ex)
                 {
                     Logger.Error("NullReferenceException - Restarting");
+                    Logger.Error($"{ex}");
                     await Execute();
                 }
-                catch (InvalidResponseException)
+                catch (InvalidResponseException ex)
                 {
                     Logger.Error("InvalidResponseException - Restarting");
+                    Logger.Error($"{ex}");
                     await Execute();
                 }
-                catch (AggregateException)
+                catch (AggregateException ex)
                 {
                     Logger.Error("AggregateException - Restarting");
+                    Logger.Error($"{ex}");
                     await Execute();
                 }
                 await Task.Delay(10000);
@@ -273,7 +281,7 @@ namespace PokemonGo.RocketAPI.Logic
                 _stats.updateConsoleTitle(_inventory);
                 Logger.Normal(ConsoleColor.Yellow,
                     caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess
-                    ? $"(POKEBATTLE) {pokemon.PokemonId} (CP {encounter?.WildPokemon?.PokemonData?.Cp}) ({Math.Round(CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData)).ToString("0.00")}% perfection) | Chance: {encounter?.CaptureProbability.CaptureProbability_.First()} | {Math.Round(distance)}m distance | with {bestPokeball} and received XP {caughtPokemonResponse.Scores.Xp.Sum()}"
+                    ? $"(POKEBATTLE) {pokemon.PokemonId} (CP {encounter?.WildPokemon?.PokemonData?.Cp}) ({Math.Round(CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData)).ToString("0.00")}% perfection) | Chance: {Math.Round(Convert.ToDouble(encounter?.CaptureProbability.CaptureProbability_.First()))} | {Math.Round(distance)}m distance | with {bestPokeball} and received XP {caughtPokemonResponse.Scores.Xp.Sum()}"
                     : $"(POKEBATTLE) {pokemon.PokemonId} (CP {encounter?.WildPokemon?.PokemonData?.Cp}) | Chance: {Math.Round(Convert.ToDouble(encounter?.CaptureProbability?.CaptureProbability_.First()))} {caughtPokemonResponse.Status} | {Math.Round(distance)}m distance | using a {bestPokeball}.."
                     );
                 await RandomHelper.RandomDelay(1750, 2250);
