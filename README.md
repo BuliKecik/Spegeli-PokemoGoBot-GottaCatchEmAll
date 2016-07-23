@@ -12,8 +12,8 @@ Chat about this Repository via Discord: https://discord.gg/VsVrjgr
 
 ## Features
 * PTC Login / Google
-* Use Humanlike Walking with 10 km/h (instead of Teleport)
-* Farm Pokestops
+* Use Humanlike Walking with 10 km/h (instead of Teleport) (Speed is configurable via UserSettings)
+* Farm Pokestops (use always the nearest from the current location)
 * Farm all Pokemon near your
 * PokemonsNotToCatch Filter (configurable via File in Config Folder)
 * Throws away unneeded items (configurable via Settings.cs)
