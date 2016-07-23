@@ -98,5 +98,30 @@ namespace PokemonGo.RocketAPI.Logic
             public double Latitude { get; set; }
             public double Longitude { get; set; }
         }
+
+        public static FortData[] pathByNearestNeighbour(FortData[] pokeStops)
+        {
+            for (var i = 1; i < pokeStops.Length - 1; i++)
+            {
+                var closest = i + 1;
+                var cloestDist = LocationUtils.CalculateDistanceInMeters(new Navigation.Location(pokeStops[i].Latitude, pokeStops[i].Longitude), new Navigation.Location(pokeStops[closest].Latitude, pokeStops[closest].Longitude));
+                for (var j = closest; j < pokeStops.Length; j++)
+                {
+                    var initialDist = cloestDist;
+                    var newDist = LocationUtils.CalculateDistanceInMeters(new Navigation.Location(pokeStops[i].Latitude, pokeStops[i].Longitude), new Navigation.Location(pokeStops[j].Latitude, pokeStops[j].Longitude));
+                    if (initialDist > newDist)
+                    {
+                        cloestDist = newDist;
+                        closest = j;
+                    }
+
+                }
+                var tmpPok = pokeStops[closest];
+                pokeStops[closest] = pokeStops[i + 1];
+                pokeStops[i + 1] = tmpPok;
+            }
+
+            return pokeStops;
+        }
     }
 }
