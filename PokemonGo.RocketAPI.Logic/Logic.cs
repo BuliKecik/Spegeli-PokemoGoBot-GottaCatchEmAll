@@ -121,8 +121,8 @@ namespace PokemonGo.RocketAPI.Logic
 
             while (true)
             {
-
                     _playerProfile = await _client.GetProfile();
+
                     _stats.updateConsoleTitle(_inventory);
 
                     var _currentLevelInfos = await Statistics._getcurrentLevelInfos(_inventory);
@@ -140,6 +140,12 @@ namespace PokemonGo.RocketAPI.Logic
                     Logger.Normal(ConsoleColor.DarkGray, $"Level: {_currentLevelInfos}");
                     Logger.Normal(ConsoleColor.DarkGray, $"Stardust: {_playerProfile.Profile.Currency.ToArray()[1].Amount}");
                     Logger.Normal(ConsoleColor.Yellow, "----------------------------");
+                    await DisplayHighests();
+                    Logger.Normal(ConsoleColor.Yellow, "----------------------------");
+
+                    var PokemonsNotToTransfer = _clientSettings.PokemonsNotToTransfer;
+                    var PokemonsNotToCatch = _clientSettings.PokemonsNotToCatch;
+                    var PokemonsToEvolve = _clientSettings.PokemonsToEvolve;
 
                     if (_clientSettings.EvolveAllPokemonWithEnoughCandy) await EvolveAllPokemonWithEnoughCandy(_clientSettings.PokemonsToEvolve);
                     if (_clientSettings.TransferDuplicatePokemon) await TransferDuplicatePokemon();
@@ -267,8 +273,8 @@ namespace PokemonGo.RocketAPI.Logic
                 _stats.updateConsoleTitle(_inventory);
                 Logger.Normal(ConsoleColor.Yellow,
                     caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess
-                    ? $"(POKEBATTLE) {pokemon.PokemonId} (CP {encounter?.WildPokemon?.PokemonData?.Cp}) ({CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData).ToString("0.00")}% perfect) | Chance: {encounter?.CaptureProbability.CaptureProbability_.First()} | {Math.Round(distance)}m distance | with {bestPokeball} and received XP {caughtPokemonResponse.Scores.Xp.Sum()}"
-                    : $"(POKEBATTLE) {pokemon.PokemonId} (CP {encounter?.WildPokemon?.PokemonData?.Cp}) | Change: {encounter?.CaptureProbability.CaptureProbability_.First()} {caughtPokemonResponse.Status} | {Math.Round(distance)}m distance | using a {bestPokeball}.."
+                    ? $"(POKEBATTLE) {pokemon.PokemonId} (CP {encounter?.WildPokemon?.PokemonData?.Cp}) ({Math.Round(CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData)).ToString("0.00")}% perfection) | Chance: {encounter?.CaptureProbability.CaptureProbability_.First()} | {Math.Round(distance)}m distance | with {bestPokeball} and received XP {caughtPokemonResponse.Scores.Xp.Sum()}"
+                    : $"(POKEBATTLE) {pokemon.PokemonId} (CP {encounter?.WildPokemon?.PokemonData?.Cp}) | Chance: {Math.Round(Convert.ToDouble(encounter?.CaptureProbability?.CaptureProbability_.First()))} {caughtPokemonResponse.Status} | {Math.Round(distance)}m distance | using a {bestPokeball}.."
                     );
                 await RandomHelper.RandomDelay(1750, 2250);
             }
@@ -307,13 +313,13 @@ namespace PokemonGo.RocketAPI.Logic
                 if (CalculatePokemonPerfection(duplicatePokemon) >= _clientSettings.KeepMinIVPercentage || duplicatePokemon.Cp > _clientSettings.KeepMinCP)
                     continue;
 
-                var bestPokemonOfType = await _inventory.GetHighestCPofType(duplicatePokemon);
                 var transfer = await _client.TransferPokemon(duplicatePokemon.Id);
 
                 _stats.increasePokemonsTransfered();
                 _stats.updateConsoleTitle(_inventory);
 
-                Logger.Normal(ConsoleColor.DarkYellow, $"(TRANSFER) {duplicatePokemon.PokemonId} with {duplicatePokemon.Cp} CP (Best: {bestPokemonOfType})");
+                PokemonData bestPokemonOfType = await _inventory.GetHighestPokemonOfTypeByCP(duplicatePokemon);
+                Logger.Normal(ConsoleColor.DarkYellow, $"(TRANSFER) {duplicatePokemon.PokemonId} (CP {duplicatePokemon.Cp} | {CalculatePokemonPerfection(duplicatePokemon).ToString("0.00")} % perfect) | (Best: {bestPokemonOfType.Cp} CP | {CalculatePokemonPerfection(bestPokemonOfType).ToString("0.00")} % perfect)");
                 await Task.Delay(500);
             }
         }
@@ -341,10 +347,10 @@ namespace PokemonGo.RocketAPI.Logic
             var pokemonCp = pokemon?.PokemonData?.Cp;
 
             var items = await _inventory.GetItems();
-            var balls = items.Where(i => (MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_POKE_BALL
-                                      || (MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_MASTER_BALL
+            var balls = items.Where(i => ((MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_POKE_BALL
+                                      || (MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_GREAT_BALL
                                       || (MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_ULTRA_BALL
-                                      || (MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_GREAT_BALL).GroupBy(i => ((MiscEnums.Item)i.Item_)).ToList();
+                                      || (MiscEnums.Item)i.Item_ == MiscEnums.Item.ITEM_MASTER_BALL) && i.Count > 0).GroupBy(i => ((MiscEnums.Item)i.Item_)).ToList();
             if (balls.Count == 0) return MiscEnums.Item.ITEM_UNKNOWN;
 
             var pokeBalls = balls.Any(g => g.Key == MiscEnums.Item.ITEM_POKE_BALL);
@@ -352,11 +358,11 @@ namespace PokemonGo.RocketAPI.Logic
             var ultraBalls = balls.Any(g => g.Key == MiscEnums.Item.ITEM_ULTRA_BALL);
             var masterBalls = balls.Any(g => g.Key == MiscEnums.Item.ITEM_MASTER_BALL);
 
-            if (masterBalls && pokemonCp >= 1500)
+            if (masterBalls && pokemonCp >= 2000)
                 return MiscEnums.Item.ITEM_MASTER_BALL;
-            else if (ultraBalls && pokemonCp >= 1500)
+            else if (ultraBalls && pokemonCp >= 2000)
                 return MiscEnums.Item.ITEM_ULTRA_BALL;
-            else if (greatBalls && pokemonCp >= 1500)
+            else if (greatBalls && pokemonCp >= 2000)
                 return MiscEnums.Item.ITEM_GREAT_BALL;
 
             if (ultraBalls && pokemonCp >= 1000)
@@ -364,12 +370,7 @@ namespace PokemonGo.RocketAPI.Logic
             else if (greatBalls && pokemonCp >= 1000)
                 return MiscEnums.Item.ITEM_GREAT_BALL;
 
-            if (ultraBalls && pokemonCp >= 600)
-                return MiscEnums.Item.ITEM_ULTRA_BALL;
-            else if (greatBalls && pokemonCp >= 600)
-                return MiscEnums.Item.ITEM_GREAT_BALL;
-
-            if (greatBalls && pokemonCp >= 350)
+            if (greatBalls && pokemonCp >= 500)
                 return MiscEnums.Item.ITEM_GREAT_BALL;
 
             return balls.OrderBy(g => g.Key).First().Key;
@@ -385,7 +386,7 @@ namespace PokemonGo.RocketAPI.Logic
                                         || (AllEnum.ItemId)i.Item_ == AllEnum.ItemId.ItemNanabBerry
                                         || (AllEnum.ItemId)i.Item_ == AllEnum.ItemId.ItemWeparBerry
                                         || (AllEnum.ItemId)i.Item_ == AllEnum.ItemId.ItemPinapBerry).GroupBy(i => ((AllEnum.ItemId)i.Item_)).ToList();
-            if (berries.Count == 0) return AllEnum.ItemId.ItemUnknown;
+            if (berries.Count == 0 || pokemonCp <= 350) return AllEnum.ItemId.ItemUnknown;
 
             var razzBerryCount = await _inventory.GetItemAmountByType(MiscEnums.Item.ITEM_RAZZ_BERRY);
             var blukBerryCount = await _inventory.GetItemAmountByType(MiscEnums.Item.ITEM_BLUK_BERRY);
@@ -393,21 +394,28 @@ namespace PokemonGo.RocketAPI.Logic
             var weparBerryCount = await _inventory.GetItemAmountByType(MiscEnums.Item.ITEM_WEPAR_BERRY);
             var pinapBerryCount = await _inventory.GetItemAmountByType(MiscEnums.Item.ITEM_PINAP_BERRY);
 
-            if (pinapBerryCount > 0 && pokemonCp >= 1000)
+            if (pinapBerryCount > 0 && pokemonCp >= 2000)
                 return AllEnum.ItemId.ItemPinapBerry;
-            else if (weparBerryCount > 0 && pokemonCp >= 1000)
+            else if (weparBerryCount > 0 && pokemonCp >= 2000)
                 return AllEnum.ItemId.ItemWeparBerry;
-            else if (nanabBerryCount > 0 && pokemonCp >= 1000)
+            else if (nanabBerryCount > 0 && pokemonCp >= 2000)
                 return AllEnum.ItemId.ItemNanabBerry;
-
-            if (weparBerryCount > 0 && pokemonCp >= 600)
-                return AllEnum.ItemId.ItemWeparBerry;
-            else if (nanabBerryCount > 0 && pokemonCp >= 600)
-                return AllEnum.ItemId.ItemNanabBerry;
-            else if (blukBerryCount > 0 && pokemonCp >= 600)
+            else if (nanabBerryCount > 0 && pokemonCp >= 2000)
                 return AllEnum.ItemId.ItemBlukBerry;
 
-            if (blukBerryCount > 0 && pokemonCp >= 350)
+            if (weparBerryCount > 0 && pokemonCp >= 1500)
+                return AllEnum.ItemId.ItemWeparBerry;
+            else if (nanabBerryCount > 0 && pokemonCp >= 1500)
+                return AllEnum.ItemId.ItemNanabBerry;
+            else if (blukBerryCount > 0 && pokemonCp >= 1500)
+                return AllEnum.ItemId.ItemBlukBerry;
+
+            if (nanabBerryCount > 0 && pokemonCp >= 1000)
+                return AllEnum.ItemId.ItemNanabBerry;
+            else if (blukBerryCount > 0 && pokemonCp >= 1000)
+                return AllEnum.ItemId.ItemBlukBerry;
+
+            if (blukBerryCount > 0 && pokemonCp >= 500)
                 return AllEnum.ItemId.ItemBlukBerry;
 
             return berries.OrderBy(g => g.Key).First().Key;
@@ -429,5 +437,19 @@ namespace PokemonGo.RocketAPI.Logic
             await Task.Delay(5000);
         }
 
+        private async Task DisplayHighests()
+        {
+            Logger.Normal($"====== DisplayHighestsCP ======");
+            var highestsPokemonCP = await _inventory.GetHighestsCP(5);
+            foreach (var pokemon in highestsPokemonCP)
+                Logger.Normal($"# CP {pokemon.Cp}\t| ({CalculatePokemonPerfection(pokemon).ToString("0.00")}\t% perfect) NAME: '{pokemon.PokemonId}'");
+            Logger.Normal($"====== DisplayHighestsPerfect ======");
+            var highestsPokemonPerfect = await _inventory.GetHighestsPerfect(5);
+            foreach (var pokemon in highestsPokemonPerfect)
+            {
+                Logger.Normal($"# CP {pokemon.Cp}\t| ({CalculatePokemonPerfection(pokemon).ToString("0.00")}\t% perfect) NAME: '{pokemon.PokemonId}'");
+            }
+        }
+    
     }
 }

@@ -44,14 +44,27 @@ namespace PokemonGo.RocketAPI.Logic
                     .Where(p => p != null && p?.FamilyId != PokemonFamilyId.FamilyUnset);
         }
 
-        public async Task<int> GetHighestCPofType(PokemonData pokemon)
+        public async Task<IEnumerable<PokemonData>> GetHighestsCP(int limit)
+        {
+            var myPokemon = await GetPokemons();
+            var pokemons = myPokemon.ToList();
+            return pokemons.OrderByDescending(x => x.Cp).ThenBy(n => n.StaminaMax).Take(limit);
+        }
+
+        public async Task<PokemonData> GetHighestPokemonOfTypeByCP(PokemonData pokemon)
         {
             var myPokemon = await GetPokemons();
             var pokemons = myPokemon.ToList();
             return pokemons.Where(x => x.PokemonId == pokemon.PokemonId)
                             .OrderByDescending(x => x.Cp)
-                            .First().Cp;
+                            .First();
+        }
 
+        public async Task<IEnumerable<PokemonData>> GetHighestsPerfect(int limit)
+        {
+            var myPokemon = await GetPokemons();
+            var pokemons = myPokemon.ToList();
+            return pokemons.OrderByDescending(x => Logic.CalculatePokemonPerfection(x)).Take(limit);
         }
 
         public async Task<IEnumerable<PokemonData>> GetDuplicatePokemonToTransfer(bool keepPokemonsThatCanEvolve = false, IEnumerable<PokemonId> filter = null)
