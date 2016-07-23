@@ -15,16 +15,18 @@ Chat about this Repository via Discord: https://discord.gg/VsVrjgr
 * Use Humanlike Walking with 10 km/h (instead of Teleport)
 * Farm Pokestops
 * Farm all Pokemon near your
-* PokemonsNotToCatch Filter (configurable via Settings.cs)
+* PokemonsNotToCatch Filter (configurable via File in Config Folder)
 * Throws away unneeded items (configurable via Settings.cs)
-* Transfer duplicate Pokemon (keep the best of everyone) (ignore favorite marked) (ignore Pokemons from NotToTransfer list configurable via Settings.cs)
-* Evolve Pokemon (only on StartUp) (Pokemon Type configurable via Settings.cs)
+* Transfer duplicate Pokemon (keep the best of everyone) (ignore favorite marked) (PokemonsNotToTransfer list configurable via File in Config Folder)
+* Evolve Pokemon (PokemonsToEvolve list configurable via File in Config Folder)
 * Use best Pokeball & Berry (depending on Pokemon CP)
+* Log File System (all activity will be tracked in a Log File)
 * Random Task Delays
 * Statistic in the Header:
 ![alt tag](https://github.com/Spegeli/Pokemon-Go-Rocket-API/blob/master/StatisticScreenshot.png)
 * Very color and useful Logging (so you every time up2date what currently happened)
 * and many more ;-)
+
 
 ## ToDo
 * Auto Update the Bot
