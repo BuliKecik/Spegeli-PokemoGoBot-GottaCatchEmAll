@@ -825,7 +825,7 @@ namespace AllEnum {
     [pbr::OriginalName("VICTREEBELL")] Victreebell = 71,
     [pbr::OriginalName("TENTACOOL")] Tentacool = 72,
     [pbr::OriginalName("TENTACRUEL")] Tentacruel = 73,
-    [pbr::OriginalName("GEODUGE")] Geoduge = 74,
+    [pbr::OriginalName("GEODUDE")] Geodude = 74,
     [pbr::OriginalName("GRAVELER")] Graveler = 75,
     [pbr::OriginalName("GOLEM")] Golem = 76,
     [pbr::OriginalName("PONYTA")] Ponyta = 77,
