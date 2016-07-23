@@ -14,12 +14,6 @@ namespace PokemonGo.RocketAPI.Logic
     public class Inventory
     {
         private readonly Client _client;
-        private readonly ISettings _clientSettings;
-
-        public Inventory(ISettings clientSettings)
-        {
-            _clientSettings = clientSettings;
-        }
 
         public Inventory(Client client)
         {
@@ -73,7 +67,7 @@ namespace PokemonGo.RocketAPI.Logic
             return pokemons.OrderByDescending(x => Logic.CalculatePokemonPerfection(x)).Take(limit);
         }
 
-        public async Task<IEnumerable<PokemonData>> GetDuplicatePokemonToTransfer(bool keepPokemonsThatCanEvolve = false, IEnumerable<PokemonId> filter = null)
+        public async Task<IEnumerable<PokemonData>> GetDuplicatePokemonToTransfer(bool keepPokemonsThatCanEvolve = false, int KeepMinDuplicatePokemon = 1, IEnumerable<PokemonId> filter = null)
         {
             var myPokemon = await GetPokemons();
 
@@ -123,7 +117,7 @@ namespace PokemonGo.RocketAPI.Logic
                         p.Where(x => x.Favorite == 0)
                             .OrderByDescending(x => x.Cp)
                             .ThenBy(n => n.StaminaMax)
-                            .Skip(_clientSettings.KeepMinDuplicatePokemon)
+                            .Skip(KeepMinDuplicatePokemon)
                             .ToList());
         }
 

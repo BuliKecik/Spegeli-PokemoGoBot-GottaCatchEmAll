@@ -303,7 +303,7 @@ namespace PokemonGo.RocketAPI.Logic
 
         private async Task TransferDuplicatePokemon(bool keepPokemonsThatCanEvolve = false)
         {
-            var duplicatePokemons = await _inventory.GetDuplicatePokemonToTransfer(keepPokemonsThatCanEvolve, _clientSettings.PokemonsNotToTransfer);
+            var duplicatePokemons = await _inventory.GetDuplicatePokemonToTransfer(keepPokemonsThatCanEvolve, _clientSettings.KeepMinDuplicatePokemon, _clientSettings.PokemonsNotToTransfer);
             // Currently not returns the correct value
             //if (duplicatePokemons != null && duplicatePokemons.Any())
             //    Logger.Normal(ConsoleColor.DarkYellow, $"(TRANSFER) {duplicatePokemons.Count()} Pokemon:");
