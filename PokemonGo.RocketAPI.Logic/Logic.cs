@@ -252,20 +252,20 @@ namespace PokemonGo.RocketAPI.Logic
             {
                 var bestBerry = await GetBestBerry(encounter?.WildPokemon);
                 var inventoryBerries = await _inventory.GetItems();
-                var berries = inventoryBerries.Where(p => (ItemId)p.Item_ == bestBerry).FirstOrDefault(); ;
                 var probability = encounter?.CaptureProbability?.CaptureProbability_?.FirstOrDefault();
-                if (bestBerry != AllEnum.ItemId.ItemUnknown && probability.HasValue && probability.Value < 0.35 && CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData) >= _clientSettings.KeepMinIVPercentage)
-                {
-                    var useRaspberry = await _client.UseCaptureItem(pokemon.EncounterId, bestBerry, pokemon.SpawnpointId);
-                    Logger.Normal($"(BERRY) {bestBerry} used, remaining: {berries.Count}");
-                    await RandomHelper.RandomDelay(50, 200);
-                }
 
                 var bestPokeball = await GetBestBall(encounter?.WildPokemon);
                 if (bestPokeball == MiscEnums.Item.ITEM_UNKNOWN)
                 {
                     Logger.Normal($"(POKEBATTLE) You don't own any Pokeballs :( - We missed a {pokemon.PokemonId} with CP {encounter?.WildPokemon?.PokemonData?.Cp}");
                     return;
+                }
+                var berries = inventoryBerries.Where(p => (ItemId)p.Item_ == bestBerry).FirstOrDefault();
+                if (bestBerry != AllEnum.ItemId.ItemUnknown && probability.HasValue && probability.Value < 0.35 && CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData) >= _clientSettings.KeepMinIVPercentage)
+                {
+                    var useRaspberry = await _client.UseCaptureItem(pokemon.EncounterId, bestBerry, pokemon.SpawnpointId);
+                    Logger.Normal($"(BERRY) {bestBerry} used, remaining: {berries.Count}");
+                    await RandomHelper.RandomDelay(50, 200);
                 }
 
                 var distance = Navigation.DistanceBetween2Coordinates(_client.CurrentLat, _client.CurrentLng, pokemon.Latitude, pokemon.Longitude);
