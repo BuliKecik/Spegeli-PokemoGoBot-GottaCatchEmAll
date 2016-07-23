@@ -10,79 +10,83 @@ using PokemonGo.RocketAPI.GeneratedCode;
 
 namespace PokemonGo.RocketAPI.Logic.Utils
 {
-    class Statistics
+    internal class Statistics
     {
-        public static int _totalExperience;
-        public static int _totalPokemons;
-        public static int _totalItemsRemoved;
-        public static int _totalPokemonsTransfered;
-        public static int _totalStardust;
-        public static string _currentLevelInfos;
+        public static int TotalExperience;
+        public static int TotalPokemons;
+        public static int TotalItemsRemoved;
+        public static int TotalPokemonsTransfered;
+        public static int TotalStardust;
+        public static string CurrentLevelInfos;
         public static int Currentlevel = -1;
 
-        public static DateTime _initSessionDateTime = DateTime.Now;
-        public static TimeSpan duration = (DateTime.Now - _initSessionDateTime);
+        public static DateTime InitSessionDateTime = DateTime.Now;
+        public static TimeSpan Duration = DateTime.Now - InitSessionDateTime;
 
-        public static double _getSessionRuntime()
+        public static async Task<string> _getcurrentLevelInfos(Inventory inventory)
         {
-            return ((DateTime.Now - _initSessionDateTime).TotalSeconds) / 3600;
-        }
-
-        public static string _getSessionRuntimeInTimeFormat()
-        {
-            return ((DateTime.Now - _initSessionDateTime).ToString(@"dd\.hh\:mm\:ss"));
-        }
-
-        public void addExperience(int xp)
-        {
-            _totalExperience += xp;
-        }
-
-        public static async Task<string> _getcurrentLevelInfos(Inventory _inventory)
-        {
-            var stats = await _inventory.GetPlayerStats();
+            var stats = await inventory.GetPlayerStats();
             var output = string.Empty;
-            PlayerStats stat = stats.FirstOrDefault();
+            var stat = stats.FirstOrDefault();
             if (stat != null)
             {
-                var _ep = (stat.NextLevelXp - stat.PrevLevelXp) - (stat.Experience - stat.PrevLevelXp);
-                var _hours = Math.Round(_ep / (_totalExperience / _getSessionRuntime()),2);
+                var ep = (stat.NextLevelXp - stat.PrevLevelXp) - (stat.Experience - stat.PrevLevelXp);
+                var hours = Math.Round(ep/(TotalExperience / _getSessionRuntime()), 2);
 
-                output = $"{stat.Level} (LvLUp in {_hours}hours // {stat.Experience - stat.PrevLevelXp - GetXpDiff(stat.Level)}/{stat.NextLevelXp - stat.PrevLevelXp - GetXpDiff(stat.Level)} XP)";
+                output = $"{stat.Level} (LvLUp in {hours}hours | {stat.Experience - stat.PrevLevelXp - GetXpDiff(stat.Level)}/{stat.NextLevelXp - stat.PrevLevelXp - GetXpDiff(stat.Level)} XP)";
                 //output = $"{stat.Level} (LvLUp in {_hours}hours // EXP required: {_ep})";
             }
             return output;
         }
 
-        public void increasePokemons()
+        public static double _getSessionRuntime()
         {
-            _totalPokemons += 1;
+            return (DateTime.Now - InitSessionDateTime).TotalSeconds/3600;
         }
 
-        public void getStardust(int stardust)
+        public static string _getSessionRuntimeInTimeFormat()
         {
-            _totalStardust = stardust;
+            return (DateTime.Now - InitSessionDateTime).ToString(@"dd\.hh\:mm\:ss");
         }
 
-        public void addItemsRemoved(int count)
+        public void AddExperience(int xp)
         {
-            _totalItemsRemoved += count;
+            TotalExperience += xp;
         }
 
-        public void increasePokemonsTransfered()
+        public void AddItemsRemoved(int count)
         {
-            _totalPokemonsTransfered += 1;
+            TotalItemsRemoved += count;
         }
 
-        public async void updateConsoleTitle(Inventory _inventory)
+        public void GetStardust(int stardust)
         {
-            _currentLevelInfos = await _getcurrentLevelInfos(_inventory);
+            TotalStardust = stardust;
+        }
+
+        public void IncreasePokemons()
+        {
+            TotalPokemons += 1;
+        }
+
+        public void IncreasePokemonsTransfered()
+        {
+            TotalPokemonsTransfered += 1;
+        }
+
+        public async void UpdateConsoleTitle(Inventory _inventory)
+        {
+            CurrentLevelInfos = await _getcurrentLevelInfos(_inventory);
             Console.Title = ToString();
         }
 
         public override string ToString()
-        {           
-            return string.Format("SessionRuntime {0} - LvL: {1:0} | EXP/H: {2:0} | P/H: {3:0} | Stardust: {4:0} | Pokemon Transfered: {5:0} | Items Removed: {6:0}",  _getSessionRuntimeInTimeFormat(), _currentLevelInfos, _totalExperience / _getSessionRuntime(), _totalPokemons / _getSessionRuntime(), _totalStardust, _totalPokemonsTransfered, _totalItemsRemoved);
+        {
+            return
+                string.Format(
+                    "Runtime {0} - Lvl: {1:0} | EXP/H: {2:0} | P/H: {3:0} | Stardust: {4:0} | Transfered: {5:0} | Items Recycled: {6:0}",
+                    _getSessionRuntimeInTimeFormat(), CurrentLevelInfos, TotalExperience / _getSessionRuntime(),
+                    TotalPokemons / _getSessionRuntime(), TotalStardust, TotalPokemonsTransfered, TotalItemsRemoved);
         }
 
         public static int GetXpDiff(int level)

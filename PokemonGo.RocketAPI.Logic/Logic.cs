@@ -106,10 +106,9 @@ namespace PokemonGo.RocketAPI.Logic
                     Logger.Error($"{ex}");
                     await Execute();
                 }
-                catch (InvalidResponseException ex)
+                catch (InvalidResponseException)
                 {
                     Logger.Error("InvalidResponseException - Restarting");
-                    Logger.Error($"{ex}");
                     await Execute();
                 }
                 catch (AggregateException ex)
@@ -131,7 +130,7 @@ namespace PokemonGo.RocketAPI.Logic
                 await Inventory.getCachedInventory(_client);
                 _playerProfile = await _client.GetProfile();
 
-                _stats.updateConsoleTitle(_inventory);
+                _stats.UpdateConsoleTitle(_inventory);
 
                 var _currentLevelInfos = await Statistics._getcurrentLevelInfos(_inventory);
 
@@ -184,8 +183,6 @@ namespace PokemonGo.RocketAPI.Logic
         private async Task ExecuteFarmingPokestopsAndPokemons()
         {
             var mapObjects = await _client.GetMapObjects();
-            //var pokeStops = mapObjects.MapCells.SelectMany(i => i.Forts).Where(i => i.Type == FortType.Checkpoint && i.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime()).OrderBy(i => LocationUtils.CalculateDistanceInMeters(new Navigation.Location(_client.CurrentLat, _client.CurrentLng), new Navigation.Location(i.Latitude, i.Longitude)));
-            //var pokeStops = Navigation.pathByNearestNeighbour(mapObjects.MapCells.SelectMany(i => i.Forts).Where(i => i.Type == FortType.Checkpoint && i.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime()).OrderBy(i => LocationUtils.CalculateDistanceInMeters(new Navigation.Location(_client.CurrentLat, _client.CurrentLng), new Navigation.Location(i.Latitude, i.Longitude))).ToArray());
 
             var pokeStops =
                 Navigation.pathByNearestNeighbour(
@@ -211,13 +208,14 @@ namespace PokemonGo.RocketAPI.Logic
                 var fortInfo = await _client.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
                 var fortSearch = await _client.SearchFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
-                _stats.addExperience(fortSearch.ExperienceAwarded);
-                _stats.updateConsoleTitle(_inventory);
-
                 Logger.Normal(ConsoleColor.Cyan, $"(POKESTOP) Name: {fortInfo.Name} in {distance:0.##} m distance");
                 if (fortSearch.ExperienceAwarded > 0)
-                    Logger.Normal(ConsoleColor.Cyan, $"(POKESTOP) XP: {fortSearch.ExperienceAwarded}, Gems: {fortSearch.GemsAwarded}, Eggs: {fortSearch.PokemonDataEgg} Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}");
+                {
+                    _stats.AddExperience(fortSearch.ExperienceAwarded);
+                    _stats.UpdateConsoleTitle(_inventory);
 
+                    Logger.Normal(ConsoleColor.Cyan, $"(POKESTOP) XP: {fortSearch.ExperienceAwarded}, Gems: {fortSearch.GemsAwarded}, Eggs: {fortSearch.PokemonDataEgg} Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}");
+                }
                 await RandomHelper.RandomDelay(50, 200);
                 await RecycleItems();
             }
@@ -226,8 +224,6 @@ namespace PokemonGo.RocketAPI.Logic
         private async Task ExecuteCatchAllNearbyPokemons()
         {
             var mapObjects = await _client.GetMapObjects();
-
-            //var pokemons = mapObjects.MapCells.SelectMany(i => i.CatchablePokemons).OrderBy(i => LocationUtils.CalculateDistanceInMeters(new Navigation.Location(_client.CurrentLat, _client.CurrentLng), new Navigation.Location(i.Latitude, i.Longitude)));
 
             var pokemons =
                 mapObjects.MapCells.SelectMany(i => i.CatchablePokemons)
@@ -289,16 +285,16 @@ namespace PokemonGo.RocketAPI.Logic
                 if (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess)
                 {
                     foreach (int xp in caughtPokemonResponse.Scores.Xp)
-                        _stats.addExperience(xp);
-                    _stats.increasePokemons();
+                        _stats.AddExperience(xp);
+                    _stats.IncreasePokemons();
                     var profile = await _client.GetProfile();
-                    _stats.getStardust(profile.Profile.Currency.ToArray()[1].Amount);
+                    _stats.GetStardust(profile.Profile.Currency.ToArray()[1].Amount);
                 }
-                _stats.updateConsoleTitle(_inventory);
+                _stats.UpdateConsoleTitle(_inventory);
                 Logger.Normal(ConsoleColor.Yellow,
                     caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess
-                    ? $"(POKEBATTLE) Caught {pokemon.PokemonId} Lvl {PokemonInfo.GetLevel(encounter?.WildPokemon?.PokemonData)} (CP {encounter?.WildPokemon?.PokemonData?.Cp}/{PokemonInfo.CalculateMaxCP(encounter?.WildPokemon?.PokemonData)} | {Math.Round(PokemonInfo.CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData)).ToString("0.00")} % perfect) | Chance: {(float)((int)(encounter?.CaptureProbability?.CaptureProbability_.First() * 100)) / 100} | {Math.Round(distance)}m distance | with {bestPokeball} and received XP {caughtPokemonResponse.Scores.Xp.Sum()}"
-                    : $"(POKEBATTLE) Missed/Escaped {pokemon.PokemonId} Lvl {PokemonInfo.GetLevel(encounter?.WildPokemon?.PokemonData)} (CP {encounter?.WildPokemon?.PokemonData?.Cp} | {Math.Round(PokemonInfo.CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData)).ToString("0.00")} % perfect) | Chance: {(float)((int)(encounter?.CaptureProbability?.CaptureProbability_.First() * 100)) / 100} {caughtPokemonResponse.Status} | {Math.Round(distance)}m distance | using a {bestPokeball}.."
+                    ? $"(POKEBATTLE) Caught {pokemon.PokemonId} Lvl {PokemonInfo.GetLevel(encounter?.WildPokemon?.PokemonData)} (CP {encounter?.WildPokemon?.PokemonData?.Cp}/{PokemonInfo.CalculateMaxCP(encounter?.WildPokemon?.PokemonData)} | {Math.Round(PokemonInfo.CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData)).ToString("0.00")} % perfect) | Chance: {(float)((int)(encounter?.CaptureProbability?.CaptureProbability_.First() * 100)) / 100} | {Math.Round(distance)}m dist | with {bestPokeball} and received XP {caughtPokemonResponse.Scores.Xp.Sum()}"
+                    : $"(POKEBATTLE) Missed/Escaped {pokemon.PokemonId} Lvl {PokemonInfo.GetLevel(encounter?.WildPokemon?.PokemonData)} (CP {encounter?.WildPokemon?.PokemonData?.Cp} | {Math.Round(PokemonInfo.CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData)).ToString("0.00")} % perfect) | Chance: {(float)((int)(encounter?.CaptureProbability?.CaptureProbability_.First() * 100)) / 100} {caughtPokemonResponse.Status} | {Math.Round(distance)}m dist | using a {bestPokeball}.."
                     );
                 await RandomHelper.RandomDelay(750, 1250);
             }
@@ -335,12 +331,13 @@ namespace PokemonGo.RocketAPI.Logic
             foreach (var duplicatePokemon in duplicatePokemons)
             {
                 //if (PokemonInfo.CalculatePokemonPerfection(duplicatePokemon) >= _clientSettings.KeepMinIVPercentage || duplicatePokemon.Cp > _clientSettings.KeepMinCP)
-                //    continue;
+                if (duplicatePokemon.Cp >= _clientSettings.KeepMinCP)
+                    continue;
 
                 var transfer = await _client.TransferPokemon(duplicatePokemon.Id);
 
-                _stats.increasePokemonsTransfered();
-                _stats.updateConsoleTitle(_inventory);
+                _stats.IncreasePokemonsTransfered();
+                _stats.UpdateConsoleTitle(_inventory);
 
                 var bestPokemonOfType = await _inventory.GetHighestPokemonOfTypeByCP(duplicatePokemon);
                 Logger.Normal(ConsoleColor.DarkYellow, $"(TRANSFER) {duplicatePokemon.PokemonId} (CP {duplicatePokemon.Cp} | {PokemonInfo.CalculatePokemonPerfection(duplicatePokemon).ToString("0.00")} % perfect) | (Best: {bestPokemonOfType.Cp} CP | {PokemonInfo.CalculatePokemonPerfection(bestPokemonOfType).ToString("0.00")} % perfect)");
@@ -359,8 +356,8 @@ namespace PokemonGo.RocketAPI.Logic
                 var transfer = await _client.RecycleItem((ItemId)item.Item_, item.Count);
                 Logger.Normal(ConsoleColor.DarkMagenta, $"(RECYCLED) {item.Count}x {(ItemId)item.Item_}");
 
-                _stats.addItemsRemoved(item.Count);
-                _stats.updateConsoleTitle(_inventory);
+                _stats.AddItemsRemoved(item.Count);
+                _stats.UpdateConsoleTitle(_inventory);
 
                 await Task.Delay(100);
             }
