@@ -318,19 +318,17 @@ namespace PokemonGo.RocketAPI.Logic
             int attemptCounter = 1;
             do
             {
-                var bestBerry = await GetBestBerry(encounter?.WildPokemon);
-                var inventoryBerries = await _inventory.GetItems();
                 var probability = encounter?.CaptureProbability?.CaptureProbability_?.FirstOrDefault();
-
                 var bestPokeball = await GetBestBall(encounter?.WildPokemon);
                 if (bestPokeball == MiscEnums.Item.ITEM_UNKNOWN)
                 {
                     Logger.Write($"You don't own any Pokeballs :( - We missed a {pokemon.PokemonId} with CP {encounter?.WildPokemon?.PokemonData?.Cp}", LogLevel.Warning);
                     return;
                 }
-
+                var bestBerry = await GetBestBerry(encounter?.WildPokemon);
+                var inventoryBerries = await _inventory.GetItems();
                 var berries = inventoryBerries.Where(p => (ItemId)p.Item_ == bestBerry).FirstOrDefault();
-                if (bestBerry != ItemId.ItemUnknown && probability.HasValue && probability.Value < 0.35 && PokemonInfo.CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData) >= _clientSettings.KeepMinIVPercentage)
+                if (bestBerry != ItemId.ItemUnknown && probability.HasValue && probability.Value < 0.35)
                 {
                     var useRaspberry = await _client.UseCaptureItem(pokemon.EncounterId, bestBerry, pokemon.SpawnpointId);
                     Logger.Write($"{bestBerry} used, remaining: {berries.Count}", LogLevel.Berry);
@@ -503,11 +501,11 @@ namespace PokemonGo.RocketAPI.Logic
             var pokemonCp = pokemon?.PokemonData?.Cp;
 
             var items = await _inventory.GetItems();
-            var berries = items.Where(i => (ItemId)i.Item_ == ItemId.ItemRazzBerry
+            var berries = items.Where(i => ((ItemId)i.Item_ == ItemId.ItemRazzBerry
                                         || (ItemId)i.Item_ == ItemId.ItemBlukBerry
                                         || (ItemId)i.Item_ == ItemId.ItemNanabBerry
                                         || (ItemId)i.Item_ == ItemId.ItemWeparBerry
-                                        || (ItemId)i.Item_ == ItemId.ItemPinapBerry).GroupBy(i => ((ItemId)i.Item_)).ToList();
+                                        || (ItemId)i.Item_ == ItemId.ItemPinapBerry) && i.Count > 0).GroupBy(i => ((ItemId)i.Item_)).ToList();
             if (berries.Count == 0 || pokemonCp <= 350) return ItemId.ItemUnknown;
 
             var razzBerryCount = await _inventory.GetItemAmountByType(MiscEnums.Item.ITEM_RAZZ_BERRY);
@@ -590,15 +588,22 @@ namespace PokemonGo.RocketAPI.Logic
                     {
                         var AllPokemon = await _inventory.GetHighestsPerfect(1000);
                         var csvExportPokemonAll = new StringBuilder();
-                        var columnnames = string.Format("{0};{1};{2};{3}", "#", "NAME", "CP", "PERFECTION");
+                        var columnnames = string.Format("{0};{1};{2};{3};{4}", "#", "NAME", "CP", "PERFECTION", "CANDY");
                         csvExportPokemonAll.AppendLine(columnnames);
+                        var myPokemonSettings = await _inventory.GetPokemonSettings();
+                        var pokemonSettings = myPokemonSettings.ToList();
+                        var myPokemonFamilies = await _inventory.GetPokemonFamilies();
+                        var pokemonFamilies = myPokemonFamilies.ToArray();
                         foreach (var pokemon in AllPokemon)
                         {
+                            var settings = pokemonSettings.Single(x => x.PokemonId == pokemon.PokemonId);
+                            var familyCandy = pokemonFamilies.Single(x => settings.FamilyId == x.FamilyId);
                             int POKENUMBER = (int)pokemon.PokemonId;
                             var NAME = $"{pokemon.PokemonId}";
                             var CP = $"{pokemon.Cp}";
+                            var CANDY = $"{familyCandy.Candy}";
                             string PERFECTION = PokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00");
-                            var pokedata = string.Format("{0};{1};{2};{3}", POKENUMBER, NAME, CP, PERFECTION);
+                            var pokedata = string.Format("{0};{1};{2};{3};{4}", POKENUMBER, NAME, CP, PERFECTION, CANDY);
                             csvExportPokemonAll.AppendLine(pokedata);
                         }
                         Logger.Write($"Export all Pokemon to \"\\Export\\{filename}\"", LogLevel.Info);
