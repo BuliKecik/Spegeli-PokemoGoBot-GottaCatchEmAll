@@ -36,7 +36,7 @@ Note: You need some basic Computer Expierience, if you need help somewhere, ask 
 
 
 1. Download and Install [Visual Studio 2015](https://go.microsoft.com/fwlink/?LinkId=691979&clcid=0x407)
-2. Download [this Repository](https://github.com/NecronomiconCoding/Pokemon-Go-Bot/archive/master.zip)
+2. Download [this Repository](https://github.com/Spegeli/Pokemon-Go-Rocket-API/archive/master.zip)
 3. Open Pokemon Go Rocket API.sln
 4. On the right hand side, double click on UserSettings.settings
 5. Select the AuthType (Google or Ptc for Pokémon Trainer Club)
@@ -50,7 +50,7 @@ Note: You need some basic Computer Expierience, if you need help somewhere, ask 
 ## License
 This Project is licensed as GNU (GNU GENERAL PUBLIC LICENSE v3) 
 
-You can find all necessary Information [here](https://github.com/NecronomiconCoding/Pokemon-Go-Bot/blob/master/LICENSE.md)
+You can find all necessary Information [here](https://github.com/Spegeli/Pokemon-Go-Rocket-API/blob/master/LICENSE.md)
 
 ## Credits
 Thanks to Ferox hard work on the API & Console we are able to manage something like this. Without him that would have been nothing. <3
