@@ -13,20 +13,19 @@ Chat about this Repository via Discord: https://discord.gg/VsVrjgr
 ## Features
 * PTC Login / Google
 * Use Humanlike Walking with 10 km/h (instead of Teleport) (Speed is configurable via UserSettings)
-* Farm Pokestops (use always the nearest from the current location)
-* Farm all Pokemon near your
-* PokemonsNotToCatch Filter (configurable via File in Config Folder)
-* Throws away unneeded items (configurable via Settings.cs)
-* Transfer duplicate Pokemon (keep the best of everyone) (ignore favorite marked) (PokemonsNotToTransfer list configurable via File in Config Folder)
-* Evolve Pokemon (PokemonsToEvolve list configurable via File in Config Folder)
+* Farm Pokestops (use always the nearest from the current location) (Optional: keep within specific distance to Start Point) (MaxDistance configurable via UserSettings)
+* Farm all Pokemon near your (Optional: PokemonsNotToCatch List. Disabled by default, can be Enabled via UserSettings, configurable Names via File in Config Folder)
+* Transfer duplicate Pokemon (ignore favorite/gym marked) (Optional: Enabled by default, can be Disabled via UserSettings. Keep X amount of everyone and order by CP or IV configurable via UserSettings) (Optional: PokemonsNotToTransfer List configurable via File in Config Folder)
+* Evolve Pokemon (Optional: Disabled by default, can be Enabled via UserSettings. PokemonsToEvolve List configurable via File in Config Folder)
+* Throws away unneeded items (configurable via UserSettings)
 * Use best Pokeball & Berry (depending on Pokemon CP)
+* Creates Excel CSV File on Startup with your current Pokemon (including Number, Name, CP & Perfection) (can be found in the Export Folder)
 * Log File System (all activity will be tracked in a Log File)
 * Random Task Delays
 * Statistic in the Header:
 ![alt tag](https://github.com/Spegeli/Pokemon-Go-Rocket-API/blob/master/StatisticScreenshot.png)
 * Very color and useful Logging (so you every time up2date what currently happened)
 * and many more ;-)
-
 
 ## ToDo
 * Auto Update the Bot
