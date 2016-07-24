@@ -156,16 +156,19 @@ namespace PokemonGo.RocketAPI.Logic
                         i =>
                             i.Type == FortType.Checkpoint &&
                             i.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime() &&
-                            ( // Make sure PokeStop is within max travel distance, unless it's set to 0.
+                            (_clientSettings.MaxTravelDistanceInMeters == 0 ||
                             LocationUtils.CalculateDistanceInMeters(
                                 _clientSettings.DefaultLatitude, _clientSettings.DefaultLongitude,
-                                    i.Latitude, i.Longitude) < _clientSettings.MaxTravelDistanceInMeters) ||
-                                        _clientSettings.MaxTravelDistanceInMeters == 0
-                            )
+                                    i.Latitude, i.Longitude) < _clientSettings.MaxTravelDistanceInMeters))
                             .OrderBy(
                             i =>
                             LocationUtils.CalculateDistanceInMeters(_client.CurrentLat, _client.CurrentLng, i.Latitude, i.Longitude)).ToArray());
-
+            var pokestopList = pokeStops.ToList();
+            if (pokestopList.Count <= 0)
+            {
+                Logger.Write($"No PokeStops within {_clientSettings.MaxTravelDistanceInMeters}m. Choose a different GPS location or increase MaxTravelDistanceInMeters.", LogLevel.Error);
+                return;
+            }
             Logger.Write($"Found {pokeStops.Count()} pokestops", LogLevel.None, ConsoleColor.Green);
 
             foreach (var pokeStop in pokeStops)
