@@ -181,7 +181,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool PrioritizeIVOverCP {
             get {
                 return ((bool)(this["PrioritizeIVOverCP"]));
@@ -200,6 +200,30 @@ namespace PokemonGo.RocketAPI.Console {
             }
             set {
                 this["MaxTravelDistanceInMeters"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseGPXPathing {
+            get {
+                return ((bool)(this["UseGPXPathing"]));
+            }
+            set {
+                this["UseGPXPathing"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("GPXFile.GPX")]
+        public string GPXFile {
+            get {
+                return ((string)(this["GPXFile"]));
+            }
+            set {
+                this["GPXFile"] = value;
             }
         }
     }

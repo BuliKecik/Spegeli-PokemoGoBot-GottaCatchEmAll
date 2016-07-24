@@ -50,6 +50,33 @@ namespace PokemonGo.RocketAPI.Logic.Utils
             return new GeoCoordinate(ToDegrees(targetLatitudeRadians), ToDegrees(targetLongitudeRadians));
         }
 
+        public static GeoCoordinate CreateWaypoint(GeoCoordinate sourceLocation, double distanceInMeters, double bearingDegrees, double altitude)
+        //from http://stackoverflow.com/a/17545955
+        {
+            var distanceKm = distanceInMeters / 1000.0;
+            var distanceRadians = distanceKm / 6371; //6371 = Earth's radius in km
+
+            var bearingRadians = ToRad(bearingDegrees);
+            var sourceLatitudeRadians = ToRad(sourceLocation.Latitude);
+            var sourceLongitudeRadians = ToRad(sourceLocation.Longitude);
+
+            var targetLatitudeRadians = Math.Asin(Math.Sin(sourceLatitudeRadians) * Math.Cos(distanceRadians)
+                                                  +
+                                                  Math.Cos(sourceLatitudeRadians) * Math.Sin(distanceRadians) *
+                                                  Math.Cos(bearingRadians));
+
+            var targetLongitudeRadians = sourceLongitudeRadians + Math.Atan2(Math.Sin(bearingRadians)
+                                                                             * Math.Sin(distanceRadians) *
+                                                                             Math.Cos(sourceLatitudeRadians),
+                Math.Cos(distanceRadians)
+                - Math.Sin(sourceLatitudeRadians) * Math.Sin(targetLatitudeRadians));
+
+            // adjust toLonRadians to be in the range -180 to +180...
+            targetLongitudeRadians = (targetLongitudeRadians + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
+
+            return new GeoCoordinate(ToDegrees(targetLatitudeRadians), ToDegrees(targetLongitudeRadians), altitude);
+        }
+
         public static double DegreeBearing(GeoCoordinate sourceLocation, GeoCoordinate targetLocation)
         // from http://stackoverflow.com/questions/2042599/direction-between-2-latitude-longitude-points-in-c-sharp
         {

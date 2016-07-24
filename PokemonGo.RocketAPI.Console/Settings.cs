@@ -32,6 +32,9 @@ namespace PokemonGo.RocketAPI.Console
         public bool PrioritizeIVOverCP => UserSettings.Default.PrioritizeIVOverCP;
         public int MaxTravelDistanceInMeters => UserSettings.Default.MaxTravelDistanceInMeters;
 
+        public bool UseGPXPathing => UserSettings.Default.UseGPXPathing;
+        public string GPXFile => UserSettings.Default.GPXFile;
+
         private ICollection<PokemonId> _pokemonsToEvolve;
         private ICollection<PokemonId> _pokemonsNotToTransfer;
         private ICollection<PokemonId> _pokemonsNotToCatch;
