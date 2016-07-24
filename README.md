@@ -39,15 +39,22 @@ Please keep your conversations in the designated channels.
    (use always the nearest from the current location) (Optional: keep within specific distance to Start Point) (MaxDistance configurable via UserSettings)
  - [Farm all Pokemon near your]<br />
    (Optional: PokemonsNotToCatch List. Disabled by default, can be Enabled via UserSettings, configurable Names via File in Config Folder)
- - Transfer duplicate Pokemon (ignore favorite/gym marked) (Optional: Enabled by default, can be Disabled via UserSettings. Keep X amount of everyone and order by CP or IV configurable via UserSettings) (Optional: PokemonsNotToTransfer List configurable via File in Config Folder)
- - Evolve Pokemon (Optional: Disabled by default, can be Enabled via UserSettings. PokemonsToEvolve List configurable via File in Config Folder)
- - Throws away unneeded items (configurable via UserSettings)
- - Use best Pokeball & Berry (depending on Pokemon CP)
- - Creates Excel CSV File on Startup with your current Pokemon (including Number, Name, CP & Perfection) (can be found in the Export Folder)
- - Log File System (all activity will be tracked in a Log File)
- - Random Task Delays
- - Statistic in the Header: ![alt tag](https://github.com/Spegeli/Pokemon-Go-Rocket-API/blob/master/StatisticScreenshot.png)
- - Very color and useful Logging (so you every time up2date what currently happened)
+ - [Transfer duplicate Pokemon]<br />
+   (ignore favorite/gym marked) (Optional: Enabled by default, can be Disabled via UserSettings. Keep X amount of everyone and order by CP or IV configurable via UserSettings) (Optional: PokemonsNotToTransfer List configurable via File in Config Folder)
+ - [Evolve Pokemon]<br />
+   (Optional: Disabled by default, can be Enabled via UserSettings. PokemonsToEvolve List configurable via File in Config Folder)
+ - [Throws away unneeded items]<br />
+   (configurable via UserSettings)
+ - [Use best Pokeball & Berry]<br />
+   (depending on Pokemon CP)
+ - [Creates Excel CSV File on Startup with your current Pokemon]<br />
+   (including Number, Name, CP & Perfection) (can be found in the Export Folder)
+ - [Log File System]<br />
+   (all activity will be tracked in a Log File)
+ - [Random Task Delays]
+ - [Statistic in the Header] ![alt tag](https://github.com/Spegeli/Pokemon-Go-Rocket-API/blob/master/StatisticScreenshot.png)
+ - [Very color and useful Logging]<br />
+   (so you every time up2date what currently happened)
  - and many more ;-)
 
 <br/>
