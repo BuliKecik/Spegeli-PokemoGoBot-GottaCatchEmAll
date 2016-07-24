@@ -25,18 +25,6 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string GoogleRefreshToken {
-            get {
-                return ((string)(this["GoogleRefreshToken"]));
-            }
-            set {
-                this["GoogleRefreshToken"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("10")]
         public double DefaultAltitude {
             get {
@@ -73,7 +61,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        [global::System.Configuration.DefaultSettingValueAttribute("250")]
         public double WalkingSpeedInKilometerPerHour {
             get {
                 return ((double)(this["WalkingSpeedInKilometerPerHour"]));
@@ -85,19 +73,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Google\r\n")]
-        public string AuthType {
-            get {
-                return ((string)(this["AuthType"]));
-            }
-            set {
-                this["AuthType"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("48.78")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public double DefaultLatitude {
             get {
                 return ((double)(this["DefaultLatitude"]));
@@ -109,7 +85,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("9.18274")]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public double DefaultLongitude {
             get {
                 return ((double)(this["DefaultLongitude"]));
@@ -145,30 +121,6 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Jarolon")]
-        public string PtcUsername {
-            get {
-                return ((string)(this["PtcUsername"]));
-            }
-            set {
-                this["PtcUsername"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5dfM56Rh")]
-        public string PtcPassword {
-            get {
-                return ((string)(this["PtcPassword"]));
-            }
-            set {
-                this["PtcPassword"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool UsePokemonToNotCatchFilter {
             get {
@@ -181,13 +133,73 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
         public int KeepMinDuplicatePokemon {
             get {
                 return ((int)(this["KeepMinDuplicatePokemon"]));
             }
             set {
                 this["KeepMinDuplicatePokemon"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Google")]
+        public string AuthType {
+            get {
+                return ((string)(this["AuthType"]));
+            }
+            set {
+                this["AuthType"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("username")]
+        public string PtcUsername {
+            get {
+                return ((string)(this["PtcUsername"]));
+            }
+            set {
+                this["PtcUsername"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("password")]
+        public string PtcPassword {
+            get {
+                return ((string)(this["PtcPassword"]));
+            }
+            set {
+                this["PtcPassword"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PrioritizeIVOverCP {
+            get {
+                return ((bool)(this["PrioritizeIVOverCP"]));
+            }
+            set {
+                this["PrioritizeIVOverCP"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        public int MaxTravelDistanceInMeters {
+            get {
+                return ((int)(this["MaxTravelDistanceInMeters"]));
+            }
+            set {
+                this["MaxTravelDistanceInMeters"] = value;
             }
         }
     }

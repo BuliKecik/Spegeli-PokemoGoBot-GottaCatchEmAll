@@ -6,6 +6,7 @@ using System.IO;
 using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.GeneratedCode;
 using PokemonGo.RocketAPI.Logging;
+using System.Text.RegularExpressions;
 
 #endregion
 
@@ -28,20 +29,12 @@ namespace PokemonGo.RocketAPI.Console
         public bool TransferDuplicatePokemon => UserSettings.Default.TransferDuplicatePokemon;
         public bool UsePokemonToNotCatchFilter => UserSettings.Default.UsePokemonToNotCatchFilter;
         public int KeepMinDuplicatePokemon => UserSettings.Default.KeepMinDuplicatePokemon;
+        public bool PrioritizeIVOverCP => UserSettings.Default.PrioritizeIVOverCP;
+        public int MaxTravelDistanceInMeters => UserSettings.Default.MaxTravelDistanceInMeters;
 
         private ICollection<PokemonId> _pokemonsToEvolve;
         private ICollection<PokemonId> _pokemonsNotToTransfer;
         private ICollection<PokemonId> _pokemonsNotToCatch;
-
-        public string GoogleRefreshToken
-        {
-            get { return UserSettings.Default.GoogleRefreshToken; }
-            set
-            {
-                UserSettings.Default.GoogleRefreshToken = value;
-                UserSettings.Default.Save();
-            }
-        }
 
         public ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter => new[]
         {
@@ -89,7 +82,8 @@ namespace PokemonGo.RocketAPI.Console
             get
             {
                 //Type of pokemons to evolve
-                _pokemonsToEvolve = _pokemonsToEvolve ?? LoadPokemonList("PokemonsToEvolve");
+                var defaultText = new string[] { "Zubat", "Pidgey", "Ratata" };
+                _pokemonsToEvolve = _pokemonsToEvolve ?? LoadPokemonList("PokemonsToEvolve", defaultText);
                 return _pokemonsToEvolve;
             }
         }
@@ -99,7 +93,8 @@ namespace PokemonGo.RocketAPI.Console
             get
             {
                 //Type of pokemons not to transfer
-                _pokemonsNotToTransfer = _pokemonsNotToTransfer ?? LoadPokemonList("PokemonsNotToTransfer");
+                var defaultText = new string[] { "Dragonite", "Charizard", "Zapdos", "Snorlax", "Alakazam", "Mew", "Mewtwo" };
+                _pokemonsNotToTransfer = _pokemonsNotToTransfer ?? LoadPokemonList("PokemonsNotToTransfer", defaultText);
                 return _pokemonsNotToTransfer;
             }
         }
@@ -109,14 +104,24 @@ namespace PokemonGo.RocketAPI.Console
             get
             {
                 //Type of pokemons not to catch
-                _pokemonsNotToCatch = _pokemonsNotToCatch ?? LoadPokemonList("PokemonsNotToCatch");
+                var defaultText = new string[] { "Zubat", "Pidgey", "Ratata" };
+                _pokemonsNotToCatch = _pokemonsNotToCatch ?? LoadPokemonList("PokemonsNotToCatch", defaultText);
                 return _pokemonsNotToCatch;
             }
         }
 
-        private ICollection<PokemonId> LoadPokemonList(string filename)
+        private ICollection<PokemonId> LoadPokemonList(string filename, string[] defaultContent)
         {
             ICollection<PokemonId> result = new List<PokemonId>();
+            Func<string, ICollection<PokemonId>> addPokemonToResult = delegate (string pokemonName) {
+                PokemonId pokemon;
+                if (Enum.TryParse<PokemonId>(pokemonName, out pokemon))
+                {
+                    result.Add((PokemonId)pokemon);
+                }
+                return result;
+            };
+
             string path = Directory.GetCurrentDirectory() + "\\Configs\\";
             if (!Directory.Exists(path))
             {
@@ -124,18 +129,33 @@ namespace PokemonGo.RocketAPI.Console
             }
             if (!File.Exists(path + filename + ".txt"))
             {
-                string pokemonName = Properties.Resources.ResourceManager.GetString(filename);
-                Logger.Write($"File: {filename} not found, creating new...", LogLevel.Warning);
-                File.WriteAllText(path + filename + ".txt", pokemonName);
+                Logger.Write($"File: \"\\Configs\\{filename}.txt\" not found, creating new...", LogLevel.Warning);
+                using (var w = File.AppendText(path + filename + ".txt"))
+                {
+                    Array.ForEach(defaultContent, x => w.WriteLine(x));
+                    Array.ForEach(defaultContent, x => addPokemonToResult(x));
+                    w.Close();
+                }
             }
             if (File.Exists(path + filename + ".txt"))
             {
-                Logger.Write($"Loading File: Configs\\{filename}", LogLevel.Info);
-                string[] _locallist = File.ReadAllLines(path + filename + ".txt");
-                foreach (string pokemonName in _locallist)
+                Logger.Write($"Loading File: \"\\Configs\\{filename}.txt\"", LogLevel.Info);
+
+                var content = string.Empty;
+                using (StreamReader reader = new StreamReader(path + filename + ".txt"))
                 {
-                    var pokemon = Enum.Parse(typeof(PokemonId), pokemonName, true);
-                    if (pokemonName != null) result.Add((PokemonId)pokemon);
+                    content = reader.ReadToEnd();
+                    reader.Close();
+                }
+                content = Regex.Replace(content, @"\\/\*(.|\n)*?\*\/", ""); //todo: supposed to remove comment blocks
+
+                StringReader tr = new StringReader(content);
+
+                var pokemonName = tr.ReadLine();
+                while (pokemonName != null)
+                {
+                    addPokemonToResult(pokemonName);
+                    pokemonName = tr.ReadLine();
                 }
             }
             return result;

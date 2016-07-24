@@ -1,12 +1,12 @@
 ﻿#region
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using PokemonGo.RocketAPI.Helpers;
 using System.Windows.Forms;
-using System.Diagnostics;
-using System;
+using PokemonGo.RocketAPI.Helpers;
 using PokemonGo.RocketAPI.Logging;
 
 #endregion
@@ -20,6 +20,11 @@ namespace PokemonGo.RocketAPI.Login
         private const string ClientId = "848232511240-73ri3t7plvk96pj4f85uj8otdat2alem.apps.googleusercontent.com";
         private const string ClientSecret = "NCjF1TLi2CcY6t5mt0ZveuL7";
 
+        /// <summary>
+        ///     Gets the access token from Google
+        /// </summary>
+        /// <param name="deviceCode"></param>
+        /// <returns>tokenResponse</returns>
         public static async Task<TokenResponseModel> GetAccessToken(DeviceCodeModel deviceCode)
         {
             //Poll until user submitted code..
@@ -30,15 +35,18 @@ namespace PokemonGo.RocketAPI.Login
                 tokenResponse = await PollSubmittedToken(deviceCode.device_code);
             } while (tokenResponse.access_token == null || tokenResponse.refresh_token == null);
 
-            Logger.Write($"Save the refresh token in your settings: {tokenResponse.refresh_token}");
-            await Task.Delay(2000);
-            Thread thread = new Thread(() => Clipboard.SetText(tokenResponse.refresh_token));
-            thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
-            thread.Start();
-            thread.Join();
-            Logger.Write("The Token is in your Clipboard!");
-
             return tokenResponse;
+        }
+
+        public static async Task<TokenResponseModel> GetAccessToken(string refreshToken)
+        {
+            return await HttpClientHelper.PostFormEncodedAsync<TokenResponseModel>(OauthTokenEndpoint,
+                new KeyValuePair<string, string>("access_type", "offline"),
+                new KeyValuePair<string, string>("client_id", ClientId),
+                new KeyValuePair<string, string>("client_secret", ClientSecret),
+                new KeyValuePair<string, string>("refresh_token", refreshToken),
+                new KeyValuePair<string, string>("grant_type", "refresh_token"),
+                new KeyValuePair<string, string>("scope", "openid email https://www.googleapis.com/auth/userinfo.email"));
         }
 
         public static async Task<DeviceCodeModel> GetDeviceCode()
@@ -47,21 +55,20 @@ namespace PokemonGo.RocketAPI.Login
                 new KeyValuePair<string, string>("client_id", ClientId),
                 new KeyValuePair<string, string>("scope", "openid email https://www.googleapis.com/auth/userinfo.email"));
 
-            Logger.Write($"Please visit {deviceCode.verification_url} and enter {deviceCode.user_code}");
-            await Task.Delay(2000);
-            Process.Start(@"http://www.google.com/device");
             try
             {
-                
+                Logger.Write("Google Device Code copied to clipboard");
+                Thread.Sleep(2000);
+                Process.Start(@"http://www.google.com/device");
                 var thread = new Thread(() => Clipboard.SetText(deviceCode.user_code)); //Copy device code
                 thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
                 thread.Start();
                 thread.Join();
-                Logger.Write("The Token is in your Clipboard!");
             }
             catch (Exception)
             {
                 Logger.Write("Couldnt copy to clipboard, do it manually", LogLevel.Warning);
+                Logger.Write($"Goto: http://www.google.com/device & enter {deviceCode.user_code}", LogLevel.Warning);
             }
 
             return deviceCode;
@@ -76,18 +83,6 @@ namespace PokemonGo.RocketAPI.Login
                 new KeyValuePair<string, string>("grant_type", "http://oauth.net/grant_type/device/1.0"),
                 new KeyValuePair<string, string>("scope", "openid email https://www.googleapis.com/auth/userinfo.email"));
         }
-
-        public static async Task<TokenResponseModel> GetAccessToken(string refreshToken)
-        {
-            return await HttpClientHelper.PostFormEncodedAsync<TokenResponseModel>(OauthTokenEndpoint,
-                new KeyValuePair<string, string>("access_type", "offline"),
-                new KeyValuePair<string, string>("client_id", ClientId),
-                new KeyValuePair<string, string>("client_secret", ClientSecret),
-                new KeyValuePair<string, string>("refresh_token", refreshToken),
-                new KeyValuePair<string, string>("grant_type", "refresh_token"),
-                new KeyValuePair<string, string>("scope", "openid email https://www.googleapis.com/auth/userinfo.email"));
-        }
-
 
         internal class ErrorResponseModel
         {

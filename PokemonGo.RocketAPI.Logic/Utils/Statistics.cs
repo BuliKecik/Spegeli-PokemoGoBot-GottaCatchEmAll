@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using PokemonGo.RocketAPI.GeneratedCode;
+using PokemonGo.RocketAPI.Enums;
 
 #endregion
 
@@ -40,9 +41,9 @@ namespace PokemonGo.RocketAPI.Logic.Utils
             return output;
         }
 
-        public void SetUsername(GetPlayerResponse profile)
+        public static string GetUsername(Client client, GetPlayerResponse profile)
         {
-            PlayerName = profile.Profile.Username ?? "";
+            return PlayerName = client.Settings.AuthType == AuthType.Ptc ? client.Settings.PtcUsername : profile.Profile.Username;
         }
 
         public static double _getSessionRuntime()

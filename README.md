@@ -35,14 +35,14 @@ Chat about this Repository via Discord: https://discord.gg/VsVrjgr
 Note: You need some basic Computer Expierience, if you need help somewhere, ask the community and do not spam us via private messages. **The Issue Tracker is not for help!**
 
 
-1. Download and Install [Visual Studio 2015](https://go.microsoft.com/fwlink/?LinkId=691979&clcid=0x407)
+1. Download and Install [Visual Studio 2015](https://go.microsoft.com/fwlink/?LinkId=691979&clcid=0x409)
 2. Download [this Repository](https://github.com/Spegeli/Pokemon-Go-Rocket-API/archive/master.zip)
 3. Open Pokemon Go Rocket API.sln
 4. On the right hand side, double click on UserSettings.settings
 5. Select the AuthType (Google or Ptc for Pokémon Trainer Club)
 6. If selected Ptc , enter the Username and Password of your Account
 7. Enter the DefaultLatitude and DefaultLongitude [can be found here](http://mondeca.com/index.php/en/any-place-en)
-8. Optional you can set up the other Settings (when you know what you're doing))
+8. Optional you can set up the other Settings (when you know what you're doing)
 9. Right click on PokemonGo.RocketAPI.Console and Set it as Startup Project
 10. Press CTRL + F5 and follow the Instructions
 11. Have fun! 

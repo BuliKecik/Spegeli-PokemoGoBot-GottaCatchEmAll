@@ -17,7 +17,7 @@ namespace PokemonGo.RocketAPI.Logging
         static string _currentFile = string.Empty;
         static string path = Directory.GetCurrentDirectory() + "\\Logs\\";
 
-        private static Logger _logger;
+        //private static Logger _logger;
 
         /// <summary>
         /// Set the logger. All future requests to <see cref="Write(string, LogLevel)"/> will use that logger, any old will be unset.

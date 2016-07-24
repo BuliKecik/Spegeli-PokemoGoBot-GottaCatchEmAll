@@ -26,6 +26,7 @@ namespace PokemonGo.RocketAPI
         private string _apiUrl;
         private AuthType _authType = AuthType.Google;
         private Request.Types.UnknownAuth _unknownAuth;
+        Random rand = null;
 
         public Client(ISettings settings)
         {
@@ -36,7 +37,7 @@ namespace PokemonGo.RocketAPI
             {
                 DirectoryInfo di = Directory.CreateDirectory(path);
             }
-            string filename = "LastCoords.txt";
+            string filename = "LastCoords.ini";
             if (File.Exists(path + filename) && File.ReadAllText(path + filename).Contains(":"))
             {
                 var latlngFromFile = File.ReadAllText(path + filename);
@@ -55,13 +56,13 @@ namespace PokemonGo.RocketAPI
                         }
                         else
                         {
-                            Logger.Write("Coordinates in \"Configs\\Coords.txt\" file is invalid, using the default coordinates", LogLevel.Error);
+                            Logger.Write("Coordinates in \"\\Configs\\Coords.ini\" file is invalid, using the default coordinates", LogLevel.Error);
                             SetCoordinates(Settings.DefaultLatitude, Settings.DefaultLongitude, Settings.DefaultAltitude);
                         }
                     }
                     catch (FormatException)
                     {
-                        Logger.Write("Coordinates in \"Configs\\Coords.txt\" file is invalid, using the default coordinates", LogLevel.Error);
+                        Logger.Write("Coordinates in \"\\Configs\\Coords.ini\" file is invalid, using the default coordinates", LogLevel.Error);
                         SetCoordinates(Settings.DefaultLatitude, Settings.DefaultLongitude, Settings.DefaultAltitude);
                     }
                 }
@@ -72,7 +73,7 @@ namespace PokemonGo.RocketAPI
             }
             else
             {
-                Logger.Write("Missing \"Configs\\Coords.txt\", using default settings for coordinates.");
+                Logger.Write("Missing \"\\Configs\\Coords.ini\", using default settings for coordinates.");
                 SetCoordinates(Settings.DefaultLatitude, Settings.DefaultLongitude, Settings.DefaultAltitude);
             }
 
@@ -125,14 +126,25 @@ namespace PokemonGo.RocketAPI
                     _httpClient.PostProtoPayload<Request, CatchPokemonResponse>($"https://{_apiUrl}/rpc", catchPokemonRequest);
         }
 
-        public async Task DoGoogleLogin()
+        public async Task DoGoogleLogin(string filename)
         {
             _authType = AuthType.Google;
 
-            GoogleLogin.TokenResponseModel tokenResponse;
-            if (Settings.GoogleRefreshToken != string.Empty)
+            string googleRefreshToken = string.Empty;
+            string path = Directory.GetCurrentDirectory() + "\\Configs\\";
+            if (!Directory.Exists(path))
             {
-                tokenResponse = await GoogleLogin.GetAccessToken(Settings.GoogleRefreshToken);
+                DirectoryInfo di = Directory.CreateDirectory(path);
+            }
+            if (File.Exists(path + filename))
+            {
+                googleRefreshToken = File.ReadAllText(path + filename);
+            }
+
+            GoogleLogin.TokenResponseModel tokenResponse;
+            if (googleRefreshToken != string.Empty)
+            {
+                tokenResponse = await GoogleLogin.GetAccessToken(googleRefreshToken);
                 AccessToken = tokenResponse?.id_token;
             }
 
@@ -140,8 +152,9 @@ namespace PokemonGo.RocketAPI
             {
                 var deviceCode = await GoogleLogin.GetDeviceCode();
                 tokenResponse = await GoogleLogin.GetAccessToken(deviceCode);
-                Settings.GoogleRefreshToken = tokenResponse?.refresh_token;
+                googleRefreshToken = tokenResponse?.refresh_token;
                 Logger.Write("Refreshtoken " + tokenResponse?.refresh_token + " saved", LogLevel.Info);
+                File.WriteAllText(path + filename, googleRefreshToken);
                 AccessToken = tokenResponse?.id_token;
             }
 
@@ -300,7 +313,7 @@ namespace PokemonGo.RocketAPI
         public void SaveLatLng(double lat, double lng)
         {
             var latlng = lat + ":" + lng;
-            File.WriteAllText(Directory.GetCurrentDirectory() + "\\Coords.txt", latlng);
+            File.WriteAllText(Directory.GetCurrentDirectory() + "\\LastCoords.ini", latlng);
         }
 
         public async Task<FortSearchResponse> SearchFort(string fortId, double fortLat, double fortLng)
@@ -335,12 +348,38 @@ namespace PokemonGo.RocketAPI
             _authType = type;
         }
 
+        private void CalcNoisedCoordinates(double lat, double lng, out double latNoise, out double lngNoise)
+        {
+            double mean = 0.0;// just for fun
+            double stdDev = 2.09513120352; //-> so 50% of the noised coordinates will have a maximal distance of 4 m to orginal ones
+
+            if (rand == null)
+            {
+                rand = new Random();
+            }
+            double u1 = rand.NextDouble();
+            double u2 = rand.NextDouble();
+            double u3 = rand.NextDouble();
+            double u4 = rand.NextDouble();
+
+            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2);
+            double randNormal = mean + stdDev * randStdNormal;
+            double randStdNormal2 = Math.Sqrt(-2.0 * Math.Log(u3)) * Math.Sin(2.0 * Math.PI * u4);
+            double randNormal2 = mean + stdDev * randStdNormal2;
+
+            latNoise = lat + randNormal / 100000.0;
+            lngNoise = lng + randNormal2 / 100000.0;
+        }
+
         private void SetCoordinates(double lat, double lng, double altitude)
         {
             if (double.IsNaN(lat) || double.IsNaN(lng)) return;
 
-            CurrentLat = lat;
-            CurrentLng = lng;
+            double latNoised = 0.0;
+            double lngNoised = 0.0;
+            CalcNoisedCoordinates(lat, lng, out latNoised, out lngNoised);
+            CurrentLat = latNoised;
+            CurrentLng = lngNoised;
             CurrentAltitude = altitude;
             SaveLatLng(lat, lng);
         }

@@ -5,21 +5,20 @@ using System.Threading.Tasks;
 
 #endregion
 
-
 namespace PokemonGo.RocketAPI.Helpers
 {
-    public static class RandomHelper
+    public class RandomHelper
     {
         private static readonly Random _random = new Random();
         private static readonly Random _rng = new Random();
 
         public static long GetLongRandom(long min, long max)
         {
-            byte[] buf = new byte[8];
+            var buf = new byte[8];
             _random.NextBytes(buf);
             var longRand = BitConverter.ToInt64(buf, 0);
 
-            return (Math.Abs(longRand % (max - min)) + min);
+            return Math.Abs(longRand%(max - min)) + min;
         }
 
         public static async Task RandomDelay(int maxDelay = 5000)
