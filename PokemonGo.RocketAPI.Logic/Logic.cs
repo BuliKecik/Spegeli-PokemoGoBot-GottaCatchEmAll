@@ -64,59 +64,28 @@ namespace PokemonGo.RocketAPI.Logic
             {
                 try
                 {
-                    if (_clientSettings.AuthType == AuthType.Ptc)
-                        await _client.DoPtcLogin(_clientSettings.PtcUsername, _clientSettings.PtcPassword);
-                    else if (_clientSettings.AuthType == AuthType.Google)
-                        await _client.DoGoogleLogin();
+                    switch (_clientSettings.AuthType)
+                    {
+                        case AuthType.Ptc:
+                            await _client.DoPtcLogin(_clientSettings.PtcUsername, _clientSettings.PtcPassword);
+                            break;
+                        case AuthType.Google:
+                            await _client.DoGoogleLogin();
+                            break;
+                        default:
+                            Logger.Write("wrong AuthType");
+                            Environment.Exit(0);
+                            break;
+                    }
 
                     await _client.SetServer();
 
                     await PostLoginExecute();
                 }
-                catch (AccessTokenExpiredException ex)
+                catch (Exception e)
                 {
-                    Logger.Write($"Access token expired", LogLevel.Error);
-                    Logger.Write($"{ex}", LogLevel.Error);
-                }
-                catch (TaskCanceledException ex)
-                {
-                    Logger.Write("Task Canceled Exception - Restarting", LogLevel.Error);
-                    Logger.Write($"{ex}", LogLevel.Error);
-                    await Execute();
-                }
-                catch (UriFormatException ex)
-                {
-                    Logger.Write("UriFormatException - Restarting", LogLevel.Error);
-                    Logger.Write($"{ex}", LogLevel.Error);
-                    await Execute();
-                }
-                catch (ArgumentOutOfRangeException ex)
-                {
-                    Logger.Write("ArgumentOutOfRangeException - Restarting", LogLevel.Error);
-                    Logger.Write($"{ex}", LogLevel.Error);
-                    await Execute();
-                }
-                catch (ArgumentNullException ex)
-                {
-                    Logger.Write("ArgumentNullException - Restarting", LogLevel.Error);
-                    Logger.Write($"{ex}");
-                    await Execute();
-                }
-                catch (NullReferenceException ex)
-                {
-                    Logger.Write("NullReferenceException - Restarting", LogLevel.Error);
-                    Logger.Write($"{ex}");
-                    await Execute();
-                }
-                catch (InvalidResponseException)
-                {
-                    Logger.Write("InvalidResponseException - Restarting", LogLevel.Error);
-                    await Execute();
-                }
-                catch (AggregateException ex)
-                {
-                    Logger.Write("AggregateException - Restarting", LogLevel.Error);
-                    Logger.Write($"{ex}");
+                    Logger.Write(e.Message + " from " + e.Source);
+                    Logger.Write("Got an exception, trying automatic restart..", LogLevel.Error);
                     await Execute();
                 }
                 await Task.Delay(10000);
@@ -243,6 +212,7 @@ namespace PokemonGo.RocketAPI.Logic
                     Logger.Write($"You don't own any Pokeballs :( - We missed a {pokemon.PokemonId} with CP {encounter?.WildPokemon?.PokemonData?.Cp}", LogLevel.Warning);
                     return;
                 }
+
                 var berries = inventoryBerries.Where(p => (ItemId)p.Item_ == bestBerry).FirstOrDefault();
                 if (bestBerry != ItemId.ItemUnknown && probability.HasValue && probability.Value < 0.35 && PokemonInfo.CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData) >= _clientSettings.KeepMinIVPercentage)
                 {
@@ -263,18 +233,14 @@ namespace PokemonGo.RocketAPI.Logic
                     _stats.GetStardust(profile.Profile.Currency.ToArray()[1].Amount);
                 }
                 _stats.UpdateConsoleTitle(_inventory);
+
                 if (encounter?.CaptureProbability?.CaptureProbability_ != null)
                 {
                     string catchStatus = attemptCounter > 1 ? $"{caughtPokemonResponse.Status} Attempt #{attemptCounter}" : $"{caughtPokemonResponse.Status}";
-                    Logger.Write(
-                        $"({catchStatus}) | {pokemon.PokemonId} Lvl {PokemonInfo.GetLevel(encounter?.WildPokemon?.PokemonData)} (CP {encounter?.WildPokemon?.PokemonData?.Cp}/{PokemonInfo.CalculateMaxCP(encounter?.WildPokemon?.PokemonData)} | {Math.Round(PokemonInfo.CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData)).ToString("0.00")} % perfect) | Chance: {(float)((int)(encounter?.CaptureProbability?.CaptureProbability_.First() * 100)) / 100} | {Math.Round(distance)}m dist | with {bestPokeball} and received XP {caughtPokemonResponse.Scores.Xp.Sum()}"
-                        , LogLevel.Pokemon);
-                    //Logger.Normal(ConsoleColor.Yellow,
-                    //caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess
-                    //? $"(POKEBATTLE) ({catchStatus}) | {pokemon.PokemonId} Lvl {PokemonInfo.GetLevel(encounter?.WildPokemon?.PokemonData)} (CP {encounter?.WildPokemon?.PokemonData?.Cp}/{PokemonInfo.CalculateMaxCP(encounter?.WildPokemon?.PokemonData)} | {Math.Round(PokemonInfo.CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData)).ToString("0.00")} % perfect) | Chance: {(float)((int)(encounter?.CaptureProbability?.CaptureProbability_.First() * 100)) / 100} | {Math.Round(distance)}m dist | with {bestPokeball} and received XP {caughtPokemonResponse.Scores.Xp.Sum()}"
-                    //: $"(POKEBATTLE) ({catchStatus}) | {pokemon.PokemonId} Lvl {PokemonInfo.GetLevel(encounter?.WildPokemon?.PokemonData)} (CP {encounter?.WildPokemon?.PokemonData?.Cp} | {Math.Round(PokemonInfo.CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData)).ToString("0.00")} % perfect) | Chance: {(float)((int)(encounter?.CaptureProbability?.CaptureProbability_.First() * 100)) / 100} {caughtPokemonResponse.Status} | {Math.Round(distance)}m dist | using a {bestPokeball}.."
-                    //);
+                    string receivedXP = catchStatus == "CatchSuccess" ? $"and received XP {caughtPokemonResponse.Scores.Xp.Sum()}" : $"";
+                    Logger.Write($"({catchStatus}) | {pokemon.PokemonId} Lvl {PokemonInfo.GetLevel(encounter?.WildPokemon?.PokemonData)} (CP {encounter?.WildPokemon?.PokemonData?.Cp}/{PokemonInfo.CalculateMaxCP(encounter?.WildPokemon?.PokemonData)} | {Math.Round(PokemonInfo.CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData)).ToString("0.00")} % perfect) | Chance: {(float)((int)(encounter?.CaptureProbability?.CaptureProbability_.First() * 100)) / 100} | {Math.Round(distance)}m dist | with {bestPokeball} {receivedXP}", LogLevel.Pokemon);
                 }
+
                 attemptCounter++;
                 await RandomHelper.RandomDelay(750, 1250);
             }
