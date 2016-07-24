@@ -147,6 +147,24 @@ namespace PokemonGo.RocketAPI.Logic
 
         private async Task ExecuteFarmingPokestopsAndPokemons()
         {
+            var distanceFromStart = LocationUtils.CalculateDistanceInMeters(
+                _clientSettings.DefaultLatitude, _clientSettings.DefaultLongitude,
+                _client.CurrentLat, _client.CurrentLng);
+
+            // Edge case for when the client somehow ends up outside the defined radius
+            if (_clientSettings.MaxTravelDistanceInMeters != 0 &&
+                distanceFromStart > _clientSettings.MaxTravelDistanceInMeters)
+            {
+                Logger.Write($"You're outside of your defined radius! Walking to start in 5 seconds...", LogLevel.Warning);
+                await Task.Delay(5000);
+                var update = await _navigation.HumanLikeWalking(
+                    new GeoCoordinate(_clientSettings.DefaultLatitude, _clientSettings.DefaultLongitude),
+                    _clientSettings.WalkingSpeedInKilometerPerHour, null);
+                var ToStart = await _navigation.HumanLikeWalking(
+                    new GeoCoordinate(_clientSettings.DefaultLatitude, _clientSettings.DefaultLongitude),
+                    _clientSettings.WalkingSpeedInKilometerPerHour, ExecuteCatchAllNearbyPokemons);
+            }
+
             var mapObjects = await _client.GetMapObjects();
 
             var pokeStops =
