@@ -73,7 +73,7 @@ namespace PokemonGo.RocketAPI
             }
             else
             {
-                Logger.Write("Missing \"\\Configs\\Coords.ini\", using default settings for coordinates.");
+                Logger.Write("Missing \"\\Configs\\Coords.ini\", using default settings for coordinates and create a new one...");
                 SetCoordinates(Settings.DefaultLatitude, Settings.DefaultLongitude, Settings.DefaultAltitude);
             }
 
@@ -313,7 +313,7 @@ namespace PokemonGo.RocketAPI
         public void SaveLatLng(double lat, double lng)
         {
             var latlng = lat + ":" + lng;
-            File.WriteAllText(Directory.GetCurrentDirectory() + "\\LastCoords.ini", latlng);
+            File.WriteAllText(Directory.GetCurrentDirectory() + "\\Configs\\LastCoords.ini", latlng);
         }
 
         public async Task<FortSearchResponse> SearchFort(string fortId, double fortLat, double fortLng)
