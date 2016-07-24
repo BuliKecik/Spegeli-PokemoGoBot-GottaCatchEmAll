@@ -348,6 +348,7 @@ namespace PokemonGo.RocketAPI.Logic
 
         private async Task RecycleItems()
         {
+            await Inventory.getCachedInventory(_client, true);
             var items = await _inventory.GetItemsToRecycle(_clientSettings);
             if (items != null && items.Any())
                 Logger.Write($"{items.Count()} {(items.Count() == 1 ? "Item" : "Items")}:", LogLevel.Recycling);
