@@ -404,6 +404,12 @@ namespace PokemonGo.RocketAPI
             _apiUrl = serverResponse.ApiUrl;
         }
 
+        public async Task RepeatAction(int repeat, Func<Task> action)
+        {
+            for (int i = 0; i < repeat; i++)
+                await action();
+        }
+
         public async Task<TransferPokemonOut> TransferPokemon(ulong pokemonId)
         {
             var customRequest = new TransferPokemon

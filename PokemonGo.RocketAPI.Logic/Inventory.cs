@@ -29,11 +29,9 @@ namespace PokemonGo.RocketAPI.Logic
         {
             var myPokemon = await GetPokemons();
 
-            var pokemonList = myPokemon.Where(p => p.DeployedFortId == 0 && p.Favorite == 0 && p.Cp < _client.Settings.KeepMinCP && PokemonInfo.CalculatePokemonPerfection(p) < _client.Settings.KeepMinIVPercentage).ToList(); //Don't evolve pokemon in gyms
+            var pokemonList = myPokemon.Where(p => p.DeployedFortId == 0 && p.Favorite == 0 && p.Cp < _client.Settings.KeepMinCP).ToList();
             if (filter != null)
-            {
                 pokemonList = pokemonList.Where(p => !filter.Contains(p.PokemonId)).ToList();
-            }
 
             if (keepPokemonsThatCanEvolve)
             {
@@ -224,12 +222,12 @@ namespace PokemonGo.RocketAPI.Logic
             return pokemonToEvolve;
         }
 
-        public static async Task<GetInventoryResponse> getCachedInventory(Client _client)
+        public static async Task<GetInventoryResponse> getCachedInventory(Client _client, bool request = false)
         {
             var now = DateTime.UtcNow;
             SemaphoreSlim ss = new SemaphoreSlim(10);
 
-            if (_lastRefresh != null && _lastRefresh.AddSeconds(30).Ticks > now.Ticks)
+            if (_lastRefresh != null && _lastRefresh.AddSeconds(30).Ticks > now.Ticks && request == false)
             {
                 return _cachedInventory;
             }
@@ -247,7 +245,6 @@ namespace PokemonGo.RocketAPI.Logic
                     ss.Release();
                 }
             }
-
         }
 
     }

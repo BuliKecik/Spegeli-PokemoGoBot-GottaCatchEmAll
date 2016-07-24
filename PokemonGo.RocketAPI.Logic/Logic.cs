@@ -31,7 +31,6 @@ namespace PokemonGo.RocketAPI.Logic
         private GetPlayerResponse _playerProfile;
 
         private int recycleCounter = 0;
-        private bool TransferIsRunning = false;
 
         public Logic(ISettings clientSettings)
         {
@@ -127,7 +126,7 @@ namespace PokemonGo.RocketAPI.Logic
                 var PokemonsToEvolve = _clientSettings.PokemonsToEvolve;
 
                 if (_clientSettings.EvolveAllPokemonWithEnoughCandy) await EvolveAllPokemonWithEnoughCandy(_clientSettings.PokemonsToEvolve);
-                if (_clientSettings.TransferDuplicatePokemon && !TransferIsRunning) await TransferDuplicatePokemon();
+                if (_clientSettings.TransferDuplicatePokemon) await TransferDuplicatePokemon();
                 await PokemonToCSV();
                 await RecycleItems();
                 await ExecuteFarmingPokestopsAndPokemons();
@@ -144,12 +143,6 @@ namespace PokemonGo.RocketAPI.Logic
 
                 await Task.Delay(10000);
             }
-        }
-
-        public async Task RepeatAction(int repeat, Func<Task> action)
-        {
-            for (int i = 0; i < repeat; i++)
-                await action();
         }
 
         private async Task ExecuteFarmingPokestopsAndPokemons()
@@ -178,8 +171,6 @@ namespace PokemonGo.RocketAPI.Logic
             foreach (var pokeStop in pokeStops)
             {
                 await ExecuteCatchAllNearbyPokemons();
-                if (_clientSettings.EvolveAllPokemonWithEnoughCandy) await EvolveAllPokemonWithEnoughCandy(_clientSettings.PokemonsToEvolve);
-                if (_clientSettings.TransferDuplicatePokemon) await TransferDuplicatePokemon();
 
                 var distance = LocationUtils.CalculateDistanceInMeters(_client.CurrentLat, _client.CurrentLng, pokeStop.Latitude, pokeStop.Longitude);
                 var fortInfo = await _client.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
@@ -271,6 +262,8 @@ namespace PokemonGo.RocketAPI.Logic
 
             if (pokemons != null && pokemons.Any())
                 Logger.Write($"Found {pokemons.Count()} catchable Pokemon", LogLevel.None, ConsoleColor.Green);
+            else
+                return;
 
             foreach (var pokemon in pokemons)
             {
@@ -286,6 +279,9 @@ namespace PokemonGo.RocketAPI.Logic
                 if (pokemons.ElementAtOrDefault(pokemons.Count() - 1) != pokemon)
                     await RandomHelper.RandomDelay(50, 200);
             }
+
+            if (_clientSettings.EvolveAllPokemonWithEnoughCandy) await EvolveAllPokemonWithEnoughCandy(_clientSettings.PokemonsToEvolve);
+            if (_clientSettings.TransferDuplicatePokemon) await TransferDuplicatePokemon();
         }
 
         private async Task EvolveAllPokemonWithEnoughCandy(IEnumerable<PokemonId> filter = null)
@@ -310,10 +306,10 @@ namespace PokemonGo.RocketAPI.Logic
 
         private async Task TransferDuplicatePokemon(bool keepPokemonsThatCanEvolve = false)
         {
+            await Inventory.getCachedInventory(_client, true);
             var duplicatePokemons = await _inventory.GetDuplicatePokemonToTransfer(keepPokemonsThatCanEvolve, _clientSettings.PrioritizeIVOverCP, _clientSettings.PokemonsNotToTransfer);
-            // Currently not returns the correct value
-            //if (duplicatePokemons != null && duplicatePokemons.Any())
-            //    Logger.Normal(ConsoleColor.DarkYellow, $"(TRANSFER) {duplicatePokemons.Count()} Pokemon:");
+            if (duplicatePokemons != null && duplicatePokemons.Any())
+                Logger.Write($"{duplicatePokemons.Count()} Pokemon:", LogLevel.Transfer);
 
             foreach (var duplicatePokemon in duplicatePokemons)
             {
@@ -323,7 +319,7 @@ namespace PokemonGo.RocketAPI.Logic
                 _stats.UpdateConsoleTitle(_inventory);
 
                 var bestPokemonOfType = await _inventory.GetHighestPokemonOfTypeByCP(duplicatePokemon);
-                    Logger.Write($"{duplicatePokemon.PokemonId} (CP {duplicatePokemon.Cp} | {PokemonInfo.CalculatePokemonPerfection(duplicatePokemon).ToString("0.00")} % perfect) | (Best: {bestPokemonOfType.Cp} CP | {PokemonInfo.CalculatePokemonPerfection(bestPokemonOfType).ToString("0.00")} % perfect)", LogLevel.Transfer);
+                Logger.Write($"{duplicatePokemon.PokemonId} (CP {duplicatePokemon.Cp} | {PokemonInfo.CalculatePokemonPerfection(duplicatePokemon).ToString("0.00")} % perfect) | (Best: {bestPokemonOfType.Cp} CP | {PokemonInfo.CalculatePokemonPerfection(bestPokemonOfType).ToString("0.00")} % perfect)", LogLevel.Transfer);
                 await Task.Delay(500);
             }
         }
