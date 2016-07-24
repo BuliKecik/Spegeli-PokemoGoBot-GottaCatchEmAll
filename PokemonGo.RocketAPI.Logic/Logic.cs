@@ -307,6 +307,7 @@ namespace PokemonGo.RocketAPI.Logic
 
         private async Task EvolveAllPokemonWithEnoughCandy(IEnumerable<PokemonId> filter = null)
         {
+            await Inventory.getCachedInventory(_client, true);
             var pokemonToEvolve = await _inventory.GetPokemonToEvolve(filter);
             if (pokemonToEvolve != null && pokemonToEvolve.Any())
                 Logger.Write($"{pokemonToEvolve.Count()} Pokemon:", LogLevel.Evolve);
