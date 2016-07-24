@@ -48,7 +48,11 @@ namespace PokemonGo.RocketAPI.Logic
             if (_clientSettings.DefaultLatitude == 0 || _clientSettings.DefaultLongitude == 0)
             {
                 Logger.Write($"Please change first Latitude and/or Longitude because currently your using default values!", LogLevel.Error);
-                Logger.Write($"Window will be auto closed in 15 seconds!", LogLevel.Error);
+                for (int i = 3; i > 0; i--)
+                {
+                    Logger.Write($"Script will auto closed in {i * 5} seconds!", LogLevel.Warning);
+                    await Task.Delay(5000);
+                }
                 await Task.Delay(15000);
                 System.Environment.Exit(1);
             } else
@@ -103,7 +107,7 @@ namespace PokemonGo.RocketAPI.Logic
                 await Inventory.getCachedInventory(_client);
                 _playerProfile = await _client.GetProfile();
                 var PlayerName = Statistics.GetUsername(_client, _playerProfile);
-                _stats.UpdateConsoleTitle(_inventory);
+                _stats.UpdateConsoleTitle(_client, _inventory);
                 var _currentLevelInfos = await Statistics._getcurrentLevelInfos(_inventory);
 
                 Logger.Write("----------------------------", LogLevel.None, ConsoleColor.Yellow);
@@ -207,7 +211,7 @@ namespace PokemonGo.RocketAPI.Logic
                                 if (fortSearch.ExperienceAwarded > 0)
                                 {
                                     _stats.AddExperience(fortSearch.ExperienceAwarded);
-                                    _stats.UpdateConsoleTitle(_inventory);
+                                    _stats.UpdateConsoleTitle(_client, _inventory);
                                     //todo: fix egg crash
                                     Logger.Write($"XP: {fortSearch.ExperienceAwarded}, Gems: {fortSearch.GemsAwarded}, Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}", LogLevel.Pokestop);
                                 }
@@ -297,7 +301,7 @@ namespace PokemonGo.RocketAPI.Logic
                 if (fortSearch.ExperienceAwarded > 0)
                 {
                     _stats.AddExperience(fortSearch.ExperienceAwarded);
-                    _stats.UpdateConsoleTitle(_inventory);
+                    _stats.UpdateConsoleTitle(_client, _inventory);
                     string EggReward = fortSearch.PokemonDataEgg != null ? "1" : "0";
                     Logger.Write($"XP: {fortSearch.ExperienceAwarded}, Gems: {fortSearch.GemsAwarded}, Eggs: {EggReward}, Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}", LogLevel.Pokestop);
                     recycleCounter++;
@@ -344,7 +348,7 @@ namespace PokemonGo.RocketAPI.Logic
                     var profile = await _client.GetProfile();
                     _stats.GetStardust(profile.Profile.Currency.ToArray()[1].Amount);
                 }
-                _stats.UpdateConsoleTitle(_inventory);
+                _stats.UpdateConsoleTitle(_client, _inventory);
 
                 if (encounter?.CaptureProbability?.CaptureProbability_ != null)
                 {
@@ -432,7 +436,7 @@ namespace PokemonGo.RocketAPI.Logic
                 var transfer = await _client.TransferPokemon(duplicatePokemon.Id);
 
                 _stats.IncreasePokemonsTransfered();
-                _stats.UpdateConsoleTitle(_inventory);
+                _stats.UpdateConsoleTitle(_client, _inventory);
 
                 var bestPokemonOfType = await _inventory.GetHighestPokemonOfTypeByCP(duplicatePokemon);
                 Logger.Write($"{duplicatePokemon.PokemonId} (CP {duplicatePokemon.Cp} | {PokemonInfo.CalculatePokemonPerfection(duplicatePokemon).ToString("0.00")} % perfect) | (Best: {bestPokemonOfType.Cp} CP | {PokemonInfo.CalculatePokemonPerfection(bestPokemonOfType).ToString("0.00")} % perfect)", LogLevel.Transfer);
@@ -453,7 +457,7 @@ namespace PokemonGo.RocketAPI.Logic
                 Logger.Write($"{item.Count}x {(ItemId)item.Item_}", LogLevel.Recycling);
 
                 _stats.AddItemsRemoved(item.Count);
-                _stats.UpdateConsoleTitle(_inventory);
+                _stats.UpdateConsoleTitle(_client, _inventory);
 
                 await Task.Delay(100);
             }

@@ -21,13 +21,15 @@ namespace PokemonGo.RocketAPI.Logic.Utils
         public static string CurrentLevelInfos;
         public static int Currentlevel = -1;
         public static string PlayerName;
+        public static int TotalPokesInBag;
+        public static int TotalPokesInPokedex;
 
         public static DateTime InitSessionDateTime = DateTime.Now;
         public static TimeSpan Duration = DateTime.Now - InitSessionDateTime;
 
-        public static async Task<string> _getcurrentLevelInfos(Inventory inventory)
+        public static async Task<string> _getcurrentLevelInfos(Inventory _inventory)
         {
-            var stats = await inventory.GetPlayerStats();
+            var stats = await _inventory.GetPlayerStats();
             var output = string.Empty;
             var stat = stats.FirstOrDefault();
             if (stat != null)
@@ -81,8 +83,15 @@ namespace PokemonGo.RocketAPI.Logic.Utils
             TotalPokemonsTransfered += 1;
         }
 
-        public async void UpdateConsoleTitle(Inventory _inventory)
+        public async void UpdateConsoleTitle(Client _client, Inventory _inventory)
         {
+            //appears to give incorrect info?		
+            var pokes = await _inventory.GetPokemons();
+            TotalPokesInBag = pokes.Count();
+
+            var inventory = await _client.GetInventory();
+            TotalPokesInPokedex = inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.PokedexEntry).Where(x => x != null && x.TimesCaptured >= 1).OrderBy(k => k.PokedexEntryNumber).ToArray().Length;
+            
             CurrentLevelInfos = await _getcurrentLevelInfos(_inventory);
             Console.Title = ToString();
         }
@@ -91,9 +100,9 @@ namespace PokemonGo.RocketAPI.Logic.Utils
         {
             return
                 string.Format(
-                    "{0} - Runtime {1} - Lvl: {2:0} | EXP/H: {3:0} | P/H: {4:0} | Stardust: {5:0} | Transfered: {6:0} | Items Recycled: {7:0}",
+                    "{0} - Runtime {1} - Lvl: {2:0} | EXP/H: {3:0} | P/H: {4:0} | Stardust: {5:0} | Transfered: {6:0} | Items Recycled: {7:0} |  Pokedex: {8:0}/147",
                     PlayerName, _getSessionRuntimeInTimeFormat(), CurrentLevelInfos, TotalExperience / _getSessionRuntime(),
-                    TotalPokemons / _getSessionRuntime(), TotalStardust, TotalPokemonsTransfered, TotalItemsRemoved);
+                    TotalPokemons / _getSessionRuntime(), TotalStardust, TotalPokemonsTransfered, TotalItemsRemoved, TotalPokesInPokedex);
         }
 
         public static int GetXpDiff(int level)
