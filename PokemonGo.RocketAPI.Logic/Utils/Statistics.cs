@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PokemonGo.RocketAPI.GeneratedCode;
 using PokemonGo.RocketAPI.Enums;
+using System.Globalization;
 
 #endregion
 
@@ -35,9 +36,17 @@ namespace PokemonGo.RocketAPI.Logic.Utils
             if (stat != null)
             {
                 var ep = (stat.NextLevelXp - stat.PrevLevelXp) - (stat.Experience - stat.PrevLevelXp);
-                var hours = Math.Round(ep/(TotalExperience / _getSessionRuntime()), 2);
+                var time = Math.Round(ep / (TotalExperience / _getSessionRuntime()), 2);
+                var hours = 0.00;
+                var minutes = 0.00;
+                if (Double.IsInfinity(time) == false && time > 0)
+                {
+                    time = Convert.ToDouble(TimeSpan.FromHours(time).ToString("h\\.mm"), CultureInfo.InvariantCulture);
+                    hours = Math.Truncate(time);
+                    minutes = Math.Round((time - hours) * 100);
+                }
 
-                output = $"{stat.Level} (LvLUp in {hours}hours | {stat.Experience - stat.PrevLevelXp - GetXpDiff(stat.Level)}/{stat.NextLevelXp - stat.PrevLevelXp - GetXpDiff(stat.Level)} XP)";
+                output = $"{stat.Level} (LvLUp in {hours}h {minutes}m | {stat.Experience - stat.PrevLevelXp - GetXpDiff(stat.Level)}/{stat.NextLevelXp - stat.PrevLevelXp - GetXpDiff(stat.Level)} XP)";
                 //output = $"{stat.Level} (LvLUp in {_hours}hours // EXP required: {_ep})";
             }
             return output;

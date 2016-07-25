@@ -64,6 +64,7 @@ namespace PokemonGo.RocketAPI.Login
                 thread.SetApartmentState(ApartmentState.STA); //Set the thread to STA
                 thread.Start();
                 thread.Join();
+                Logger.Write($"Google Device Code: {deviceCode.user_code}");
             }
             catch (Exception)
             {

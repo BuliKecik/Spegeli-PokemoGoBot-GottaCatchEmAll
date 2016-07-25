@@ -226,5 +226,53 @@ namespace PokemonGo.RocketAPI.Console {
                 this["GPXFile"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool useLuckyEggsWhileEvolving {
+            get {
+                return ((bool)(this["useLuckyEggsWhileEvolving"]));
+            }
+            set {
+                this["useLuckyEggsWhileEvolving"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool NotTransferPokemonsThatCanEvolve {
+            get {
+                return ((bool)(this["NotTransferPokemonsThatCanEvolve"]));
+            }
+            set {
+                this["NotTransferPokemonsThatCanEvolve"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool EvolveOnlyPokemonAboveIV {
+            get {
+                return ((bool)(this["EvolveOnlyPokemonAboveIV"]));
+            }
+            set {
+                this["EvolveOnlyPokemonAboveIV"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("95")]
+        public int EvolveAboveIVValue {
+            get {
+                return ((int)(this["EvolveAboveIVValue"]));
+            }
+            set {
+                this["EvolveAboveIVValue"] = value;
+            }
+        }
     }
 }

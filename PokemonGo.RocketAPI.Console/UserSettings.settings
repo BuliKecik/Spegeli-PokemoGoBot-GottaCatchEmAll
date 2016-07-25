@@ -53,5 +53,17 @@
     <Setting Name="GPXFile" Type="System.String" Scope="User">
       <Value Profile="(Default)">GPXFile.GPX</Value>
     </Setting>
+    <Setting Name="useLuckyEggsWhileEvolving" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="NotTransferPokemonsThatCanEvolve" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="EvolveOnlyPokemonAboveIV" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="EvolveAboveIVValue" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">95</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

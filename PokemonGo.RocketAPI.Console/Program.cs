@@ -14,7 +14,7 @@ namespace PokemonGo.RocketAPI.Console
     internal class Program
     {
 
-        private static void Main(string[] args)
+        private static void Main()
         {
             AppDomain.CurrentDomain.UnhandledException
                 += delegate (object sender, UnhandledExceptionEventArgs eargs)

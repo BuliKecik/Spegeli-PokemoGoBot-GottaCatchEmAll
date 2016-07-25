@@ -49,13 +49,10 @@ namespace PokemonGo.RocketAPI.Logic
                 sourceLocation = new GeoCoordinate(_client.CurrentLat, _client.CurrentLng);
                 var currentDistanceToTarget = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
 
-                if (currentDistanceToTarget < 40)
+                if (currentDistanceToTarget < 30 && speedInMetersPerSecond > SpeedDownTo)
                 {
-                    if (speedInMetersPerSecond > SpeedDownTo)
-                    {
-                        Logger.Write($"We are within 40 meters of the target. Speeding down to 10 km/h to not pass the target.", LogLevel.Navigation);
-                        speedInMetersPerSecond = SpeedDownTo;
-                    }
+                    //Logger.Write($"We are within 40 meters of the target. Speeding down to 10 km/h to not pass the target.", LogLevel.Navigation);
+                    speedInMetersPerSecond = SpeedDownTo;
                 }
 
                 nextWaypointDistance = Math.Min(currentDistanceToTarget,
@@ -70,13 +67,14 @@ namespace PokemonGo.RocketAPI.Logic
                             _client.Settings.DefaultAltitude);
                 if (functionExecutedWhileWalking != null)
                     await functionExecutedWhileWalking();// look for pokemon
-                await Task.Delay(Math.Min((int)(distanceToTarget / speedInMetersPerSecond * 100), 3000));
+                await Task.Delay(Math.Min((int)(distanceToTarget / speedInMetersPerSecond * 100), 1000));
             } while (LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation) >= 30);
 
             return result;
         }
 
-        public async Task<PlayerUpdateResponse> HumanPathWalking(GPXReader.trkpt trk, double walkingSpeedInKilometersPerHour, Func<Task> functionExecutedWhileWalking)
+        public async Task<PlayerUpdateResponse> HumanPathWalking(GpxReader.Trkpt trk,
+            double walkingSpeedInKilometersPerHour, Func<Task> functionExecutedWhileWalking)
         {
             //PlayerUpdateResponse result = null;
 

@@ -26,7 +26,11 @@ namespace PokemonGo.RocketAPI
         int KeepMinDuplicatePokemon { get; }
         bool PrioritizeIVOverCP { get; }
         int MaxTravelDistanceInMeters { get; }
-
+        bool useLuckyEggsWhileEvolving { get; }
+        bool NotTransferPokemonsThatCanEvolve { get; }
+        bool EvolveOnlyPokemonAboveIV { get; }
+        float EvolveAboveIVValue { get; }
+ 
         bool UseGPXPathing { get; }
         string GPXFile { get; }
 

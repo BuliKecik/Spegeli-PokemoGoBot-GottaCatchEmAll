@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 
 #endregion
 
@@ -41,6 +42,8 @@ namespace PokemonGo.RocketAPI.Logging
         /// <param name="color">Optional. Default is automatic color.</param>
         public static void Write(string message, LogLevel level = LogLevel.None, ConsoleColor color = ConsoleColor.White)
         {
+            Console.OutputEncoding = Encoding.Unicode;
+
             switch (level)
             {
                 case LogLevel.Info:
@@ -83,6 +86,10 @@ namespace PokemonGo.RocketAPI.Logging
                     System.Console.ForegroundColor = ConsoleColor.White;
                     System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (BERRY) {message}");
                     break;
+                case LogLevel.Egg:
+                    System.Console.ForegroundColor = ConsoleColor.White;
+                    System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (EGG) {message}");
+                    break;
                 case LogLevel.Recycling:
                     System.Console.ForegroundColor = ConsoleColor.DarkMagenta;
                     System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (RECYCLING) {message}");
@@ -123,6 +130,7 @@ namespace PokemonGo.RocketAPI.Logging
         Transfer = 8,
         Evolve = 9,
         Berry = 10,
-        Recycling = 11
+        Egg = 11,
+        Recycling = 12
     }
 }

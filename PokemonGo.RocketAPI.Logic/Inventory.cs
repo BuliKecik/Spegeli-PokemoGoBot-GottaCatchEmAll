@@ -52,10 +52,13 @@ namespace PokemonGo.RocketAPI.Logic
                         continue;
 
                     var amountToSkip = familyCandy.Candy / settings.CandyToEvolve;
+                    amountToSkip = amountToSkip > _client.Settings.KeepMinDuplicatePokemon
+                        ? amountToSkip
+                        : _client.Settings.KeepMinDuplicatePokemon;
                     if (prioritizeIVoverCP)
                     {
                         results.AddRange(pokemonList.Where(x => x.PokemonId == pokemon.Key)
-                            .OrderByDescending(x => PokemonInfo.CalculatePokemonPerfection(x))
+                            .OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
                             .ThenBy(n => n.StaminaMax)
                             .Skip(amountToSkip)
                             .ToList());
@@ -79,7 +82,7 @@ namespace PokemonGo.RocketAPI.Logic
                 .Where(x => x.Count() > 1)
                 .SelectMany(
                     p =>
-                        p.OrderByDescending(x => PokemonInfo.CalculatePokemonPerfection(x))
+                        p.OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
                             .ThenBy(n => n.StaminaMax)
                             .Skip(_client.Settings.KeepMinDuplicatePokemon)
                             .ToList());
@@ -118,6 +121,15 @@ namespace PokemonGo.RocketAPI.Logic
             var pokemons = myPokemon.ToList();
             return pokemons.Where(x => x.PokemonId == pokemon.PokemonId)
                 .OrderByDescending(x => x.Cp)
+                .FirstOrDefault();
+        }
+
+        public async Task<PokemonData> GetHighestPokemonOfTypeByIV(PokemonData pokemon)
+        {
+            var myPokemon = await GetPokemons();
+            var pokemons = myPokemon.ToList();
+            return pokemons.Where(x => x.PokemonId == pokemon.PokemonId)
+                .OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
                 .FirstOrDefault();
         }
 
@@ -189,9 +201,11 @@ namespace PokemonGo.RocketAPI.Logic
             var myPokemons = await GetPokemons();
             myPokemons = myPokemons.Where(p => p.DeployedFortId == 0).OrderByDescending(p => p.Cp); //Don't evolve pokemon in gyms
             if (filter != null)
-            {		
                 myPokemons = myPokemons.Where(p => filter.Contains(p.PokemonId));		
-            }
+
+            if (_client.Settings.EvolveOnlyPokemonAboveIV)
+                myPokemons = myPokemons.Where(p => PokemonInfo.CalculatePokemonPerfection(p) >= _client.Settings.EvolveAboveIVValue);
+
             var pokemons = myPokemons.ToList();
 
             var myPokemonSettings = await GetPokemonSettings();
@@ -224,25 +238,22 @@ namespace PokemonGo.RocketAPI.Logic
         public static async Task<GetInventoryResponse> getCachedInventory(Client _client, bool request = false)
         {
             var now = DateTime.UtcNow;
-            SemaphoreSlim ss = new SemaphoreSlim(10);
+            var ss = new SemaphoreSlim(10);
 
-            if (_lastRefresh != null && _lastRefresh.AddSeconds(30).Ticks > now.Ticks && request == false)
+            if (_lastRefresh.AddSeconds(30).Ticks > now.Ticks && request == false)
             {
                 return _cachedInventory;
             }
-            else
+            await ss.WaitAsync();
+            try
             {
-                await ss.WaitAsync();
-                try
-                {
-                    _lastRefresh = now;
-                    _cachedInventory = await _client.GetInventory();
-                    return _cachedInventory;
-                }
-                finally
-                {
-                    ss.Release();
-                }
+                _lastRefresh = now;
+                _cachedInventory = await _client.GetInventory();
+                return _cachedInventory;
+            }
+            finally
+            {
+                ss.Release();
             }
         }
 

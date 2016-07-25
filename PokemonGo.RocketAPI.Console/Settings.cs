@@ -3,10 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.GeneratedCode;
 using PokemonGo.RocketAPI.Logging;
-using System.Text.RegularExpressions;
+
 
 #endregion
 
@@ -26,11 +27,15 @@ namespace PokemonGo.RocketAPI.Console
         public int KeepMinCP => UserSettings.Default.KeepMinCP;
         public double WalkingSpeedInKilometerPerHour => UserSettings.Default.WalkingSpeedInKilometerPerHour;
         public bool EvolveAllPokemonWithEnoughCandy => UserSettings.Default.EvolveAllPokemonWithEnoughCandy;
+        public bool useLuckyEggsWhileEvolving => UserSettings.Default.useLuckyEggsWhileEvolving;
         public bool TransferDuplicatePokemon => UserSettings.Default.TransferDuplicatePokemon;
+        public bool NotTransferPokemonsThatCanEvolve => UserSettings.Default.NotTransferPokemonsThatCanEvolve;
         public bool UsePokemonToNotCatchFilter => UserSettings.Default.UsePokemonToNotCatchFilter;
         public int KeepMinDuplicatePokemon => UserSettings.Default.KeepMinDuplicatePokemon;
         public bool PrioritizeIVOverCP => UserSettings.Default.PrioritizeIVOverCP;
         public int MaxTravelDistanceInMeters => UserSettings.Default.MaxTravelDistanceInMeters;
+        public bool EvolveOnlyPokemonAboveIV => UserSettings.Default.EvolveOnlyPokemonAboveIV;
+        public float EvolveAboveIVValue => UserSettings.Default.EvolveAboveIVValue;
 
         public bool UseGPXPathing => UserSettings.Default.UseGPXPathing;
         public string GPXFile => UserSettings.Default.GPXFile;
@@ -42,17 +47,17 @@ namespace PokemonGo.RocketAPI.Console
         public ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter => new[]
         {
             new KeyValuePair<ItemId, int>(ItemId.ItemUnknown, 0),
-            new KeyValuePair<ItemId, int>(ItemId.ItemPokeBall, 20),
-            new KeyValuePair<ItemId, int>(ItemId.ItemGreatBall, 20),
-            new KeyValuePair<ItemId, int>(ItemId.ItemUltraBall, 50),
+            new KeyValuePair<ItemId, int>(ItemId.ItemPokeBall, 25),
+            new KeyValuePair<ItemId, int>(ItemId.ItemGreatBall, 50),
+            new KeyValuePair<ItemId, int>(ItemId.ItemUltraBall, 75),
             new KeyValuePair<ItemId, int>(ItemId.ItemMasterBall, 100),
 
             new KeyValuePair<ItemId, int>(ItemId.ItemPotion, 0),
-            new KeyValuePair<ItemId, int>(ItemId.ItemSuperPotion, 0),
-            new KeyValuePair<ItemId, int>(ItemId.ItemHyperPotion, 20),
-            new KeyValuePair<ItemId, int>(ItemId.ItemMaxPotion, 50),
+            new KeyValuePair<ItemId, int>(ItemId.ItemSuperPotion, 10),
+            new KeyValuePair<ItemId, int>(ItemId.ItemHyperPotion, 25),
+            new KeyValuePair<ItemId, int>(ItemId.ItemMaxPotion, 75),
 
-            new KeyValuePair<ItemId, int>(ItemId.ItemRevive, 10),
+            new KeyValuePair<ItemId, int>(ItemId.ItemRevive, 15),
             new KeyValuePair<ItemId, int>(ItemId.ItemMaxRevive, 50),
 
             new KeyValuePair<ItemId, int>(ItemId.ItemLuckyEgg, 200),
@@ -85,8 +90,10 @@ namespace PokemonGo.RocketAPI.Console
             get
             {
                 //Type of pokemons to evolve
-                var defaultText = new string[] { "Zubat", "Pidgey", "Rattata" };
-                _pokemonsToEvolve = _pokemonsToEvolve ?? LoadPokemonList("PokemonsToEvolve", defaultText);
+                List<PokemonId> defaultPokemon = new List<PokemonId> {
+                    PokemonId.Zubat, PokemonId.Pidgey, PokemonId.Rattata
+                };
+                _pokemonsToEvolve = _pokemonsToEvolve ?? LoadPokemonList("PokemonsToEvolve.ini", defaultPokemon);
                 return _pokemonsToEvolve;
             }
         }
@@ -96,8 +103,10 @@ namespace PokemonGo.RocketAPI.Console
             get
             {
                 //Type of pokemons not to transfer
-                var defaultText = new string[] { "Dragonite", "Charizard", "Zapdos", "Snorlax", "Alakazam", "Mew", "Mewtwo" };
-                _pokemonsNotToTransfer = _pokemonsNotToTransfer ?? LoadPokemonList("PokemonsNotToTransfer", defaultText);
+                List<PokemonId> defaultPokemon = new List<PokemonId> {
+                    PokemonId.Dragonite, PokemonId.Charizard, PokemonId.Zapdos, PokemonId.Snorlax, PokemonId.Alakazam, PokemonId.Mew, PokemonId.Mewtwo
+                };
+                _pokemonsNotToTransfer = _pokemonsNotToTransfer ?? LoadPokemonList("PokemonsNotToTransfer.ini", defaultPokemon);
                 return _pokemonsNotToTransfer;
             }
         }
@@ -107,45 +116,38 @@ namespace PokemonGo.RocketAPI.Console
             get
             {
                 //Type of pokemons not to catch
-                var defaultText = new string[] { "Zubat", "Pidgey", "Rattata" };
-                _pokemonsNotToCatch = _pokemonsNotToCatch ?? LoadPokemonList("PokemonsNotToCatch", defaultText);
+                List<PokemonId> defaultPokemon = new List<PokemonId> {
+                    PokemonId.Zubat, PokemonId.Pidgey, PokemonId.Rattata
+                };
+                _pokemonsNotToCatch = _pokemonsNotToCatch ?? LoadPokemonList("PokemonsNotToCatch.ini", defaultPokemon);
                 return _pokemonsNotToCatch;
             }
         }
 
-        private ICollection<PokemonId> LoadPokemonList(string filename, string[] defaultContent)
+        private ICollection<PokemonId> LoadPokemonList(string filename, List<PokemonId> defaultPokemon)
         {
             ICollection<PokemonId> result = new List<PokemonId>();
-            Func<string, ICollection<PokemonId>> addPokemonToResult = delegate (string pokemonName) {
-                PokemonId pokemon;
-                if (Enum.TryParse<PokemonId>(pokemonName, out pokemon))
-                {
-                    result.Add((PokemonId)pokemon);
-                }
-                return result;
-            };
-
             string path = Directory.GetCurrentDirectory() + "\\Configs\\";
+
             if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            if (!File.Exists(path + filename))
             {
-                DirectoryInfo di = Directory.CreateDirectory(path);
-            }
-            if (!File.Exists(path + filename + ".txt"))
-            {
-                Logger.Write($"File: \"\\Configs\\{filename}.txt\" not found, creating new...", LogLevel.Warning);
-                using (var w = File.AppendText(path + filename + ".txt"))
+                Logger.Write($"File: \"\\Configs\\{filename}\" not found, creating new...", LogLevel.Warning);
+                using (var w = File.AppendText(path + filename))
                 {
-                    Array.ForEach(defaultContent, x => w.WriteLine(x));
-                    Array.ForEach(defaultContent, x => addPokemonToResult(x));
+                    defaultPokemon.ForEach(pokemon => w.WriteLine(pokemon.ToString()));
+                    defaultPokemon.ForEach(pokemon => result.Add((PokemonId)pokemon));
                     w.Close();
                 }
             }
-            if (File.Exists(path + filename + ".txt"))
+            if (File.Exists(path + filename))
             {
-                Logger.Write($"Loading File: \"\\Configs\\{filename}.txt\"", LogLevel.Info);
+                Logger.Write($"Loading File: \"\\Configs\\{filename}\"", LogLevel.Info);
 
                 var content = string.Empty;
-                using (StreamReader reader = new StreamReader(path + filename + ".txt"))
+                using (StreamReader reader = new StreamReader(path + filename))
                 {
                     content = reader.ReadToEnd();
                     reader.Close();
@@ -157,7 +159,11 @@ namespace PokemonGo.RocketAPI.Console
                 var pokemonName = tr.ReadLine();
                 while (pokemonName != null)
                 {
-                    addPokemonToResult(pokemonName);
+                    PokemonId pokemon;
+                    if (Enum.TryParse<PokemonId>(pokemonName, out pokemon))
+                    {
+                        result.Add((PokemonId)pokemon);
+                    }
                     pokemonName = tr.ReadLine();
                 }
             }
