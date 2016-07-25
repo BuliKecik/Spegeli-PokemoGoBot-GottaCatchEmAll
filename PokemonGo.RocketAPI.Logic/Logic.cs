@@ -31,6 +31,7 @@ namespace PokemonGo.RocketAPI.Logic
         private GetPlayerResponse _playerProfile;
 
         private int recycleCounter = 0;
+        private bool IsInitialized = false;
 
         public Logic(ISettings clientSettings)
         {
@@ -105,35 +106,38 @@ namespace PokemonGo.RocketAPI.Logic
 
             while (true)
             {
-                await Inventory.getCachedInventory(_client);
-                _playerProfile = await _client.GetProfile();
-                var PlayerName = Statistics.GetUsername(_client, _playerProfile);
-                _stats.UpdateConsoleTitle(_client, _inventory);
-                var _currentLevelInfos = await Statistics._getcurrentLevelInfos(_inventory);
+                if (!IsInitialized)
+                {
+                    await Inventory.getCachedInventory(_client);
+                    _playerProfile = await _client.GetProfile();
+                    var PlayerName = Statistics.GetUsername(_client, _playerProfile);
+                    _stats.UpdateConsoleTitle(_client, _inventory);
+                    var _currentLevelInfos = await Statistics._getcurrentLevelInfos(_inventory);
 
-                Logger.Write("----------------------------", LogLevel.None, ConsoleColor.Yellow);
-                if (_clientSettings.AuthType == AuthType.Ptc)
-                    Logger.Write($"PTC Account: {PlayerName}\n", LogLevel.None, ConsoleColor.Cyan);
-                Logger.Write($"Latitude: {_clientSettings.DefaultLatitude}", LogLevel.None, ConsoleColor.DarkGray);
-                Logger.Write($"Longitude: {_clientSettings.DefaultLongitude}", LogLevel.None, ConsoleColor.DarkGray);
-                Logger.Write("----------------------------", LogLevel.None, ConsoleColor.Yellow);
-                Logger.Write("Your Account:\n");
-                Logger.Write($"Name: {PlayerName}", LogLevel.None, ConsoleColor.DarkGray);
-                Logger.Write($"Team: {_playerProfile.Profile.Team}", LogLevel.None, ConsoleColor.DarkGray);
-                Logger.Write($"Level: {_currentLevelInfos}", LogLevel.None, ConsoleColor.DarkGray);
-                Logger.Write($"Stardust: {_playerProfile.Profile.Currency.ToArray()[1].Amount}", LogLevel.None, ConsoleColor.DarkGray);
-                Logger.Write("----------------------------", LogLevel.None, ConsoleColor.Yellow);
-                await DisplayHighests();
-                Logger.Write("----------------------------", LogLevel.None, ConsoleColor.Yellow);
+                    Logger.Write("----------------------------", LogLevel.None, ConsoleColor.Yellow);
+                    if (_clientSettings.AuthType == AuthType.Ptc)
+                        Logger.Write($"PTC Account: {PlayerName}\n", LogLevel.None, ConsoleColor.Cyan);
+                    Logger.Write($"Latitude: {_clientSettings.DefaultLatitude}", LogLevel.None, ConsoleColor.DarkGray);
+                    Logger.Write($"Longitude: {_clientSettings.DefaultLongitude}", LogLevel.None, ConsoleColor.DarkGray);
+                    Logger.Write("----------------------------", LogLevel.None, ConsoleColor.Yellow);
+                    Logger.Write("Your Account:\n");
+                    Logger.Write($"Name: {PlayerName}", LogLevel.None, ConsoleColor.DarkGray);
+                    Logger.Write($"Team: {_playerProfile.Profile.Team}", LogLevel.None, ConsoleColor.DarkGray);
+                    Logger.Write($"Level: {_currentLevelInfos}", LogLevel.None, ConsoleColor.DarkGray);
+                    Logger.Write($"Stardust: {_playerProfile.Profile.Currency.ToArray()[1].Amount}", LogLevel.None, ConsoleColor.DarkGray);
+                    Logger.Write("----------------------------", LogLevel.None, ConsoleColor.Yellow);
+                    await DisplayHighests();
+                    Logger.Write("----------------------------", LogLevel.None, ConsoleColor.Yellow);
 
-                var PokemonsNotToTransfer = _clientSettings.PokemonsNotToTransfer;
-                var PokemonsNotToCatch = _clientSettings.PokemonsNotToCatch;
-                var PokemonsToEvolve = _clientSettings.PokemonsToEvolve;
+                    var PokemonsNotToTransfer = _clientSettings.PokemonsNotToTransfer;
+                    var PokemonsNotToCatch = _clientSettings.PokemonsNotToCatch;
+                    var PokemonsToEvolve = _clientSettings.PokemonsToEvolve;
 
-                if (_clientSettings.EvolvePokemon || _clientSettings.EvolveOnlyPokemonAboveIV) await EvolvePokemon(_clientSettings.PokemonsToEvolve);
-                if (_clientSettings.TransferPokemon) await TransferPokemon();
-                await _inventory.ExportPokemonToCSV(_playerProfile.Profile);
-                await RecycleItems();
+                    if (_clientSettings.EvolvePokemon || _clientSettings.EvolveOnlyPokemonAboveIV) await EvolvePokemon(_clientSettings.PokemonsToEvolve);
+                    if (_clientSettings.TransferPokemon) await TransferPokemon();
+                    await _inventory.ExportPokemonToCSV(_playerProfile.Profile);
+                    await RecycleItems();
+                }
                 await ExecuteFarmingPokestopsAndPokemons(_clientSettings.UseGPXPathing);
 
                 /*
@@ -345,6 +349,7 @@ namespace PokemonGo.RocketAPI.Logic
                 if (bestBerry != ItemId.ItemUnknown && probability.HasValue && probability.Value < 0.35)
                 {
                     await _client.UseCaptureItem(pokemon.EncounterId, bestBerry, pokemon.SpawnpointId);
+                    berries.Count--;
                     Logger.Write($"{bestBerry} used, remaining: {berries.Count}", LogLevel.Berry);
                     await RandomHelper.RandomDelay(50, 200);
                 }
