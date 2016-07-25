@@ -1,5 +1,6 @@
 ﻿#region
 
+using PokemonGo.RocketAPI.Logging;
 using System;
 
 #endregion

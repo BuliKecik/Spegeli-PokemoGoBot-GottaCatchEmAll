@@ -137,14 +137,14 @@ namespace PokemonGo.RocketAPI.Logic
                 await ExecuteFarmingPokestopsAndPokemons(_clientSettings.UseGPXPathing);
 
                 /*
-            * Example calls below
-            *
-            var profile = await _client.GetProfile();
-            var settings = await _client.GetSettings();
-            var mapObjects = await _client.GetMapObjects();
-            var inventory = await _client.GetInventory();
-            var pokemons = inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.Pokemon).Where(p => p != null && p?.PokemonId > 0);
-            */
+                * Example calls below
+                *
+                var profile = await _client.GetProfile();
+                var settings = await _client.GetSettings();
+                var mapObjects = await _client.GetMapObjects();
+                var inventory = await _client.GetInventory();
+                var pokemons = inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.Pokemon).Where(p => p != null && p?.PokemonId > 0);
+                */
 
                 await Task.Delay(10000);
             }
@@ -213,7 +213,9 @@ namespace PokemonGo.RocketAPI.Logic
                                 var pokeStop = pokestopList[0];
                                 pokestopList.RemoveAt(0);
 
-                                await _client.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
+                                var distance = LocationUtils.CalculateDistanceInMeters(_client.CurrentLat, _client.CurrentLng, pokeStop.Latitude, pokeStop.Longitude);
+                                var fortInfo = await _client.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
+                                Logger.Write($"Name: {fortInfo.Name} in {distance:0.##} m distance", LogLevel.Pokestop);
 
                                 var fortSearch =
                                     await _client.SearchFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
@@ -221,15 +223,14 @@ namespace PokemonGo.RocketAPI.Logic
                                 {
                                     _stats.AddExperience(fortSearch.ExperienceAwarded);
                                     _stats.UpdateConsoleTitle(_client, _inventory);
-                                    //todo: fix egg crash
-                                    Logger.Write(
-                                        $"XP: {fortSearch.ExperienceAwarded}, Gems: {fortSearch.GemsAwarded}, Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}",
-                                        LogLevel.Pokestop);
+                                    string EggReward = fortSearch.PokemonDataEgg != null ? "1" : "0";
+                                    Logger.Write($"XP: {fortSearch.ExperienceAwarded}, Gems: {fortSearch.GemsAwarded}, Eggs: {EggReward}, Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}", LogLevel.Pokestop);
+                                    recycleCounter++;
                                 }
 
-                                await Task.Delay(1000);
-                                await RecycleItems();
-                                if (_clientSettings.TransferDuplicatePokemon) await TransferDuplicatePokemon();
+                                await RandomHelper.RandomDelay(50, 200);
+                                if (recycleCounter >= 5)
+                                    await RecycleItems();
                             }
 
                             await
@@ -622,7 +623,8 @@ namespace PokemonGo.RocketAPI.Logic
                         var csvExportPokemonAll = new StringBuilder();
                         var _currentLevelInfos = await Statistics._getcurrentLevelInfos(_inventory);
                         csvExportPokemonAll.AppendLine(Statistics.GetUsername(_client, _playerProfile) + _currentLevelInfos.ToString());
-                        var columnnames = string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9}", "#", "NAME", "LVL", "CP", "MaxCP", "PERFECTION", "CANDY", "iATK", "iDEF", "iSTA");
+                        string ls = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator;
+                        var columnnames = string.Format($"#{ls}NAME{ls}LVL{ls}CP{ls}MaxCP{ls}PERFECTION{ls}CANDY{ls}iATK{ls}iDEF{ls}iSTA{ls}", "#", "NAME", "LVL", "CP", "MaxCP", "PERFECTION", "CANDY", "iATK", "iDEF", "iSTA");
                         csvExportPokemonAll.AppendLine(columnnames);
 
                         foreach (var pokemon in AllPokemon)
@@ -639,7 +641,9 @@ namespace PokemonGo.RocketAPI.Logic
                             var settings = pokemonSettings.Single(x => x.PokemonId == pokemon.PokemonId);
                             var familyCandy = pokemonFamilies.Single(x => settings.FamilyId == x.FamilyId);
                             var CANDY = familyCandy.Candy;
-                            var pokedata = string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9}", POKENUMBER, NAME, LVL, CP, MaxCP, PERFECTION, CANDY, IATK, IDEF, ISTA);
+                            var pokedata = string.Format($"{POKENUMBER}{ls}{NAME}{ls}{LVL}{ls}{CP}{ls}{MaxCP}{ls}{PERFECTION}{ls}{CANDY}{ls}{CANDY}{ls}{IATK}{ls}{IDEF}{ls}{ISTA}{ls}", POKENUMBER, NAME, LVL, CP, MaxCP, PERFECTION, CANDY, IATK, IDEF, ISTA);
+                            //var pokedata = string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9}", POKENUMBER, NAME, LVL, CP, MaxCP, PERFECTION, CANDY, IATK, IDEF, ISTA);
+
                             csvExportPokemonAll.AppendLine(pokedata);
                         }
                         Logger.Write($"Export all Pokemon to \"\\Export\\{filename}\"", LogLevel.Info);

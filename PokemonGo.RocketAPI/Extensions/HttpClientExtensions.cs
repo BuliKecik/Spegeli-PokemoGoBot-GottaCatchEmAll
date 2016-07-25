@@ -37,7 +37,10 @@ namespace PokemonGo.RocketAPI.Extensions
             var response = await PostProto(client, url, request);
 
             if (response.Payload.Count == 0)
+            {
+                Logger.Write("InvalidResponseException from HttpClientExtensions.cs", LogLevel.Error);
                 throw new InvalidResponseException();
+            }
 
             //Decode payload
             //todo: multi-payload support

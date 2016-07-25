@@ -8,6 +8,7 @@ using PokemonGo.RocketAPI.GeneratedCode;
 using System.Collections.Concurrent;
 using System;
 using System.Threading;
+using PokemonGo.RocketAPI.Logging;
 
 #endregion
 
