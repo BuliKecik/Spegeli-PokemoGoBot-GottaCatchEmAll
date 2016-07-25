@@ -109,7 +109,7 @@ namespace PokemonGo.RocketAPI.Logging
         private static void Log(string message)
         {
             // maybe do a new log rather than appending?
-            using (var log = File.AppendText(path + _currentFile + ".txt"))
+            using (var log = File.AppendText(Path.Combine(path, _currentFile + ".txt")))
             {
                 log.WriteLine(message);
                 log.Flush();

@@ -28,19 +28,22 @@ namespace PokemonGo.RocketAPI
         private Request.Types.UnknownAuth _unknownAuth;
         Random rand = null;
 
+        private static string configs_path = Path.Combine(Directory.GetCurrentDirectory(), "Configs");
+        private static string lastcoords_file = Path.Combine(configs_path, "LastCoords.ini");
+
         public Client(ISettings settings)
         {
             Settings = settings;
 
-            Tuple<double, double> latLngFromFile = GetLatLngFromFile("LastCoords.ini");
+            Tuple<double, double> latLngFromFile = GetLatLngFromFile();
 
-            if (latLngFromFile != null)
+            if (latLngFromFile != null && latLngFromFile.Item1 != 0 && latLngFromFile.Item2 != 0)
             {
                 SetCoordinates(latLngFromFile.Item1, latLngFromFile.Item2, Settings.DefaultAltitude);
             }
             else
             {
-                if (!File.Exists(Directory.GetCurrentDirectory() + "\\Configs\\LastCoords.ini") || !File.ReadAllText(Directory.GetCurrentDirectory() + "\\Configs\\LastCoords.ini").Contains(":"))
+                if (!File.Exists(lastcoords_file) || !File.ReadAllText(lastcoords_file).Contains(":"))
                     Logger.Write("Missing \"\\Configs\\LastCoords.ini\", using default settings for coordinates and create a new one...");
                 SetCoordinates(Settings.DefaultLatitude, Settings.DefaultLongitude, Settings.DefaultAltitude);
             }
@@ -65,16 +68,13 @@ namespace PokemonGo.RocketAPI
         /// Gets the lat LNG from file.
         /// </summary>
         /// <returns>Tuple&lt;System.Double, System.Double&gt;.</returns>
-        public static Tuple<double, double> GetLatLngFromFile(string filename = "LastCoords.ini")
+        public static Tuple<double, double> GetLatLngFromFile()
         {
-            string path = Directory.GetCurrentDirectory() + "\\Configs\\";
-            if (!Directory.Exists(path))
+            if (!Directory.Exists(configs_path))
+                Directory.CreateDirectory(configs_path);
+            if (File.Exists(lastcoords_file) && File.ReadAllText(lastcoords_file).Contains(":"))
             {
-                DirectoryInfo di = Directory.CreateDirectory(path);
-            }
-            if (File.Exists(path + filename) && File.ReadAllText(path + filename).Contains(":"))
-            {
-                var latlngFromFile = File.ReadAllText(path + filename);
+                var latlngFromFile = File.ReadAllText(lastcoords_file);
                 var latlng = latlngFromFile.Split(':');
                 if (latlng[0].Length != 0 && latlng[1].Length != 0)
                 {
@@ -137,38 +137,30 @@ namespace PokemonGo.RocketAPI
                     _httpClient.PostProtoPayload<Request, CatchPokemonResponse>($"https://{_apiUrl}/rpc", catchPokemonRequest);
         }
 
-        public async Task DoGoogleLogin(string filename)
+        public async Task DoGoogleLogin(string filename = "GoogleAuth.ini")
         {
             _authType = AuthType.Google;
-
             string googleRefreshToken = string.Empty;
-            string path = Directory.GetCurrentDirectory() + "\\Configs\\";
-            if (!Directory.Exists(path))
-            {
-                DirectoryInfo di = Directory.CreateDirectory(path);
-            }
-            if (File.Exists(path + filename))
-            {
-                googleRefreshToken = File.ReadAllText(path + filename);
-            }
-
+            if (!Directory.Exists(configs_path))
+                Directory.CreateDirectory(configs_path);
+            string googletoken_file = Path.Combine(configs_path, filename);
+            if (File.Exists(googletoken_file))
+                googleRefreshToken = File.ReadAllText(googletoken_file);
             GoogleLogin.TokenResponseModel tokenResponse;
             if (googleRefreshToken != string.Empty)
             {
                 tokenResponse = await GoogleLogin.GetAccessToken(googleRefreshToken);
                 AccessToken = tokenResponse?.id_token;
             }
-
             if (AccessToken == null)
             {
                 var deviceCode = await GoogleLogin.GetDeviceCode();
                 tokenResponse = await GoogleLogin.GetAccessToken(deviceCode);
                 googleRefreshToken = tokenResponse?.refresh_token;
                 Logger.Write("Refreshtoken " + tokenResponse?.refresh_token + " saved", LogLevel.Info);
-                File.WriteAllText(path + filename, googleRefreshToken);
+                File.WriteAllText(googletoken_file, googleRefreshToken);
                 AccessToken = tokenResponse?.id_token;
             }
-
         }
 
         public async Task DoPtcLogin(string username, string password)
@@ -324,7 +316,7 @@ namespace PokemonGo.RocketAPI
         public void SaveLatLng(double lat, double lng, string filename = "LastCoords.ini")
         {
             var latlng = lat + ":" + lng;
-            File.WriteAllText(Directory.GetCurrentDirectory() + "\\Configs\\" + filename, latlng);
+            File.WriteAllText(Path.Combine(configs_path, filename), latlng);
         }
 
         public async Task<FortSearchResponse> SearchFort(string fortId, double fortLat, double fortLng)

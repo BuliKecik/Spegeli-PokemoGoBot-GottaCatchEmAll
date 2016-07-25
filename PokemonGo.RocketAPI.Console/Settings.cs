@@ -16,6 +16,8 @@ namespace PokemonGo.RocketAPI.Console
 {
     public class Settings : ISettings
     {
+        private string configs_path = Path.Combine(Directory.GetCurrentDirectory(), "Configs");
+
         public AuthType AuthType => (AuthType)Enum.Parse(typeof(AuthType), UserSettings.Default.AuthType, true);
         public string PtcUsername => UserSettings.Default.PtcUsername;
         public string PtcPassword => UserSettings.Default.PtcPassword;
@@ -127,27 +129,25 @@ namespace PokemonGo.RocketAPI.Console
         private ICollection<PokemonId> LoadPokemonList(string filename, List<PokemonId> defaultPokemon)
         {
             ICollection<PokemonId> result = new List<PokemonId>();
-            string path = Directory.GetCurrentDirectory() + "\\Configs\\";
-
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-
-            if (!File.Exists(path + filename))
+            if (!Directory.Exists(configs_path))
+                Directory.CreateDirectory(configs_path);
+            string pokemonlist_file = Path.Combine(configs_path, filename);
+            if (!File.Exists(pokemonlist_file))
             {
                 Logger.Write($"File: \"\\Configs\\{filename}\" not found, creating new...", LogLevel.Warning);
-                using (var w = File.AppendText(path + filename))
+                using (var w = File.AppendText(pokemonlist_file))
                 {
                     defaultPokemon.ForEach(pokemon => w.WriteLine(pokemon.ToString()));
                     defaultPokemon.ForEach(pokemon => result.Add((PokemonId)pokemon));
                     w.Close();
                 }
             }
-            if (File.Exists(path + filename))
+            if (File.Exists(pokemonlist_file))
             {
                 Logger.Write($"Loading File: \"\\Configs\\{filename}\"", LogLevel.Info);
 
                 var content = string.Empty;
-                using (StreamReader reader = new StreamReader(path + filename))
+                using (StreamReader reader = new StreamReader(pokemonlist_file))
                 {
                     content = reader.ReadToEnd();
                     reader.Close();

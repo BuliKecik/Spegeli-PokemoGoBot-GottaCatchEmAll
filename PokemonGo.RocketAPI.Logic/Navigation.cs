@@ -1,11 +1,12 @@
 ﻿#region
 
 using System;
-using System.Device.Location;
+//using System.Device.Location;
 using System.Threading.Tasks;
 using PokemonGo.RocketAPI.GeneratedCode;
 using PokemonGo.RocketAPI.Logic.Utils;
 using PokemonGo.RocketAPI.Logging;
+using PokemonGo.RocketAPI.Helpers;
 
 #endregion
 

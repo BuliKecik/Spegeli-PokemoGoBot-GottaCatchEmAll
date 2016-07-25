@@ -2,18 +2,15 @@
 
 using System;
 using System.Collections.Generic;
-using System.Device.Location;
+//using System.Device.Location;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using PokemonGo.RocketAPI.Enums;
-using PokemonGo.RocketAPI.Exceptions;
 using PokemonGo.RocketAPI.Extensions;
 using PokemonGo.RocketAPI.GeneratedCode;
 using PokemonGo.RocketAPI.Logic.Utils;
 using PokemonGo.RocketAPI.Helpers;
 using System.IO;
-using System.Text;
 using PokemonGo.RocketAPI.Logging;
 
 #endregion
@@ -29,6 +26,7 @@ namespace PokemonGo.RocketAPI.Logic
         private readonly Statistics _stats;
         private readonly Navigation _navigation;
         private GetPlayerResponse _playerProfile;
+        private string configs_path = Path.Combine(Directory.GetCurrentDirectory(), "Configs");
 
         private int recycleCounter = 0;
         private bool IsInitialized = false;
@@ -679,19 +677,19 @@ namespace PokemonGo.RocketAPI.Logic
         /// </summary>
         private void ResetCoords(string filename = "LastCoords.ini")
         {
-            string path = Directory.GetCurrentDirectory() + "\\Configs\\";
-            if (!File.Exists(path + filename)) return;
+            string lastcoords_file = Path.Combine(configs_path, filename);
+            if (!File.Exists(lastcoords_file)) return;
             Tuple<double, double> latLngFromFile = Client.GetLatLngFromFile();
             if (latLngFromFile == null) return;
             double distance = LocationUtils.CalculateDistanceInMeters(latLngFromFile.Item1, latLngFromFile.Item2, _clientSettings.DefaultLatitude, _clientSettings.DefaultLongitude);
-            DateTime? lastModified = File.Exists(path + filename) ? (DateTime?)File.GetLastWriteTime(path + filename) : null;
+            DateTime? lastModified = File.Exists(lastcoords_file) ? (DateTime?)File.GetLastWriteTime(lastcoords_file) : null;
             if (lastModified == null) return;
             double? hoursSinceModified = (DateTime.Now - lastModified).HasValue ? (double?)((DateTime.Now - lastModified).Value.Minutes / 60.0) : null;
             if (hoursSinceModified == null || hoursSinceModified < 1) return; // Shouldn't really be null, but can be 0 and that's bad for division.
             var kmph = (distance / 1000) / (hoursSinceModified ?? .1);
             if (kmph < 80) // If speed required to get to the default location is < 80km/hr
             {
-                File.Delete(path + filename);
+                File.Delete(lastcoords_file);
                 Logger.Write("Detected realistic Traveling , using UserSettings.settings", LogLevel.Warning);
             }
             else
