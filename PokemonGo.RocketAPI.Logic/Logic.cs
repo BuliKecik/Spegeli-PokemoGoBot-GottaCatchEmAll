@@ -132,7 +132,7 @@ namespace PokemonGo.RocketAPI.Logic
 
                 if (_clientSettings.EvolvePokemon || _clientSettings.EvolveOnlyPokemonAboveIV) await EvolvePokemon(_clientSettings.PokemonsToEvolve);
                 if (_clientSettings.TransferPokemon) await TransferPokemon();
-                await PokemonToCSV();
+                await _inventory.ExportPokemonToCSV(_playerProfile.Profile);
                 await RecycleItems();
                 await ExecuteFarmingPokestopsAndPokemons(_clientSettings.UseGPXPathing);
 
@@ -598,62 +598,6 @@ namespace PokemonGo.RocketAPI.Logic
                 Logger.Write(
                     $"# CP {pokemon.Cp.ToString().PadLeft(4, ' ')}/{PokemonInfo.CalculateMaxCP(pokemon).ToString().PadLeft(4, ' ')} | ({PokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00")}% perfect)\t| Lvl {PokemonInfo.GetLevel(pokemon).ToString("00")}\t NAME: '{pokemon.PokemonId}'",
                     LogLevel.Info, ConsoleColor.Yellow);
-            }
-        }
-
-        private async Task PokemonToCSV(string filename = "PokeList.csv")
-        {
-            string path = Directory.GetCurrentDirectory() + "\\Export\\";
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            if (Directory.Exists(path))
-            {
-                try
-                {
-                    if (File.Exists(path + filename))
-                        File.Delete(path + filename);
-                    if (!File.Exists(path + filename))
-                    {
-                        var AllPokemon = await _inventory.GetHighestsPerfect(1000);
-                        var myPokemonSettings = await _inventory.GetPokemonSettings();
-                        var pokemonSettings = myPokemonSettings.ToList();
-
-                        var myPokemonFamilies = await _inventory.GetPokemonFamilies();
-                        var pokemonFamilies = myPokemonFamilies.ToArray();
-                        var csvExportPokemonAll = new StringBuilder();
-                        var _currentLevelInfos = await Statistics._getcurrentLevelInfos(_inventory);
-                        csvExportPokemonAll.AppendLine(Statistics.GetUsername(_client, _playerProfile) + _currentLevelInfos.ToString());
-                        string ls = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator;
-                        var columnnames = string.Format($"#{ls}NAME{ls}LVL{ls}CP{ls}MaxCP{ls}PERFECTION{ls}CANDY{ls}iATK{ls}iDEF{ls}iSTA{ls}", "#", "NAME", "LVL", "CP", "MaxCP", "PERFECTION", "CANDY", "iATK", "iDEF", "iSTA");
-                        csvExportPokemonAll.AppendLine(columnnames);
-
-                        foreach (var pokemon in AllPokemon)
-                        {
-                            int POKENUMBER = (int)pokemon.PokemonId;
-                            var NAME = $"{pokemon.PokemonId}";
-                            var LVL = $"{PokemonInfo.GetLevel(pokemon)}";
-                            var MaxCP = $"{PokemonInfo.CalculateMaxCP(pokemon)}";
-                            var CP = $"{pokemon.Cp}";
-                            string PERFECTION = PokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00");
-                            var IATK = $"{pokemon.IndividualAttack}";
-                            var IDEF = $"{pokemon.IndividualDefense}";
-                            var ISTA = $"{pokemon.IndividualStamina}";
-                            var settings = pokemonSettings.Single(x => x.PokemonId == pokemon.PokemonId);
-                            var familyCandy = pokemonFamilies.Single(x => settings.FamilyId == x.FamilyId);
-                            var CANDY = familyCandy.Candy;
-                            var pokedata = string.Format($"{POKENUMBER}{ls}{NAME}{ls}{LVL}{ls}{CP}{ls}{MaxCP}{ls}{PERFECTION}{ls}{CANDY}{ls}{CANDY}{ls}{IATK}{ls}{IDEF}{ls}{ISTA}{ls}", POKENUMBER, NAME, LVL, CP, MaxCP, PERFECTION, CANDY, IATK, IDEF, ISTA);
-                            //var pokedata = string.Format("{0};{1};{2};{3};{4};{5};{6};{7};{8};{9}", POKENUMBER, NAME, LVL, CP, MaxCP, PERFECTION, CANDY, IATK, IDEF, ISTA);
-
-                            csvExportPokemonAll.AppendLine(pokedata);
-                        }
-                        Logger.Write($"Export all Pokemon to \"\\Export\\{filename}\"", LogLevel.Info);
-                        File.WriteAllText(path + filename, csvExportPokemonAll.ToString());
-                    }
-                }
-                catch
-                {
-                    Logger.Write("Export all Pokemons to CSV not possible. File seems be in use!", LogLevel.Warning);
-                }
             }
         }
 
