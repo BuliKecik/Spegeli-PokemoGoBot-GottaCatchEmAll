@@ -324,7 +324,6 @@ namespace PokemonGo.RocketAPI.Logic
                     Logger.Write("Export Player Infos and all Pokemons to CSV not possible. File seems be in use!", LogLevel.Warning);
                 }
             }
-            return;
         }
 
     }

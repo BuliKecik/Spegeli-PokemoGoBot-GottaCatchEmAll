@@ -138,6 +138,7 @@ namespace PokemonGo.RocketAPI.Logic
                     await _inventory.ExportPokemonToCSV(_playerProfile.Profile);
                     await RecycleItems();
                 }
+                IsInitialized = true;
                 await ExecuteFarmingPokestopsAndPokemons(_clientSettings.UseGPXPathing);
 
                 /*
