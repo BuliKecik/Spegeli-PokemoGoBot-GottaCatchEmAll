@@ -28,7 +28,7 @@ Chatting about this Repository can be done on our Discord: https://discord.gg/Vs
    (Optional: PokemonsNotToTransfer List - Pokemon on this List will be not Transfered, configurable via File in Config Folder)
    (Optional: NotTransferPokemonsThatCanEvolve, Disabled by default, can be Enabled via UserSettings)
  - [Evolve Pokemon]<br />
-   (Optional: Disabled by default, can be Enabled via UserSettings)
+   (Optional: Enabled by default, can be Disabled via UserSettings)
    (Optional: PokemonsToEvolve List - Only Pokemons in this List will be Evolved, configurable via File in Config Folder)
    (Optional: EvolveOnlyPokemonAboveIV - Will Evolve only Pokemon with IV > EvolveAboveIVValue, Disabled by default, can be Enabled vis UserSettings)
  - [Throws away unneeded items]<br />

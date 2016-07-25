@@ -98,48 +98,12 @@ namespace PokemonGo.RocketAPI.Console {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool EvolveAllPokemonWithEnoughCandy {
+        public bool UsePokemonToNotCatchList {
             get {
-                return ((bool)(this["EvolveAllPokemonWithEnoughCandy"]));
+                return ((bool)(this["UsePokemonToNotCatchList"]));
             }
             set {
-                this["EvolveAllPokemonWithEnoughCandy"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool TransferDuplicatePokemon {
-            get {
-                return ((bool)(this["TransferDuplicatePokemon"]));
-            }
-            set {
-                this["TransferDuplicatePokemon"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool UsePokemonToNotCatchFilter {
-            get {
-                return ((bool)(this["UsePokemonToNotCatchFilter"]));
-            }
-            set {
-                this["UsePokemonToNotCatchFilter"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2")]
-        public int KeepMinDuplicatePokemon {
-            get {
-                return ((int)(this["KeepMinDuplicatePokemon"]));
-            }
-            set {
-                this["KeepMinDuplicatePokemon"] = value;
+                this["UsePokemonToNotCatchList"] = value;
             }
         }
         
@@ -217,7 +181,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("GPXFile.GPX")]
+        [global::System.Configuration.DefaultSettingValueAttribute("GPXFILE.gpx")]
         public string GPXFile {
             get {
                 return ((string)(this["GPXFile"]));
@@ -241,7 +205,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool NotTransferPokemonsThatCanEvolve {
             get {
                 return ((bool)(this["NotTransferPokemonsThatCanEvolve"]));
@@ -265,13 +229,49 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("95")]
-        public int EvolveAboveIVValue {
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool EvolvePokemon {
             get {
-                return ((int)(this["EvolveAboveIVValue"]));
+                return ((bool)(this["EvolvePokemon"]));
             }
             set {
-                this["EvolveAboveIVValue"] = value;
+                this["EvolvePokemon"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("95")]
+        public float EvolveOnlyPokemonAboveIVValue {
+            get {
+                return ((float)(this["EvolveOnlyPokemonAboveIVValue"]));
+            }
+            set {
+                this["EvolveOnlyPokemonAboveIVValue"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool TransferPokemon {
+            get {
+                return ((bool)(this["TransferPokemon"]));
+            }
+            set {
+                this["TransferPokemon"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        public int TransferPokemonKeepDuplicateAmount {
+            get {
+                return ((int)(this["TransferPokemonKeepDuplicateAmount"]));
+            }
+            set {
+                this["TransferPokemonKeepDuplicateAmount"] = value;
             }
         }
     }

@@ -22,23 +22,23 @@ namespace PokemonGo.RocketAPI.Console
         public double DefaultLatitude => UserSettings.Default.DefaultLatitude;
         public double DefaultLongitude => UserSettings.Default.DefaultLongitude;
         public double DefaultAltitude => UserSettings.Default.DefaultAltitude;
+        public bool UseGPXPathing => UserSettings.Default.UseGPXPathing;
+        public string GPXFile => UserSettings.Default.GPXFile;
+        public double WalkingSpeedInKilometerPerHour => UserSettings.Default.WalkingSpeedInKilometerPerHour;
+        public int MaxTravelDistanceInMeters => UserSettings.Default.MaxTravelDistanceInMeters;
+
+        public bool UsePokemonToNotCatchList => UserSettings.Default.UsePokemonToNotCatchList;
+        public bool EvolvePokemon => UserSettings.Default.EvolvePokemon;
+        public bool EvolveOnlyPokemonAboveIV => UserSettings.Default.EvolveOnlyPokemonAboveIV;
+        public float EvolveOnlyPokemonAboveIVValue => UserSettings.Default.EvolveOnlyPokemonAboveIVValue;
+        public bool TransferPokemon => UserSettings.Default.TransferPokemon;
+        public int TransferPokemonKeepDuplicateAmount => UserSettings.Default.TransferPokemonKeepDuplicateAmount;
+        public bool NotTransferPokemonsThatCanEvolve => UserSettings.Default.NotTransferPokemonsThatCanEvolve;
 
         public float KeepMinIVPercentage => UserSettings.Default.KeepMinIVPercentage;
         public int KeepMinCP => UserSettings.Default.KeepMinCP;
-        public double WalkingSpeedInKilometerPerHour => UserSettings.Default.WalkingSpeedInKilometerPerHour;
-        public bool EvolveAllPokemonWithEnoughCandy => UserSettings.Default.EvolveAllPokemonWithEnoughCandy;
         public bool useLuckyEggsWhileEvolving => UserSettings.Default.useLuckyEggsWhileEvolving;
-        public bool TransferDuplicatePokemon => UserSettings.Default.TransferDuplicatePokemon;
-        public bool NotTransferPokemonsThatCanEvolve => UserSettings.Default.NotTransferPokemonsThatCanEvolve;
-        public bool UsePokemonToNotCatchFilter => UserSettings.Default.UsePokemonToNotCatchFilter;
-        public int KeepMinDuplicatePokemon => UserSettings.Default.KeepMinDuplicatePokemon;
         public bool PrioritizeIVOverCP => UserSettings.Default.PrioritizeIVOverCP;
-        public int MaxTravelDistanceInMeters => UserSettings.Default.MaxTravelDistanceInMeters;
-        public bool EvolveOnlyPokemonAboveIV => UserSettings.Default.EvolveOnlyPokemonAboveIV;
-        public float EvolveAboveIVValue => UserSettings.Default.EvolveAboveIVValue;
-
-        public bool UseGPXPathing => UserSettings.Default.UseGPXPathing;
-        public string GPXFile => UserSettings.Default.GPXFile;
 
         private ICollection<PokemonId> _pokemonsToEvolve;
         private ICollection<PokemonId> _pokemonsNotToTransfer;

@@ -12,34 +12,32 @@ namespace PokemonGo.RocketAPI
     public interface ISettings
     {
         AuthType AuthType { get; }
+        string PtcPassword { get; }
+        string PtcUsername { get; }
         double DefaultLatitude { get; }
         double DefaultLongitude { get; }
         double DefaultAltitude { get; }
-        string PtcPassword { get; }
-        string PtcUsername { get; }
-        float KeepMinIVPercentage { get; }
-        int KeepMinCP { get; }
-        double WalkingSpeedInKilometerPerHour { get; }
-        bool EvolveAllPokemonWithEnoughCandy { get; }
-        bool TransferDuplicatePokemon { get; }
-        bool UsePokemonToNotCatchFilter { get; }
-        int KeepMinDuplicatePokemon { get; }
-        bool PrioritizeIVOverCP { get; }
-        int MaxTravelDistanceInMeters { get; }
-        bool useLuckyEggsWhileEvolving { get; }
-        bool NotTransferPokemonsThatCanEvolve { get; }
-        bool EvolveOnlyPokemonAboveIV { get; }
-        float EvolveAboveIVValue { get; }
- 
         bool UseGPXPathing { get; }
         string GPXFile { get; }
+        double WalkingSpeedInKilometerPerHour { get; }
+        int MaxTravelDistanceInMeters { get; }
+
+        bool UsePokemonToNotCatchList { get; }
+        bool EvolvePokemon { get; }
+        bool EvolveOnlyPokemonAboveIV { get; }
+        float EvolveOnlyPokemonAboveIVValue { get; }
+        bool TransferPokemon { get; }
+        int TransferPokemonKeepDuplicateAmount { get; }
+        bool NotTransferPokemonsThatCanEvolve { get; }
+
+        float KeepMinIVPercentage { get; }
+        int KeepMinCP { get; }
+        bool PrioritizeIVOverCP { get; }
+        bool useLuckyEggsWhileEvolving { get; }
 
         ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter { get; }
-
         ICollection<PokemonId> PokemonsToEvolve { get; }
-
         ICollection<PokemonId> PokemonsNotToTransfer { get; }
-
         ICollection<PokemonId> PokemonsNotToCatch { get; }
     }
 }

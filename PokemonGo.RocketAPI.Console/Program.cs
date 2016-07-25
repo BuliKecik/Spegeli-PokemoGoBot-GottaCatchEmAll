@@ -13,7 +13,6 @@ namespace PokemonGo.RocketAPI.Console
 {
     internal class Program
     {
-
         private static void Main()
         {
             AppDomain.CurrentDomain.UnhandledException

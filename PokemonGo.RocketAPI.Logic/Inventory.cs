@@ -26,7 +26,7 @@ namespace PokemonGo.RocketAPI.Logic
             _client = client;
         }
 
-        public async Task<IEnumerable<PokemonData>> GetDuplicatePokemonToTransfer(bool keepPokemonsThatCanEvolve = false, bool prioritizeIVoverCP = false, IEnumerable<PokemonId> filter = null)
+        public async Task<IEnumerable<PokemonData>> GetPokemonToTransfer(bool keepPokemonsThatCanEvolve = false, bool prioritizeIVoverCP = false, IEnumerable<PokemonId> filter = null)
         {
             var myPokemon = await GetPokemons();
             var pokemonList = myPokemon.Where(p => p.DeployedFortId == 0 && p.Favorite == 0 && p.Cp < _client.Settings.KeepMinCP).ToList();
@@ -49,13 +49,19 @@ namespace PokemonGo.RocketAPI.Logic
                 {
                     var settings = pokemonSettings.Single(x => x.PokemonId == pokemon.Key);
                     var familyCandy = pokemonFamilies.Single(x => settings.FamilyId == x.FamilyId);
-                    if (settings.CandyToEvolve == 0)
-                        continue;
+                    var amountToSkip = _client.Settings.TransferPokemonKeepDuplicateAmount;
 
-                    var amountToSkip = familyCandy.Candy / settings.CandyToEvolve;
-                    amountToSkip = amountToSkip > _client.Settings.KeepMinDuplicatePokemon
-                        ? amountToSkip
-                        : _client.Settings.KeepMinDuplicatePokemon;
+                    if (settings.CandyToEvolve > 0 && familyCandy.Candy / settings.CandyToEvolve > amountToSkip)
+                        amountToSkip = familyCandy.Candy / settings.CandyToEvolve;
+
+                    //Changes from: https://github.com/NecronomiconCoding/NecroBot/pull/475/files
+                    //if (settings.CandyToEvolve == 0)
+                    //    continue;
+                    //var amountToSkip = familyCandy.Candy / settings.CandyToEvolve;
+                    //amountToSkip = amountToSkip > _client.Settings.KeepMinDuplicatePokemon
+                    //    ? amountToSkip
+                    //    : _client.Settings.KeepMinDuplicatePokemon;
+
                     if (prioritizeIVoverCP)
                     {
                         results.AddRange(pokemonList.Where(x => x.PokemonId == pokemon.Key)
@@ -85,7 +91,7 @@ namespace PokemonGo.RocketAPI.Logic
                     p =>
                         p.OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
                             .ThenBy(n => n.StaminaMax)
-                            .Skip(_client.Settings.KeepMinDuplicatePokemon)
+                            .Skip(_client.Settings.TransferPokemonKeepDuplicateAmount)
                             .ToList());
             }
             else
@@ -97,7 +103,7 @@ namespace PokemonGo.RocketAPI.Logic
                     p =>
                         p.OrderByDescending(x => x.Cp)
                             .ThenBy(n => n.StaminaMax)
-                            .Skip(_client.Settings.KeepMinDuplicatePokemon)
+                            .Skip(_client.Settings.TransferPokemonKeepDuplicateAmount)
                             .ToList());
             }
         }
@@ -205,7 +211,7 @@ namespace PokemonGo.RocketAPI.Logic
                 myPokemons = myPokemons.Where(p => filter.Contains(p.PokemonId));		
 
             if (_client.Settings.EvolveOnlyPokemonAboveIV)
-                myPokemons = myPokemons.Where(p => PokemonInfo.CalculatePokemonPerfection(p) >= _client.Settings.EvolveAboveIVValue);
+                myPokemons = myPokemons.Where(p => PokemonInfo.CalculatePokemonPerfection(p) >= _client.Settings.EvolveOnlyPokemonAboveIVValue);
 
             var pokemons = myPokemons.ToList();
 

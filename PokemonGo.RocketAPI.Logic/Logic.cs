@@ -130,8 +130,8 @@ namespace PokemonGo.RocketAPI.Logic
                 var PokemonsNotToCatch = _clientSettings.PokemonsNotToCatch;
                 var PokemonsToEvolve = _clientSettings.PokemonsToEvolve;
 
-                if (_clientSettings.EvolveAllPokemonWithEnoughCandy || _clientSettings.EvolveOnlyPokemonAboveIV) await EvolveAllPokemonWithEnoughCandy(_clientSettings.PokemonsToEvolve);
-                if (_clientSettings.TransferDuplicatePokemon) await TransferDuplicatePokemon();
+                if (_clientSettings.EvolvePokemon || _clientSettings.EvolveOnlyPokemonAboveIV) await EvolvePokemon(_clientSettings.PokemonsToEvolve);
+                if (_clientSettings.TransferPokemon) await TransferPokemon();
                 await PokemonToCSV();
                 await RecycleItems();
                 await ExecuteFarmingPokestopsAndPokemons(_clientSettings.UseGPXPathing);
@@ -407,7 +407,7 @@ namespace PokemonGo.RocketAPI.Logic
                     i =>
                     LocationUtils.CalculateDistanceInMeters(_client.CurrentLat, _client.CurrentLng, i.Latitude, i.Longitude));
 
-            if (_clientSettings.UsePokemonToNotCatchFilter)
+            if (_clientSettings.UsePokemonToNotCatchList)
             {
                 ICollection<PokemonId> filter = _clientSettings.PokemonsNotToCatch;
                 pokemons = mapObjects.MapCells.SelectMany(i => i.CatchablePokemons).Where(p => !filter.Contains(p.PokemonId)).OrderBy(i => LocationUtils.CalculateDistanceInMeters(_client.CurrentLat, _client.CurrentLng, i.Latitude, i.Longitude));
@@ -434,11 +434,11 @@ namespace PokemonGo.RocketAPI.Logic
                     await RandomHelper.RandomDelay(50, 200);
             }
 
-            if (_clientSettings.EvolveAllPokemonWithEnoughCandy || _clientSettings.EvolveOnlyPokemonAboveIV) await EvolveAllPokemonWithEnoughCandy(_clientSettings.PokemonsToEvolve);
-            if (_clientSettings.TransferDuplicatePokemon) await TransferDuplicatePokemon();
+            if (_clientSettings.EvolvePokemon || _clientSettings.EvolveOnlyPokemonAboveIV) await EvolvePokemon(_clientSettings.PokemonsToEvolve);
+            if (_clientSettings.TransferPokemon) await TransferPokemon();
         }
 
-        private async Task EvolveAllPokemonWithEnoughCandy(IEnumerable<PokemonId> filter = null)
+        private async Task EvolvePokemon(IEnumerable<PokemonId> filter = null)
         {
             await Inventory.getCachedInventory(_client, true);
             var pokemonToEvolve = await _inventory.GetPokemonToEvolve(filter);
@@ -463,10 +463,10 @@ namespace PokemonGo.RocketAPI.Logic
             }
         }
 
-        private async Task TransferDuplicatePokemon()
+        private async Task TransferPokemon()
         {
             await Inventory.getCachedInventory(_client, true);
-            var duplicatePokemons = await _inventory.GetDuplicatePokemonToTransfer(_clientSettings.NotTransferPokemonsThatCanEvolve, _clientSettings.PrioritizeIVOverCP, _clientSettings.PokemonsNotToTransfer);
+            var duplicatePokemons = await _inventory.GetPokemonToTransfer(_clientSettings.NotTransferPokemonsThatCanEvolve, _clientSettings.PrioritizeIVOverCP, _clientSettings.PokemonsNotToTransfer);
             if (duplicatePokemons != null && duplicatePokemons.Any())
                 Logger.Write($"{duplicatePokemons.Count()} Pokemon:", LogLevel.Transfer);
 

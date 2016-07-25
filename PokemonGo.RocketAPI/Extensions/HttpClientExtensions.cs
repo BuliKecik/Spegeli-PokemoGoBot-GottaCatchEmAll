@@ -6,6 +6,7 @@ using Google.Protobuf;
 using PokemonGo.RocketAPI.Exceptions;
 using PokemonGo.RocketAPI.GeneratedCode;
 using PokemonGo.RocketAPI.Logging;
+using System.Diagnostics;
 
 #endregion
 
