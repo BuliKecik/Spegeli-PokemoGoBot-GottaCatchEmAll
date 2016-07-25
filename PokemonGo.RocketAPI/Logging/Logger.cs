@@ -83,7 +83,7 @@ namespace PokemonGo.RocketAPI.Logging
                     System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (EVOLVE) {message}");
                     break;
                 case LogLevel.Berry:
-                    System.Console.ForegroundColor = ConsoleColor.White;
+                    System.Console.ForegroundColor = ConsoleColor.Magenta;
                     System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (BERRY) {message}");
                     break;
                 case LogLevel.Egg:

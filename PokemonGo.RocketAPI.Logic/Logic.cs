@@ -301,7 +301,7 @@ namespace PokemonGo.RocketAPI.Logic
                 Logger.Write("No usable PokeStops found in your area. Is your maximum distance too small?",
                     LogLevel.Warning);
             else
-                Logger.Write($"Found {pokeStops.Count()} pokestops", LogLevel.None, ConsoleColor.Green);
+                Logger.Write($"Found {pokeStops.Count()} {(pokeStops.Count() == 1 ? "Pokestop" : "Pokestops")}", LogLevel.Info);
 
             while (pokestopList.Any())
             {
@@ -420,7 +420,7 @@ namespace PokemonGo.RocketAPI.Logic
             }
 
             if (pokemons != null && pokemons.Any())
-                Logger.Write($"Found {pokemons.Count()} catchable Pokemon", LogLevel.None, ConsoleColor.Green);
+                Logger.Write($"Found {pokemons.Count()} catchable Pokemon", LogLevel.Info);
             else
                 return;
 
@@ -450,7 +450,7 @@ namespace PokemonGo.RocketAPI.Logic
             var pokemonToEvolve = await _inventory.GetPokemonToEvolve(filter);
             if (pokemonToEvolve != null && pokemonToEvolve.Any())
             {
-                Logger.Write($"{pokemonToEvolve.Count()} Pokemon:", LogLevel.Evolve);
+                Logger.Write($"Found {pokemonToEvolve.Count()} Pokemon for Evolve:", LogLevel.Info);
                 if (_clientSettings.useLuckyEggsWhileEvolving)
                     await UseLuckyEgg();
             }
@@ -474,7 +474,7 @@ namespace PokemonGo.RocketAPI.Logic
             await Inventory.getCachedInventory(_client, true);
             var duplicatePokemons = await _inventory.GetPokemonToTransfer(_clientSettings.NotTransferPokemonsThatCanEvolve, _clientSettings.PrioritizeIVOverCP, _clientSettings.PokemonsNotToTransfer);
             if (duplicatePokemons != null && duplicatePokemons.Any())
-                Logger.Write($"{duplicatePokemons.Count()} Pokemon:", LogLevel.Transfer);
+                Logger.Write($"Found {duplicatePokemons.Count()} Pokemon for Transfer:", LogLevel.Info);
 
             foreach (var duplicatePokemon in duplicatePokemons)
             {
@@ -505,7 +505,7 @@ namespace PokemonGo.RocketAPI.Logic
             await Inventory.getCachedInventory(_client, true);
             var items = await _inventory.GetItemsToRecycle(_clientSettings);
             if (items != null && items.Any())
-                Logger.Write($"{items.Count()} {(items.Count() == 1 ? "Item" : "Items")}:", LogLevel.Recycling);
+                Logger.Write($"Found {items.Count()} Recyclable {(items.Count() == 1 ? "Item" : "Items")}:", LogLevel.Info);
 
             foreach (var item in items)
             {

@@ -16,21 +16,21 @@ Chatting about this Repository can be done on our Discord: https://discord.gg/Vs
  - [Configurable Custom Pathing]<br />
    (Speed in km/h is configurable via UserSettings)
  - [Farm Pokestops]<br />
-   (use always the nearest from the current location)
+   (use always the nearest from the current location)<br />
    (Optional: keep within specific MaxTravelDistanceInMeters to Start Point) (MaxTravelDistanceInMeters configurable via UserSettings)
  - [Farm all Pokemon near your]<br />
    (Optional: PokemonsNotToCatch List. Disabled by default, can be Enabled via UserSettings, configurable Names via File in Config Folder)
- - [Transfer duplicate Pokemon]<br />
-   (ignore favorite/gym marked)
-   (Optional: Enabled by default, can be Disabled via UserSettings.)
-   (Optional: PrioritizeIVOverCP - Determines the sorting sequence - CP or IV, Disabled by default, can be Enabled via UserSettings.)
-   (Optional: KeepMinDuplicatePokemon - The amount of X best Pokemon he should keep, 2 by default, configurable via UserSettings)
-   (Optional: PokemonsNotToTransfer List - Pokemon on this List will be not Transfered, configurable via File in Config Folder)
-   (Optional: NotTransferPokemonsThatCanEvolve, Disabled by default, can be Enabled via UserSettings)
  - [Evolve Pokemon]<br />
-   (Optional: Enabled by default, can be Disabled via UserSettings)
-   (Optional: PokemonsToEvolve List - Only Pokemons in this List will be Evolved, configurable via File in Config Folder)
+   (Optional: Enabled by default, can be Disabled via UserSettings)<br />
+   (Optional: PokemonsToEvolve List - Only Pokemons in this List will be Evolved, configurable via File in Config Folder)<br />
    (Optional: EvolveOnlyPokemonAboveIV - Will Evolve only Pokemon with IV > EvolveAboveIVValue, Disabled by default, can be Enabled vis UserSettings)
+ - [Transfer duplicate Pokemon]<br />
+   (ignore favorite/gym marked)<br />
+   (Optional: Enabled by default, can be Disabled via UserSettings.)<br />
+   (Optional: PrioritizeIVOverCP - Determines the sorting sequence - CP or IV, Disabled by default, can be Enabled via UserSettings.)<br />
+   (Optional: KeepMinDuplicatePokemon - The amount of X best Pokemon he should keep, 2 by default, configurable via UserSettings)<br />
+   (Optional: PokemonsNotToTransfer List - Pokemon on this List will be not Transfered, configurable via File in Config Folder)<br />
+   (Optional: NotTransferPokemonsThatCanEvolve - Will keep all Pokemons which can be Evolve not matter if they on PokemonsToEvolve List or not, Disabled by default, can be Enabled via UserSettings)
  - [Throws away unneeded items]<br />
    (configurable via UserSettings)
  - [Use best Pokeball & Berry]<br />
