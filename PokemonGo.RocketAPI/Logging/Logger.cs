@@ -16,7 +16,7 @@ namespace PokemonGo.RocketAPI.Logging
     public class Logger
     {
         static string _currentFile = string.Empty;
-        static string path = Directory.GetCurrentDirectory() + "\\Logs\\";
+        static string path = Path.Combine(Directory.GetCurrentDirectory(), "Logs");
 
         //private static Logger _logger;
 
