@@ -13,22 +13,30 @@ Chatting about this Repository can be done on our Discord: https://discord.gg/Vs
  
  - [PTC Login / Google]
  - [Humanlike Walking]<br />
-   (Speed in km/h is configurable via UserSettings)
  - [Configurable Custom Pathing]<br />
+   (Speed in km/h is configurable via UserSettings)
  - [Farm Pokestops]<br />
-   (use always the nearest from the current location) (Optional: keep within specific distance to Start Point) (MaxDistance configurable via UserSettings)
+   (use always the nearest from the current location)
+   (Optional: keep within specific MaxTravelDistanceInMeters to Start Point) (MaxTravelDistanceInMeters configurable via UserSettings)
  - [Farm all Pokemon near your]<br />
    (Optional: PokemonsNotToCatch List. Disabled by default, can be Enabled via UserSettings, configurable Names via File in Config Folder)
  - [Transfer duplicate Pokemon]<br />
-   (ignore favorite/gym marked) (Optional: Enabled by default, can be Disabled via UserSettings. Keep X amount of everyone and order by CP or IV configurable via UserSettings) (Optional: PokemonsNotToTransfer List configurable via File in Config Folder)
+   (ignore favorite/gym marked)
+   (Optional: Enabled by default, can be Disabled via UserSettings.)
+   (Optional: PrioritizeIVOverCP - Determines the sorting sequence - CP or IV, Disabled by default, can be Enabled via UserSettings.)
+   (Optional: KeepMinDuplicatePokemon - The amount of X best Pokemon he should keep, 2 by default, configurable via UserSettings)
+   (Optional: PokemonsNotToTransfer List - Pokemon on this List will be not Transfered, configurable via File in Config Folder)
+   (Optional: NotTransferPokemonsThatCanEvolve, Disabled by default, can be Enabled via UserSettings)
  - [Evolve Pokemon]<br />
-   (Optional: Disabled by default, can be Enabled via UserSettings. PokemonsToEvolve List configurable via File in Config Folder)
+   (Optional: Disabled by default, can be Enabled via UserSettings)
+   (Optional: PokemonsToEvolve List - Only Pokemons in this List will be Evolved, configurable via File in Config Folder)
+   (Optional: EvolveOnlyPokemonAboveIV - Will Evolve only Pokemon with IV > EvolveAboveIVValue, Disabled by default, can be Enabled vis UserSettings)
  - [Throws away unneeded items]<br />
    (configurable via UserSettings)
  - [Use best Pokeball & Berry]<br />
-   (depending on Pokemon CP)
+   (depending on Pokemon CP and IV)
  - [Creates Excel CSV File on Startup with your current Pokemon]<br />
-   (including Number, Name, CP & Perfection) (can be found in the Export Folder)
+   (including Number, Name, CP,Perfection and many more) (can be found in the Export Folder)
  - [Log File System]<br />
    (all activity will be tracked in a Log File)
  - [Random Task Delays]
