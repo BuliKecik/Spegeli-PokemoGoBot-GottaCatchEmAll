@@ -2,6 +2,7 @@
 
 using PokemonGo.RocketAPI.Logging;
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
 using System.Threading;
@@ -24,7 +25,7 @@ namespace PokemonGo.RocketAPI.Helpers
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            for (var i = 0; i <= MaxRetries; i++)
+            for (int i = 0; i <= MaxRetries; i++)
             {
                 try
                 {
@@ -36,7 +37,7 @@ namespace PokemonGo.RocketAPI.Helpers
                 }
                 catch (Exception ex)
                 {
-                    Logger.Write($"[#{i} of {MaxRetries}] retry request {request.RequestUri} - Error: {ex}",
+                    Debug.WriteLine($"[#{i} of {MaxRetries}] retry request {request.RequestUri} - Error: {ex}",
                         LogLevel.Warning);
                     if (i >= MaxRetries) throw;
                     await Task.Delay(1000, cancellationToken);

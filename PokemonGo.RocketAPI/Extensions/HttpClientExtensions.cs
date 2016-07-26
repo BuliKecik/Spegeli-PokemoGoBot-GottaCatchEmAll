@@ -30,12 +30,11 @@ namespace PokemonGo.RocketAPI.Extensions
             return decodedResponse;
         }
 
-        public static async Task<TResponsePayload> PostProtoPayload<TRequest, TResponsePayload>(this HttpClient client,
-            string url, TRequest request) where TRequest : IMessage<TRequest>
-            where TResponsePayload : IMessage<TResponsePayload>, new()
+        public static async Task<TResponsePayload> PostProtoPayload<TRequest, TResponsePayload>(this HttpClient client, string url, TRequest request) where TRequest : IMessage<TRequest> where TResponsePayload : IMessage<TResponsePayload>, new()
         {
             //Logger.Write($"Requesting {typeof(TResponsePayload).Name}", LogLevel.Debug);
-            var response = await PostProto(client, url, request);
+            Debug.WriteLine($"Requesting {typeof(TResponsePayload).Name}");
+            var response = await PostProto<TRequest>(client, url, request);
 
             if (response.Payload.Count == 0)
             {
