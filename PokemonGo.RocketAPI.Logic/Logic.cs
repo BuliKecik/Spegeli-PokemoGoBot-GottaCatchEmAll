@@ -26,6 +26,7 @@ namespace PokemonGo.RocketAPI.Logic
         private readonly Navigation _navigation;
         private GetPlayerResponse _playerProfile;
         private static DateTime _lastLuckyEggTime;
+        private static DateTime _lastIncenseTime;
         private string configs_path = Path.Combine(Directory.GetCurrentDirectory(), "Settings");
 
         private int recycleCounter = 0;
@@ -210,6 +211,8 @@ namespace PokemonGo.RocketAPI.Logic
                             {
                                 if (_clientSettings.UseLuckyEggs)
                                     await UseLuckyEgg();
+                                if (_clientSettings.UseIncense)
+                                    await UseIncense();
 
                                 pokestopList =
                                     pokestopList.OrderBy(
@@ -305,6 +308,8 @@ namespace PokemonGo.RocketAPI.Logic
             {
                 if (_clientSettings.UseLuckyEggs)
                     await UseLuckyEgg();
+                if (_clientSettings.UseIncense)
+                    await UseIncense();
 
                 pokestopList =
                     pokestopList.OrderBy(
@@ -664,7 +669,20 @@ namespace PokemonGo.RocketAPI.Logic
 
             _lastLuckyEggTime = DateTime.Now;
             await _client.UseXpBoostItem(ItemId.ItemLuckyEgg);
-            Logger.Write($"Used Lucky Egg, remaining: {LuckyEgg.Count - 1}", LogLevel.Egg);
+            Logger.Write($"Used Lucky Egg, remaining: {LuckyEgg.Count - 1}", LogLevel.Item);
+        }
+
+        public async Task UseIncense()
+        {
+            var inventory = await _inventory.GetItems();
+            var WorstIncense = inventory.Where(p => (ItemId)p.Item_ == ItemId.ItemIncenseOrdinary).FirstOrDefault();
+
+            if (WorstIncense == null || WorstIncense.Count <= 0 || _lastIncenseTime.AddMinutes(30).Ticks > DateTime.Now.Ticks)
+                return;
+
+            _lastIncenseTime = DateTime.Now;
+            await _client.UseIncenseItem(ItemId.ItemIncenseOrdinary);
+            Logger.Write($"Used Ordinary Incense, remaining: {WorstIncense.Count - 1}", LogLevel.Item);
         }
 
         /// <summary>

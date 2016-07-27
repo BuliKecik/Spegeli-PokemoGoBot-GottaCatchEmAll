@@ -43,6 +43,7 @@ namespace PokemonGo.RocketAPI.Console
         public float TransferPokemonKeepAboveIVPercentage => UserSettings.Default.TransferPokemonKeepAboveIVPercentage;
 
         public bool UseLuckyEggs => UserSettings.Default.UseLuckyEggs;
+        public bool UseIncense => UserSettings.Default.UseIncense;
         public bool PrioritizeIVOverCP => UserSettings.Default.PrioritizeIVOverCP;
 
         private ICollection<PokemonId> _pokemonsToEvolve;

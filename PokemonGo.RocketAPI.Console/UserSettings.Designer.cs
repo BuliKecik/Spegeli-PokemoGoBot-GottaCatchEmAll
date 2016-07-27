@@ -37,7 +37,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("85")]
+        [global::System.Configuration.DefaultSettingValueAttribute("90")]
         public float TransferPokemonKeepAboveIVPercentage {
             get {
                 return ((float)(this["TransferPokemonKeepAboveIVPercentage"]));
@@ -121,7 +121,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("username")]
+        [global::System.Configuration.DefaultSettingValueAttribute("UserName")]
         public string PtcUsername {
             get {
                 return ((string)(this["PtcUsername"]));
@@ -133,7 +133,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("password")]
+        [global::System.Configuration.DefaultSettingValueAttribute("UserPassword")]
         public string PtcPassword {
             get {
                 return ((string)(this["PtcPassword"]));
@@ -265,7 +265,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
         public int TransferPokemonKeepDuplicateAmount {
             get {
                 return ((int)(this["TransferPokemonKeepDuplicateAmount"]));
@@ -308,6 +308,18 @@ namespace PokemonGo.RocketAPI.Console {
             }
             set {
                 this["UsePokemonToNotTransferList"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseIncense {
+            get {
+                return ((bool)(this["UseIncense"]));
+            }
+            set {
+                this["UseIncense"] = value;
             }
         }
     }

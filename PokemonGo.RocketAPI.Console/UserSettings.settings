@@ -6,7 +6,7 @@
       <Value Profile="(Default)">10</Value>
     </Setting>
     <Setting Name="TransferPokemonKeepAboveIVPercentage" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">85</Value>
+      <Value Profile="(Default)">90</Value>
     </Setting>
     <Setting Name="TransferPokemonKeepAboveCP" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1500</Value>
@@ -27,10 +27,10 @@
       <Value Profile="(Default)">Google</Value>
     </Setting>
     <Setting Name="PtcUsername" Type="System.String" Scope="User">
-      <Value Profile="(Default)">username</Value>
+      <Value Profile="(Default)">UserName</Value>
     </Setting>
     <Setting Name="PtcPassword" Type="System.String" Scope="User">
-      <Value Profile="(Default)">password</Value>
+      <Value Profile="(Default)">UserPassword</Value>
     </Setting>
     <Setting Name="PrioritizeIVOverCP" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -63,7 +63,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="TransferPokemonKeepDuplicateAmount" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">2</Value>
+      <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="UseTransferPokemonKeepAboveCP" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -73,6 +73,9 @@
     </Setting>
     <Setting Name="UsePokemonToNotTransferList" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UseIncense" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>
