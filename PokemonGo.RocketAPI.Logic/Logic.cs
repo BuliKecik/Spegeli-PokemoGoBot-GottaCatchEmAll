@@ -669,7 +669,7 @@ namespace PokemonGo.RocketAPI.Logic
 
             _lastLuckyEggTime = DateTime.Now;
             await _client.UseXpBoostItem(ItemId.ItemLuckyEgg);
-            Logger.Write($"Used Lucky Egg, remaining: {LuckyEgg.Count - 1}", LogLevel.Item);
+            Logger.Write($"Used Lucky Egg, remaining: {LuckyEgg.Count - 1}", LogLevel.Egg);
         }
 
         public async Task UseIncense()
@@ -682,7 +682,7 @@ namespace PokemonGo.RocketAPI.Logic
 
             _lastIncenseTime = DateTime.Now;
             await _client.UseIncenseItem(ItemId.ItemIncenseOrdinary);
-            Logger.Write($"Used Ordinary Incense, remaining: {WorstIncense.Count - 1}", LogLevel.Item);
+            Logger.Write($"Used Ordinary Incense, remaining: {WorstIncense.Count - 1}", LogLevel.Incense);
         }
 
         /// <summary>

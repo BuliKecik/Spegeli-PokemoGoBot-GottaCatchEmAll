@@ -86,9 +86,13 @@ namespace PokemonGo.RocketAPI.Logging
                     System.Console.ForegroundColor = ConsoleColor.Magenta;
                     System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (BERRY) {message}");
                     break;
-                case LogLevel.Item:
+                case LogLevel.Egg:
                     System.Console.ForegroundColor = ConsoleColor.White;
                     System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (EGG) {message}");
+                    break;
+                case LogLevel.Incense:
+                    System.Console.ForegroundColor = ConsoleColor.White;
+                    System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (INSENCE) {message}");
                     break;
                 case LogLevel.Recycling:
                     System.Console.ForegroundColor = ConsoleColor.DarkMagenta;
@@ -130,7 +134,8 @@ namespace PokemonGo.RocketAPI.Logging
         Transfer = 8,
         Evolve = 9,
         Berry = 10,
-        Item = 11,
-        Recycling = 12
+        Egg = 11,
+        Incense = 12,
+        Recycling = 13
     }
 }
