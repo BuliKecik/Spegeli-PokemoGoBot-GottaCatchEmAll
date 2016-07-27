@@ -38,30 +38,30 @@ namespace PokemonGo.RocketAPI.Console {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("85")]
-        public float KeepMinIVPercentage {
+        public float TransferPokemonKeepAboveIVPercentage {
             get {
-                return ((float)(this["KeepMinIVPercentage"]));
+                return ((float)(this["TransferPokemonKeepAboveIVPercentage"]));
             }
             set {
-                this["KeepMinIVPercentage"] = value;
+                this["TransferPokemonKeepAboveIVPercentage"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
-        public int KeepMinCP {
+        [global::System.Configuration.DefaultSettingValueAttribute("1500")]
+        public int TransferPokemonKeepAboveCP {
             get {
-                return ((int)(this["KeepMinCP"]));
+                return ((int)(this["TransferPokemonKeepAboveCP"]));
             }
             set {
-                this["KeepMinCP"] = value;
+                this["TransferPokemonKeepAboveCP"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("250")]
+        [global::System.Configuration.DefaultSettingValueAttribute("150")]
         public double WalkingSpeedInKilometerPerHour {
             get {
                 return ((double)(this["WalkingSpeedInKilometerPerHour"]));
@@ -157,7 +157,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        [global::System.Configuration.DefaultSettingValueAttribute("500")]
         public int MaxTravelDistanceInMeters {
             get {
                 return ((int)(this["MaxTravelDistanceInMeters"]));
@@ -194,18 +194,18 @@ namespace PokemonGo.RocketAPI.Console {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool useLuckyEggsWhileEvolving {
+        public bool UseLuckyEggs {
             get {
-                return ((bool)(this["useLuckyEggsWhileEvolving"]));
+                return ((bool)(this["UseLuckyEggs"]));
             }
             set {
-                this["useLuckyEggsWhileEvolving"] = value;
+                this["UseLuckyEggs"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool NotTransferPokemonsThatCanEvolve {
             get {
                 return ((bool)(this["NotTransferPokemonsThatCanEvolve"]));
@@ -272,6 +272,42 @@ namespace PokemonGo.RocketAPI.Console {
             }
             set {
                 this["TransferPokemonKeepDuplicateAmount"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseTransferPokemonKeepAboveCP {
+            get {
+                return ((bool)(this["UseTransferPokemonKeepAboveCP"]));
+            }
+            set {
+                this["UseTransferPokemonKeepAboveCP"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseTransferPokemonKeepAboveIV {
+            get {
+                return ((bool)(this["UseTransferPokemonKeepAboveIV"]));
+            }
+            set {
+                this["UseTransferPokemonKeepAboveIV"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UsePokemonToNotTransferList {
+            get {
+                return ((bool)(this["UsePokemonToNotTransferList"]));
+            }
+            set {
+                this["UsePokemonToNotTransferList"] = value;
             }
         }
     }

@@ -28,7 +28,7 @@ namespace PokemonGo.RocketAPI
         private Request.Types.UnknownAuth _unknownAuth;
         Random rand = null;
 
-        private static string configs_path = Path.Combine(Directory.GetCurrentDirectory(), "Configs");
+        private static string configs_path = Path.Combine(Directory.GetCurrentDirectory(), "Settings");
         private static string lastcoords_file = Path.Combine(configs_path, "LastCoords.ini");
 
         public Client(ISettings settings)
@@ -44,7 +44,7 @@ namespace PokemonGo.RocketAPI
             else
             {
                 if (!File.Exists(lastcoords_file) || !File.ReadAllText(lastcoords_file).Contains(":"))
-                    Logger.Write("Missing \"\\Configs\\LastCoords.ini\", using default settings for coordinates and create a new one...");
+                    Logger.Write("Missing Settings File \"LastCoords.ini\", using default settings for coordinates and create a new one...");
                 SetCoordinates(Settings.DefaultLatitude, Settings.DefaultLongitude, Settings.DefaultAltitude);
             }
 
@@ -90,13 +90,13 @@ namespace PokemonGo.RocketAPI
                         }
                         else
                         {
-                            Logger.Write("Coordinates in \"\\Configs\\Coords.ini\" file is invalid, using the default coordinates", LogLevel.Error);
+                            Logger.Write("Coordinates in \"\\Configs\\Coords.ini\" file are invalid, using the default coordinates", LogLevel.Error);
                             return null;
                         }
                     }
                     catch (FormatException)
                     {
-                        Logger.Write("Coordinates in \"\\Configs\\Coords.ini\" file is invalid, using the default coordinates", LogLevel.Error);
+                        Logger.Write("Coordinates in \"\\Configs\\Coords.ini\" file are invalid, using the default coordinates", LogLevel.Error);
                         return null;
                     }
                 }

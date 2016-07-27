@@ -23,17 +23,20 @@ namespace PokemonGo.RocketAPI
         int MaxTravelDistanceInMeters { get; }
 
         bool UsePokemonToNotCatchList { get; }
+        bool UsePokemonToNotTransferList { get; }
         bool EvolvePokemon { get; }
         bool EvolveOnlyPokemonAboveIV { get; }
         float EvolveOnlyPokemonAboveIVValue { get; }
         bool TransferPokemon { get; }
         int TransferPokemonKeepDuplicateAmount { get; }
         bool NotTransferPokemonsThatCanEvolve { get; }
+        bool UseTransferPokemonKeepAboveCP { get; }
+        int TransferPokemonKeepAboveCP { get; }
+        bool UseTransferPokemonKeepAboveIV { get; }
+        float TransferPokemonKeepAboveIVPercentage { get; }
 
-        float KeepMinIVPercentage { get; }
-        int KeepMinCP { get; }
         bool PrioritizeIVOverCP { get; }
-        bool useLuckyEggsWhileEvolving { get; }
+        bool UseLuckyEggs { get; }
 
         ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter { get; }
         ICollection<PokemonId> PokemonsToEvolve { get; }

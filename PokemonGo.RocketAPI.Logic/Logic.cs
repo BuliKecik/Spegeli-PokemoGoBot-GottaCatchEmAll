@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-//using System.Device.Location;
 using System.Linq;
 using System.Threading.Tasks;
 using PokemonGo.RocketAPI.Enums;
@@ -26,7 +25,8 @@ namespace PokemonGo.RocketAPI.Logic
         private readonly Statistics _stats;
         private readonly Navigation _navigation;
         private GetPlayerResponse _playerProfile;
-        private string configs_path = Path.Combine(Directory.GetCurrentDirectory(), "Configs");
+        private static DateTime _lastLuckyEggTime;
+        private string configs_path = Path.Combine(Directory.GetCurrentDirectory(), "Settings");
 
         private int recycleCounter = 0;
         private bool IsInitialized = false;
@@ -53,9 +53,9 @@ namespace PokemonGo.RocketAPI.Logic
                     Logger.Write($"Script will auto closed in {i * 5} seconds!", LogLevel.Warning);
                     await Task.Delay(5000);
                 }
-                await Task.Delay(15000);
                 System.Environment.Exit(1);
-            } else
+            }
+            else
             {
                 Logger.Write($"Make sure Lat & Lng is right. Exit Program if not! Lat: {_client.CurrentLat} Lng: {_client.CurrentLng}", LogLevel.Warning);
                 for (int i = 3; i > 0; i--)
@@ -208,6 +208,9 @@ namespace PokemonGo.RocketAPI.Logic
 
                             while (pokestopList.Any())
                             {
+                                if (_clientSettings.UseLuckyEggs)
+                                    await UseLuckyEgg();
+
                                 pokestopList =
                                     pokestopList.OrderBy(
                                         i =>
@@ -231,7 +234,6 @@ namespace PokemonGo.RocketAPI.Logic
                                     recycleCounter++;
                                 }
 
-                                await RandomHelper.RandomDelay(50, 200);
                                 if (recycleCounter >= 5)
                                     await RecycleItems();
                             }
@@ -269,7 +271,7 @@ namespace PokemonGo.RocketAPI.Logic
                 distanceFromStart > _clientSettings.MaxTravelDistanceInMeters)
             {
                 Logger.Write(
-                    $"You're outside of your defined radius! Walking to start ({distanceFromStart}m away) in 5 seconds. Is your Coords.ini file correct?",
+                    $"You're outside of your defined radius! Walking to start ({distanceFromStart:0.##}m away) in 5 seconds. Is your LastCoords.ini file correct?",
                     LogLevel.Warning);
                 await Task.Delay(5000);
                 Logger.Write("Moving to start location now.");
@@ -291,9 +293,7 @@ namespace PokemonGo.RocketAPI.Logic
                             LocationUtils.CalculateDistanceInMeters(
                                 _clientSettings.DefaultLatitude, _clientSettings.DefaultLongitude,
                                     i.Latitude, i.Longitude) < _clientSettings.MaxTravelDistanceInMeters))
-                            .OrderBy(
-                            i =>
-                            LocationUtils.CalculateDistanceInMeters(_client.CurrentLat, _client.CurrentLng, i.Latitude, i.Longitude)).ToArray());
+                            .ToArray());
             var pokestopList = pokeStops.ToList();
             if (pokestopList.Count <= 0)
                 Logger.Write("No usable PokeStops found in your area. Is your maximum distance too small?",
@@ -303,8 +303,14 @@ namespace PokemonGo.RocketAPI.Logic
 
             while (pokestopList.Any())
             {
-                await ExecuteCatchAllNearbyPokemons();
+                if (_clientSettings.UseLuckyEggs)
+                    await UseLuckyEgg();
 
+                pokestopList =
+                    pokestopList.OrderBy(
+                        i =>
+                            LocationUtils.CalculateDistanceInMeters(_client.CurrentLat,
+                                _client.CurrentLng, i.Latitude, i.Longitude)).ToList();
                 var pokeStop = pokestopList[0];
                 pokestopList.RemoveAt(0);
 
@@ -323,7 +329,7 @@ namespace PokemonGo.RocketAPI.Logic
                     Logger.Write($"XP: {fortSearch.ExperienceAwarded}, Gems: {fortSearch.GemsAwarded}, Eggs: {EggReward}, Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}", LogLevel.Pokestop);
                     recycleCounter++;
                 }
-                await RandomHelper.RandomDelay(50, 200);
+
                 if (recycleCounter >= 5)
                     await RecycleItems();
             }
@@ -350,7 +356,6 @@ namespace PokemonGo.RocketAPI.Logic
                     await _client.UseCaptureItem(pokemon.EncounterId, bestBerry, pokemon.SpawnpointId);
                     berries.Count--;
                     Logger.Write($"{bestBerry} used, remaining: {berries.Count}", LogLevel.Berry);
-                    await RandomHelper.RandomDelay(50, 200);
                 }
 
                 var distance = LocationUtils.CalculateDistanceInMeters(_client.CurrentLat, _client.CurrentLng, pokemon.Latitude, pokemon.Longitude);
@@ -392,11 +397,10 @@ namespace PokemonGo.RocketAPI.Logic
                         ? $"and received XP {caughtPokemonResponse.Scores.Xp.Sum()}" 
                         : $"";
 
-                    Logger.Write($"({catchStatus}) | {pokemon.PokemonId} Lvl {PokemonInfo.GetLevel(encounter?.WildPokemon?.PokemonData)} (CP {encounter?.WildPokemon?.PokemonData?.Cp}/{PokemonInfo.CalculateMaxCP(encounter?.WildPokemon?.PokemonData)} | {Math.Round(PokemonInfo.CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData)).ToString("0.00")} % perfect) | Chance: {(float)((int)(encounter?.CaptureProbability?.CaptureProbability_.First() * 100)) / 100} | {Math.Round(distance)}m dist | with a {returnRealBallName(bestPokeball)}Ball {receivedXP}", LogLevel.Pokemon);
+                    Logger.Write($"({catchStatus}) | {pokemon.PokemonId} - Lvl {PokemonInfo.GetLevel(encounter?.WildPokemon?.PokemonData)} [CP {encounter?.WildPokemon?.PokemonData?.Cp}/{PokemonInfo.CalculateMaxCP(encounter?.WildPokemon?.PokemonData)} | IV: {Math.Round(PokemonInfo.CalculatePokemonPerfection(encounter?.WildPokemon?.PokemonData)).ToString("0.00")}% perfect] | Chance: {(float)((int)(encounter?.CaptureProbability?.CaptureProbability_.First() * 100)) / 100} | {distance:0.##}m dist | with a {returnRealBallName(bestPokeball)}Ball {receivedXP}", LogLevel.Pokemon);
                 }
 
                 attemptCounter++;
-                await RandomHelper.RandomDelay(750, 1250);
             }
             while (caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchMissed || caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchEscape);
         }
@@ -425,17 +429,12 @@ namespace PokemonGo.RocketAPI.Logic
             foreach (var pokemon in pokemons)
             {
                 var distance = LocationUtils.CalculateDistanceInMeters(_client.CurrentLat, _client.CurrentLng, pokemon.Latitude, pokemon.Longitude);
-                await Task.Delay(distance > 100 ? 1000 : 100);
-
                 var encounter = await _client.EncounterPokemon(pokemon.EncounterId, pokemon.SpawnpointId);
 
                 if (encounter.Status == EncounterResponse.Types.Status.EncounterSuccess)
                     await CatchEncounter(encounter, pokemon);
                 else
                     Logger.Write($"Encounter problem: {encounter.Status}", LogLevel.Warning);
-                if (!Equals(pokemons.ElementAtOrDefault(pokemons.Count() - 1), pokemon))
-                    // If pokemon is not last pokemon in list, create delay between catches, else keep moving.
-                    await RandomHelper.RandomDelay(50, 200);
             }
 
             if (_clientSettings.EvolvePokemon || _clientSettings.EvolveOnlyPokemonAboveIV) await EvolvePokemon(_clientSettings.PokemonsToEvolve);
@@ -447,11 +446,7 @@ namespace PokemonGo.RocketAPI.Logic
             await Inventory.getCachedInventory(_client, true);
             var pokemonToEvolve = await _inventory.GetPokemonToEvolve(filter);
             if (pokemonToEvolve != null && pokemonToEvolve.Any())
-            {
                 Logger.Write($"Found {pokemonToEvolve.Count()} Pokemon for Evolve:", LogLevel.Info);
-                if (_clientSettings.useLuckyEggsWhileEvolving)
-                    await UseLuckyEgg();
-            }
 
             foreach (var pokemon in pokemonToEvolve)
             {
@@ -462,8 +457,6 @@ namespace PokemonGo.RocketAPI.Logic
                         ? $"{pokemon.PokemonId} successfully for {evolvePokemonOutProto.ExpAwarded} xp"
                         : $"Failed: {pokemon.PokemonId}. EvolvePokemonOutProto.Result was {evolvePokemonOutProto.Result}, stopping evolving {pokemon.PokemonId}"
                     , LogLevel.Evolve);
-
-                await Task.Delay(1000);
             }
         }
 
@@ -493,8 +486,7 @@ namespace PokemonGo.RocketAPI.Logic
                 var bestPokemonOfType = _client.Settings.PrioritizeIVOverCP
                     ? await _inventory.GetHighestPokemonOfTypeByIV(duplicatePokemon)
                     : await _inventory.GetHighestPokemonOfTypeByCP(duplicatePokemon);
-                Logger.Write($"{duplicatePokemon.PokemonId} (CP {duplicatePokemon.Cp} | {PokemonInfo.CalculatePokemonPerfection(duplicatePokemon).ToString("0.00")} % perfect) | (Best: {bestPokemonOfType.Cp} CP | {PokemonInfo.CalculatePokemonPerfection(bestPokemonOfType).ToString("0.00")} % perfect) | Family Candies: {FamilyCandies}", LogLevel.Transfer);
-                await Task.Delay(500);
+                Logger.Write($"{duplicatePokemon.PokemonId} [CP {duplicatePokemon.Cp}/{PokemonInfo.CalculateMaxCP(duplicatePokemon)} | IV: { PokemonInfo.CalculatePokemonPerfection(duplicatePokemon).ToString("0.00")}% perfect] | Best: [CP: {bestPokemonOfType.Cp}/{PokemonInfo.CalculateMaxCP(bestPokemonOfType)} | IV: {PokemonInfo.CalculatePokemonPerfection(bestPokemonOfType).ToString("0.00")}% perfect] | Family Candies: {FamilyCandies}", LogLevel.Transfer);
             }
         }
 
@@ -512,8 +504,6 @@ namespace PokemonGo.RocketAPI.Logic
 
                 _stats.AddItemsRemoved(item.Count);
                 _stats.UpdateConsoleTitle(_client, _inventory);
-
-                await Task.Delay(100);
             }
             recycleCounter = 0;
         }
@@ -539,10 +529,10 @@ namespace PokemonGo.RocketAPI.Logic
             if (masterBalls && pokemonCp >= 1500)
                 return MiscEnums.Item.ITEM_MASTER_BALL;
 
-            if (ultraBalls && (pokemonCp >= 1000 || (iV >= _clientSettings.KeepMinIVPercentage && proba < 0.40)))
+            if (ultraBalls && (pokemonCp >= 1000 || (iV >= _clientSettings.TransferPokemonKeepAboveIVPercentage && proba < 0.40)))
                 return MiscEnums.Item.ITEM_ULTRA_BALL;
 
-            if (greatBalls && (pokemonCp >= 300 || (iV >= _clientSettings.KeepMinIVPercentage && proba < 0.50)))
+            if (greatBalls && (pokemonCp >= 300 || (iV >= _clientSettings.TransferPokemonKeepAboveIVPercentage && proba < 0.50)))
                 return MiscEnums.Item.ITEM_GREAT_BALL;
 
             return balls.OrderBy(g => g.Key).First().Key;
@@ -560,7 +550,7 @@ namespace PokemonGo.RocketAPI.Logic
                                         || (ItemId)i.Item_ == ItemId.ItemNanabBerry
                                         || (ItemId)i.Item_ == ItemId.ItemWeparBerry
                                         || (ItemId)i.Item_ == ItemId.ItemPinapBerry) && i.Count > 0).GroupBy(i => ((ItemId)i.Item_)).ToList();
-            if (berries.Count == 0 || pokemonCp <= 350) return ItemId.ItemUnknown;
+            if (berries.Count == 0 || pokemonCp < 150) return ItemId.ItemUnknown;
 
             var razzBerryCount = await _inventory.GetItemAmountByType(MiscEnums.Item.ITEM_RAZZ_BERRY);
             var blukBerryCount = await _inventory.GetItemAmountByType(MiscEnums.Item.ITEM_BLUK_BERRY);
@@ -574,17 +564,17 @@ namespace PokemonGo.RocketAPI.Logic
             if (weparBerryCount > 0 && pokemonCp >= 1500)
                 return ItemId.ItemWeparBerry;
 
-            if (nanabBerryCount > 0 && (pokemonCp >= 1000 || (iV >= _clientSettings.KeepMinIVPercentage && proba < 0.40)))
+            if (nanabBerryCount > 0 && (pokemonCp >= 1000 || (iV >= _clientSettings.TransferPokemonKeepAboveIVPercentage && proba < 0.40)))
                 return ItemId.ItemNanabBerry;
 
-            if (blukBerryCount > 0 && (pokemonCp >= 500 || (iV >= _clientSettings.KeepMinIVPercentage && proba < 0.50)))
+            if (blukBerryCount > 0 && (pokemonCp >= 500 || (iV >= _clientSettings.TransferPokemonKeepAboveIVPercentage && proba < 0.50)))
                 return ItemId.ItemBlukBerry;
 
             if (razzBerryCount > 0 && pokemonCp >= 150)
                 return ItemId.ItemRazzBerry;
 
-            return ItemId.ItemUnknown;
-            //return berries.OrderBy(g => g.Key).First().Key;
+            //return ItemId.ItemUnknown;
+            return berries.OrderBy(g => g.Key).First().Key;
         }
 
         private async Task DisplayHighests()
@@ -665,9 +655,10 @@ namespace PokemonGo.RocketAPI.Logic
             var inventory = await _inventory.GetItems();
             var LuckyEgg = inventory.Where(p => (ItemId)p.Item_ == ItemId.ItemLuckyEgg).FirstOrDefault();
 
-            if (LuckyEgg == null || LuckyEgg.Count <= 0)
+            if (LuckyEgg == null || LuckyEgg.Count <= 0 || _lastLuckyEggTime.AddMinutes(30).Ticks > DateTime.Now.Ticks)
                 return;
 
+            _lastLuckyEggTime = DateTime.Now;
             await _client.UseXpBoostItem(ItemId.ItemLuckyEgg);
             Logger.Write($"Used Lucky Egg, remaining: {LuckyEgg.Count - 1}", LogLevel.Egg);
         }
@@ -681,16 +672,18 @@ namespace PokemonGo.RocketAPI.Logic
             if (!File.Exists(lastcoords_file)) return;
             Tuple<double, double> latLngFromFile = Client.GetLatLngFromFile();
             if (latLngFromFile == null) return;
-            double distance = LocationUtils.CalculateDistanceInMeters(latLngFromFile.Item1, latLngFromFile.Item2, _clientSettings.DefaultLatitude, _clientSettings.DefaultLongitude);
+            double DistanceInMeters = LocationUtils.CalculateDistanceInMeters(latLngFromFile.Item1, latLngFromFile.Item2, _clientSettings.DefaultLatitude, _clientSettings.DefaultLongitude);
             DateTime? lastModified = File.Exists(lastcoords_file) ? (DateTime?)File.GetLastWriteTime(lastcoords_file) : null;
             if (lastModified == null) return;
-            double? hoursSinceModified = (DateTime.Now - lastModified).HasValue ? (double?)((DateTime.Now - lastModified).Value.Minutes / 60.0) : null;
-            if (hoursSinceModified == null || hoursSinceModified < 1) return; // Shouldn't really be null, but can be 0 and that's bad for division.
-            var kmph = (distance / 1000) / (hoursSinceModified ?? .1);
+            //double? hoursSinceModified = (DateTime.Now - lastModified).HasValue ? (double?)((DateTime.Now - lastModified).Value.Minutes / 60.0) : null;
+            double? minutesSinceModified = (DateTime.Now - lastModified).HasValue ? (double?)((DateTime.Now - lastModified).Value.Minutes) : null;
+            if (minutesSinceModified == null || minutesSinceModified < 60) return; // Shouldn't really be null, but can be 0 and that's bad for division.
+            var kmph = (DistanceInMeters / 1000) / (minutesSinceModified);
             if (kmph < 80) // If speed required to get to the default location is < 80km/hr
             {
                 File.Delete(lastcoords_file);
                 Logger.Write("Detected realistic Traveling , using UserSettings.settings", LogLevel.Warning);
+                //Client.SetCoordinates(_client.Settings.DefaultLatitude, _client.Settings.DefaultLongitude, _client.Settings.DefaultAltitude);
             }
             else
             {

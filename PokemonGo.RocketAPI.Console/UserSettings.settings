@@ -5,14 +5,14 @@
     <Setting Name="DefaultAltitude" Type="System.Double" Scope="User">
       <Value Profile="(Default)">10</Value>
     </Setting>
-    <Setting Name="KeepMinIVPercentage" Type="System.Single" Scope="User">
+    <Setting Name="TransferPokemonKeepAboveIVPercentage" Type="System.Single" Scope="User">
       <Value Profile="(Default)">85</Value>
     </Setting>
-    <Setting Name="KeepMinCP" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1000</Value>
+    <Setting Name="TransferPokemonKeepAboveCP" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1500</Value>
     </Setting>
     <Setting Name="WalkingSpeedInKilometerPerHour" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">250</Value>
+      <Value Profile="(Default)">150</Value>
     </Setting>
     <Setting Name="DefaultLatitude" Type="System.Double" Scope="User">
       <Value Profile="(Default)">0</Value>
@@ -36,7 +36,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="MaxTravelDistanceInMeters" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1000</Value>
+      <Value Profile="(Default)">500</Value>
     </Setting>
     <Setting Name="UseGPXPathing" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -44,11 +44,11 @@
     <Setting Name="GPXFile" Type="System.String" Scope="User">
       <Value Profile="(Default)">GPXFILE.gpx</Value>
     </Setting>
-    <Setting Name="useLuckyEggsWhileEvolving" Type="System.Boolean" Scope="User">
+    <Setting Name="UseLuckyEggs" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="NotTransferPokemonsThatCanEvolve" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="EvolveOnlyPokemonAboveIV" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -64,6 +64,15 @@
     </Setting>
     <Setting Name="TransferPokemonKeepDuplicateAmount" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">2</Value>
+    </Setting>
+    <Setting Name="UseTransferPokemonKeepAboveCP" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UseTransferPokemonKeepAboveIV" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UsePokemonToNotTransferList" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>
