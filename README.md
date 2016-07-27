@@ -24,22 +24,27 @@ Chatting about this Repository can be done on our Discord: https://discord.gg/Vs
    (Optional: Enabled by default, can be Disabled via UserSettings)<br />
    (Optional: PokemonsToEvolve List - Only Pokemons in this List will be Evolved, configurable via File in Config Folder)<br />
    (Optional: EvolveOnlyPokemonAboveIV - Will Evolve only Pokemon with IV > EvolveAboveIVValue, Disabled by default, can be Enabled vis UserSettings)
- - [Transfer duplicate Pokemon]<br />
+ - [Transfer Pokemon]<br />
    (ignore favorite/gym marked)<br />
    (Optional: Enabled by default, can be Disabled via UserSettings.)<br />
-   (Optional: PrioritizeIVOverCP - Determines the sorting sequence - CP or IV, Disabled by default, can be Enabled via UserSettings.)<br />
-   (Optional: KeepMinDuplicatePokemon - The amount of X best Pokemon he should keep, 2 by default, configurable via UserSettings)<br />
-   (Optional: PokemonsNotToTransfer List - Pokemon on this List will be not Transfered, configurable via File in Config Folder)<br />
-   (Optional: NotTransferPokemonsThatCanEvolve - Will keep all Pokemons which can be Evolve not matter if they on PokemonsToEvolve List or not, Disabled by default, can be Enabled via UserSettings)
+   (Optional: UseTransferPokemonKeepAboveCP - Keeps all Pokemon with CP > TransferPokemonKeepAboveCP, Enabled by default, can be Disabled vis UserSettings)
+   (Optional: UseTransferPokemonKeepAboveIV - Keeps all Pokemon with IV > TransferPokemonKeepAboveIVPercentage, Enabled by default, can be Disabled vis UserSettings)
+   (Optional: PrioritizeIVOverCP - Determines the sorting sequence - CP or IV, Enabled by default, can be Disabled via UserSettings.)<br />
+   (Optional: TransferPokemonKeepDuplicateAmount - The amount of X best Pokemon he should keep, 2 by default, configurable via UserSettings)<br />
+   (Optional: PokemonsNotToTransfer List. Enabled by default, can be Disabled via UserSettings, configurable Names via File in Config Folder)
+   (Optional: NotTransferPokemonsThatCanEvolve - Will keep ALL Pokemons which can be Evolve not matter if they on PokemonsToEvolve List or not, Disabled by default, can be Enabled via UserSettings)
  - [Throws away unneeded items]<br />
-   (configurable via UserSettings)
+   (configurable via Settings.cs)
+ - [Use Lucky Eggs]<br />
+   (Disbaled by default, can be Enabled via UserSettings)
+ - [Use Incense]<br />
+   (Disbaled by default, can be Enabled via UserSettings)
  - [Use best Pokeball & Berry]<br />
    (depending on Pokemon CP and IV)
  - [Creates Excel CSV File on Startup with your current Pokemon]<br />
-   (including Number, Name, CP,Perfection and many more) (can be found in the Export Folder)
+   (including Number, Name, CP,IV Perfection in % and many more) (can be found in the Export Folder)
  - [Log File System]<br />
    (all activity will be tracked in a Log File)
- - [Random Task Delays]
  - [Statistic in the Header] ![alt tag](https://github.com/Spegeli/Pokemon-Go-Rocket-API/blob/master/StatisticScreenshot.png)
  - [Very color and useful Logging]<br />
    (so you every time up2date what currently happened)
