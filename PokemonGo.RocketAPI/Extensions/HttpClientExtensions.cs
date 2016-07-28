@@ -34,12 +34,13 @@ namespace PokemonGo.RocketAPI.Extensions
         {
             //Logger.Write($"Requesting {typeof(TResponsePayload).Name}", LogLevel.Debug);
             Debug.WriteLine($"Requesting {typeof(TResponsePayload).Name}");
+
             var response = await PostProto<TRequest>(client, url, request);
 
             if (response.Payload.Count == 0)
             {
                 Logger.Write("InvalidResponseException from HttpClientExtensions.cs", LogLevel.Error);
-                throw new InvalidResponseException();
+                //throw new InvalidResponseException();
             }
 
             //Decode payload

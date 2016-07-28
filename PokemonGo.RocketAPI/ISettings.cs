@@ -14,6 +14,8 @@ namespace PokemonGo.RocketAPI
         AuthType AuthType { get; }
         string PtcPassword { get; }
         string PtcUsername { get; }
+        string GoogleEmail { get; }
+        string GooglePassword { get; }
         double DefaultLatitude { get; }
         double DefaultLongitude { get; }
         double DefaultAltitude { get; }
@@ -41,7 +43,7 @@ namespace PokemonGo.RocketAPI
 
         ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter { get; }
         ICollection<PokemonId> PokemonsToEvolve { get; }
-        ICollection<PokemonId> PokemonsNotToTransfer { get; }
-        ICollection<PokemonId> PokemonsNotToCatch { get; }
+        ICollection<PokemonId> PokemonsToNotTransfer { get; }
+        ICollection<PokemonId> PokemonsToNotCatch { get; }
     }
 }

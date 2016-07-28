@@ -44,28 +44,30 @@ namespace PokemonGo.RocketAPI.Logic
 
         public async Task Execute()
         {
-            Git.CheckVersion();
-
-            if (_clientSettings.DefaultLatitude == 0 || _clientSettings.DefaultLongitude == 0)
+            if (!IsInitialized)
             {
-                Logger.Write($"Please change first Latitude and/or Longitude because currently your using default values!", LogLevel.Error);
-                for (int i = 3; i > 0; i--)
-                {
-                    Logger.Write($"Script will auto closed in {i * 5} seconds!", LogLevel.Warning);
-                    await Task.Delay(5000);
-                }
-                System.Environment.Exit(1);
-            }
-            else
-            {
-                Logger.Write($"Make sure Lat & Lng is right. Exit Program if not! Lat: {_client.CurrentLat} Lng: {_client.CurrentLng}", LogLevel.Warning);
-                for (int i = 3; i > 0; i--)
-                {
-                    Logger.Write($"Script will continue in {i * 5} seconds!", LogLevel.Warning);
-                    await Task.Delay(5000);
-                }
-            }
+                Git.CheckVersion();
 
+                if (_clientSettings.DefaultLatitude == 0 || _clientSettings.DefaultLongitude == 0)
+                {
+                    Logger.Write($"Please change first Latitude and/or Longitude because currently your using default values!", LogLevel.Error);
+                    for (int i = 3; i > 0; i--)
+                    {
+                        Logger.Write($"Script will auto closed in {i * 5} seconds!", LogLevel.Warning);
+                        await Task.Delay(5000);
+                    }
+                    System.Environment.Exit(1);
+                }
+                else
+                {
+                    Logger.Write($"Make sure Lat & Lng is right. Exit Program if not! Lat: {_client.CurrentLat} Lng: {_client.CurrentLng}", LogLevel.Warning);
+                    for (int i = 3; i > 0; i--)
+                    {
+                        Logger.Write($"Script will continue in {i * 5} seconds!", LogLevel.Warning);
+                        await Task.Delay(5000);
+                    }
+                }
+            }
             Logger.Write($"Logging in via: {_clientSettings.AuthType}", LogLevel.Info);
             while (true)
             {
@@ -77,7 +79,7 @@ namespace PokemonGo.RocketAPI.Logic
                             await _client.DoPtcLogin(_clientSettings.PtcUsername, _clientSettings.PtcPassword);
                             break;
                         case AuthType.Google:
-                            await _client.DoGoogleLogin("GoogleAuth.ini");
+                            await _client.DoGoogleLogin(_clientSettings.GoogleEmail, _clientSettings.GooglePassword);
                             break;
                         default:
                             Logger.Write("wrong AuthType");
@@ -128,8 +130,8 @@ namespace PokemonGo.RocketAPI.Logic
                     await DisplayHighests();
                     Logger.Write("----------------------------", LogLevel.None, ConsoleColor.Yellow);
 
-                    var PokemonsNotToTransfer = _clientSettings.PokemonsNotToTransfer;
-                    var PokemonsNotToCatch = _clientSettings.PokemonsNotToCatch;
+                    var PokemonsToNotTransfer = _clientSettings.PokemonsToNotTransfer;
+                    var PokemonsToNotCatch = _clientSettings.PokemonsToNotCatch;
                     var PokemonsToEvolve = _clientSettings.PokemonsToEvolve;
 
                     if (_clientSettings.EvolvePokemon || _clientSettings.EvolveOnlyPokemonAboveIV) await EvolvePokemon(_clientSettings.PokemonsToEvolve);
@@ -213,6 +215,8 @@ namespace PokemonGo.RocketAPI.Logic
                                     await UseLuckyEgg();
                                 if (_clientSettings.UseIncense)
                                     await UseIncense();
+
+                                await ExecuteCatchAllNearbyPokemons();
 
                                 pokestopList =
                                     pokestopList.OrderBy(
@@ -310,6 +314,8 @@ namespace PokemonGo.RocketAPI.Logic
                     await UseLuckyEgg();
                 if (_clientSettings.UseIncense)
                     await UseIncense();
+
+                await ExecuteCatchAllNearbyPokemons();
 
                 pokestopList =
                     pokestopList.OrderBy(
@@ -418,13 +424,12 @@ namespace PokemonGo.RocketAPI.Logic
                 mapObjects.MapCells.SelectMany(i => i.CatchablePokemons)
                 .OrderBy(
                     i =>
-                    LocationUtils.CalculateDistanceInMeters(_client.CurrentLat, _client.CurrentLng, i.Latitude, i.Longitude));
-
+                    LocationUtils.CalculateDistanceInMeters(_client.CurrentLat, _client.CurrentLng, i.Latitude, i.Longitude)).ToList();
             if (_clientSettings.UsePokemonToNotCatchList)
             {
-                ICollection<PokemonId> filter = _clientSettings.PokemonsNotToCatch;
-                pokemons = mapObjects.MapCells.SelectMany(i => i.CatchablePokemons).Where(p => !filter.Contains(p.PokemonId)).OrderBy(i => LocationUtils.CalculateDistanceInMeters(_client.CurrentLat, _client.CurrentLng, i.Latitude, i.Longitude));
-            }
+                ICollection<PokemonId> filter = _clientSettings.PokemonsToNotCatch;
+                pokemons = pokemons.Where(p => !filter.Contains(p.PokemonId)).ToList();
+           }
 
             if (pokemons != null && pokemons.Any())
                 Logger.Write($"Found {pokemons.Count()} catchable Pokemon", LogLevel.Info);
@@ -468,7 +473,7 @@ namespace PokemonGo.RocketAPI.Logic
         private async Task TransferPokemon()
         {
             await Inventory.getCachedInventory(_client, true);
-            var duplicatePokemons = await _inventory.GetPokemonToTransfer(_clientSettings.NotTransferPokemonsThatCanEvolve, _clientSettings.PrioritizeIVOverCP, _clientSettings.PokemonsNotToTransfer);
+            var duplicatePokemons = await _inventory.GetPokemonToTransfer(_clientSettings.NotTransferPokemonsThatCanEvolve, _clientSettings.PrioritizeIVOverCP, _clientSettings.PokemonsToNotTransfer);
             if (duplicatePokemons != null && duplicatePokemons.Any())
                 Logger.Write($"Found {duplicatePokemons.Count()} Pokemon for Transfer:", LogLevel.Info);
 
@@ -579,7 +584,7 @@ namespace PokemonGo.RocketAPI.Logic
             if (blukBerryCount > 0 && (pokemonCp >= 500 || (iV >= _clientSettings.TransferPokemonKeepAboveIVPercentage && proba < 0.50)))
                 return ItemId.ItemBlukBerry;
 
-            if (razzBerryCount > 0 && pokemonCp >= 150)
+            if (razzBerryCount > 0 && pokemonCp >= 300)
                 return ItemId.ItemRazzBerry;
 
             //return ItemId.ItemUnknown;

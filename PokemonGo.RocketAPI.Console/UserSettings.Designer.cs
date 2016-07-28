@@ -49,7 +49,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1500")]
+        [global::System.Configuration.DefaultSettingValueAttribute("2000")]
         public int TransferPokemonKeepAboveCP {
             get {
                 return ((int)(this["TransferPokemonKeepAboveCP"]));
@@ -121,7 +121,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("UserName")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Username")]
         public string PtcUsername {
             get {
                 return ((string)(this["PtcUsername"]));
@@ -133,7 +133,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("UserPassword")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Password")]
         public string PtcPassword {
             get {
                 return ((string)(this["PtcPassword"]));
@@ -157,7 +157,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("500")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
         public int MaxTravelDistanceInMeters {
             get {
                 return ((int)(this["MaxTravelDistanceInMeters"]));
@@ -320,6 +320,30 @@ namespace PokemonGo.RocketAPI.Console {
             }
             set {
                 this["UseIncense"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("eMail")]
+        public string GoogleEmail {
+            get {
+                return ((string)(this["GoogleEmail"]));
+            }
+            set {
+                this["GoogleEmail"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Password")]
+        public string GooglePassword {
+            get {
+                return ((string)(this["GooglePassword"]));
+            }
+            set {
+                this["GooglePassword"] = value;
             }
         }
     }

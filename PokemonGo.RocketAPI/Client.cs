@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Google.Protobuf;
+using DankMemes.GPSOAuthSharp;
 using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.Exceptions;
 using PokemonGo.RocketAPI.Extensions;
@@ -14,6 +15,7 @@ using PokemonGo.RocketAPI.Helpers;
 using PokemonGo.RocketAPI.Login;
 using static PokemonGo.RocketAPI.GeneratedCode.Response.Types;
 using PokemonGo.RocketAPI.Logging;
+using System.Collections.Generic;
 
 #endregion
 
@@ -136,31 +138,11 @@ namespace PokemonGo.RocketAPI
                 await
                     _httpClient.PostProtoPayload<Request, CatchPokemonResponse>($"https://{_apiUrl}/rpc", catchPokemonRequest);
         }
-
-        public async Task DoGoogleLogin(string filename = "GoogleAuth.ini")
+        
+        public async Task DoGoogleLogin(string username, string password)
         {
             _authType = AuthType.Google;
-            string googleRefreshToken = string.Empty;
-            if (!Directory.Exists(configs_path))
-                Directory.CreateDirectory(configs_path);
-            string googletoken_file = Path.Combine(configs_path, filename);
-            if (File.Exists(googletoken_file))
-                googleRefreshToken = File.ReadAllText(googletoken_file);
-            GoogleLogin.TokenResponseModel tokenResponse;
-            if (googleRefreshToken != string.Empty)
-            {
-                tokenResponse = await GoogleLogin.GetAccessToken(googleRefreshToken);
-                AccessToken = tokenResponse?.id_token;
-            }
-            if (AccessToken == null)
-            {
-                var deviceCode = await GoogleLogin.GetDeviceCode();
-                tokenResponse = await GoogleLogin.GetAccessToken(deviceCode);
-                googleRefreshToken = tokenResponse?.refresh_token;
-                Logger.Write("Refreshtoken " + tokenResponse?.refresh_token + " saved", LogLevel.Info);
-                File.WriteAllText(googletoken_file, googleRefreshToken);
-                AccessToken = tokenResponse?.id_token;
-            }
+            AccessToken = await GoogleLoginGPSOAuth.DoLogin(username, password);
         }
 
         public async Task DoPtcLogin(string username, string password)

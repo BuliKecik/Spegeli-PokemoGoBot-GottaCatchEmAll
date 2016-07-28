@@ -9,7 +9,7 @@
       <Value Profile="(Default)">90</Value>
     </Setting>
     <Setting Name="TransferPokemonKeepAboveCP" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1500</Value>
+      <Value Profile="(Default)">2000</Value>
     </Setting>
     <Setting Name="WalkingSpeedInKilometerPerHour" Type="System.Double" Scope="User">
       <Value Profile="(Default)">150</Value>
@@ -27,16 +27,16 @@
       <Value Profile="(Default)">Google</Value>
     </Setting>
     <Setting Name="PtcUsername" Type="System.String" Scope="User">
-      <Value Profile="(Default)">UserName</Value>
+      <Value Profile="(Default)">Username</Value>
     </Setting>
     <Setting Name="PtcPassword" Type="System.String" Scope="User">
-      <Value Profile="(Default)">UserPassword</Value>
+      <Value Profile="(Default)">Password</Value>
     </Setting>
     <Setting Name="PrioritizeIVOverCP" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="MaxTravelDistanceInMeters" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">500</Value>
+      <Value Profile="(Default)">1000</Value>
     </Setting>
     <Setting Name="UseGPXPathing" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -76,6 +76,12 @@
     </Setting>
     <Setting Name="UseIncense" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="GoogleEmail" Type="System.String" Scope="User">
+      <Value Profile="(Default)">eMail</Value>
+    </Setting>
+    <Setting Name="GooglePassword" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Password</Value>
     </Setting>
   </Settings>
 </SettingsFile>

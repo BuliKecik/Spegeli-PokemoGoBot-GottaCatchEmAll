@@ -21,6 +21,8 @@ namespace PokemonGo.RocketAPI.Console
         public AuthType AuthType => (AuthType)Enum.Parse(typeof(AuthType), UserSettings.Default.AuthType, true);
         public string PtcUsername => UserSettings.Default.PtcUsername;
         public string PtcPassword => UserSettings.Default.PtcPassword;
+        public string GoogleEmail => UserSettings.Default.GoogleEmail;
+        public string GooglePassword => UserSettings.Default.GooglePassword;
         public double DefaultLatitude => UserSettings.Default.DefaultLatitude;
         public double DefaultLongitude => UserSettings.Default.DefaultLongitude;
         public double DefaultAltitude => UserSettings.Default.DefaultAltitude;
@@ -47,8 +49,8 @@ namespace PokemonGo.RocketAPI.Console
         public bool PrioritizeIVOverCP => UserSettings.Default.PrioritizeIVOverCP;
 
         private ICollection<PokemonId> _pokemonsToEvolve;
-        private ICollection<PokemonId> _pokemonsNotToTransfer;
-        private ICollection<PokemonId> _pokemonsNotToCatch;
+        private ICollection<PokemonId> _pokemonsToNotTransfer;
+        private ICollection<PokemonId> _pokemonsToNotCatch;
 
         public ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter => new[]
         {
@@ -104,7 +106,7 @@ namespace PokemonGo.RocketAPI.Console
             }
         }
 
-        public ICollection<PokemonId> PokemonsNotToTransfer
+        public ICollection<PokemonId> PokemonsToNotTransfer
         {
             get
             {
@@ -112,12 +114,12 @@ namespace PokemonGo.RocketAPI.Console
                 List<PokemonId> defaultPokemon = new List<PokemonId> {
                     PokemonId.Dragonite, PokemonId.Charizard, PokemonId.Zapdos, PokemonId.Snorlax, PokemonId.Alakazam, PokemonId.Mew, PokemonId.Mewtwo
                 };
-                _pokemonsNotToTransfer = _pokemonsNotToTransfer ?? LoadPokemonList("PokemonsToNotTransfer.ini", defaultPokemon);
-                return _pokemonsNotToTransfer;
+                _pokemonsToNotTransfer = _pokemonsToNotTransfer ?? LoadPokemonList("PokemonsToNotTransfer.ini", defaultPokemon);
+                return _pokemonsToNotTransfer;
             }
         }
 
-        public ICollection<PokemonId> PokemonsNotToCatch
+        public ICollection<PokemonId> PokemonsToNotCatch
         {
             get
             {
@@ -125,8 +127,8 @@ namespace PokemonGo.RocketAPI.Console
                 List<PokemonId> defaultPokemon = new List<PokemonId> {
                     PokemonId.Zubat, PokemonId.Pidgey, PokemonId.Rattata
                 };
-                _pokemonsNotToCatch = _pokemonsNotToCatch ?? LoadPokemonList("PokemonsToNotCatch.ini", defaultPokemon);
-                return _pokemonsNotToCatch;
+                _pokemonsToNotCatch = _pokemonsToNotCatch ?? LoadPokemonList("PokemonsToNotCatch.ini", defaultPokemon);
+                return _pokemonsToNotCatch;
             }
         }
 
