@@ -264,18 +264,8 @@ namespace PokemonGo.RocketAPI.Logic
                 {
                     _cachedInventory = await _client.GetInventory();
                 }
-                catch (InvalidResponseException)
+                catch 
                 {
-                    Logger.Write("InvalidResponseException from getCachedInventory", LogLevel.Error);
-                    Logger.Write("Trying again in 15 seconds...");
-                    Thread.Sleep(15000);
-                    _cachedInventory = await _client.GetInventory();
-                }
-                catch (Exception e)
-                {
-                    Logger.Write(e.Message + " from " + e.Source);
-                    Logger.Write("InvalidResponseException from getCachedInventory", LogLevel.Error);
-                    throw new InvalidResponseException();
                 }
                 
                 return _cachedInventory;

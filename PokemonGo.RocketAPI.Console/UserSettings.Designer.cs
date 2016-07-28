@@ -325,7 +325,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("eMail")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Email")]
         public string GoogleEmail {
             get {
                 return ((string)(this["GoogleEmail"]));
@@ -344,6 +344,30 @@ namespace PokemonGo.RocketAPI.Console {
             }
             set {
                 this["GooglePassword"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool GPXIgnorePokemon {
+            get {
+                return ((bool)(this["GPXIgnorePokemon"]));
+            }
+            set {
+                this["GPXIgnorePokemon"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool GPXIgnorePokestops {
+            get {
+                return ((bool)(this["GPXIgnorePokestops"]));
+            }
+            set {
+                this["GPXIgnorePokestops"] = value;
             }
         }
     }

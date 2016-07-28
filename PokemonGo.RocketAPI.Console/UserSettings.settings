@@ -78,10 +78,16 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="GoogleEmail" Type="System.String" Scope="User">
-      <Value Profile="(Default)">eMail</Value>
+      <Value Profile="(Default)">Email</Value>
     </Setting>
     <Setting Name="GooglePassword" Type="System.String" Scope="User">
       <Value Profile="(Default)">Password</Value>
+    </Setting>
+    <Setting Name="GPXIgnorePokemon" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="GPXIgnorePokestops" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>
