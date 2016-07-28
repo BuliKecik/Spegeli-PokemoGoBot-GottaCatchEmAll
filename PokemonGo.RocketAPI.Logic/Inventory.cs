@@ -274,7 +274,7 @@ namespace PokemonGo.RocketAPI.Logic
                 catch (Exception e)
                 {
                     Logger.Write(e.Message + " from " + e.Source);
-                    Logger.Write("InvalidResponseException from getCachedInventory - Info 1", LogLevel.Error);
+                    Logger.Write("InvalidResponseException from getCachedInventory", LogLevel.Error);
                     throw new InvalidResponseException();
                 }
                 
