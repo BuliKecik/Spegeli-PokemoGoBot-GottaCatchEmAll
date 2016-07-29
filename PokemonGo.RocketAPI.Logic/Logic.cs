@@ -11,6 +11,7 @@ using PokemonGo.RocketAPI.Logic.Utils;
 using PokemonGo.RocketAPI.Helpers;
 using System.IO;
 using PokemonGo.RocketAPI.Logging;
+using System.Globalization;
 
 #endregion
 
@@ -180,7 +181,7 @@ namespace PokemonGo.RocketAPI.Logic
                         {
                             var nextPoint = trackPoints.ElementAt(curTrkPt);
                             if (LocationUtils.CalculateDistanceInMeters(_client.CurrentLat, _client.CurrentLng,
-                                Convert.ToDouble(nextPoint.Lat), Convert.ToDouble(nextPoint.Lon)) > 5000)
+                                Convert.ToDouble(nextPoint.Lat, CultureInfo.InvariantCulture), Convert.ToDouble(nextPoint.Lon, CultureInfo.InvariantCulture)) > 5000)
                             {
                                 Logger.Write(
                                     $"Your desired destination of {nextPoint.Lat}, {nextPoint.Lon} is too far from your current position of {_client.CurrentLat}, {_client.CurrentLng}",

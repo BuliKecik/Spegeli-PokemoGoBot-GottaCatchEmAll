@@ -15,7 +15,6 @@ namespace PokemonGo.RocketAPI.Logic
 {
     public class Navigation
     {
-
         private const double SpeedDownTo = 10 / 3.6;
         private readonly Client _client;
 
@@ -52,7 +51,7 @@ namespace PokemonGo.RocketAPI.Logic
 
                 if (currentDistanceToTarget < 30 && speedInMetersPerSecond > SpeedDownTo)
                 {
-                    Logger.Write($"We are within 40 meters of the target. Speeding down to 10 km/h to not pass the target.", LogLevel.Navigation);
+                    Logger.Write($"We are within 30 meters of the target. Speeding down to 10 km/h to not pass the target.", LogLevel.Navigation);
                     speedInMetersPerSecond = SpeedDownTo;
                 }
 
@@ -66,9 +65,11 @@ namespace PokemonGo.RocketAPI.Logic
                     await
                         _client.UpdatePlayerLocation(waypoint.Latitude, waypoint.Longitude,
                             _client.Settings.DefaultAltitude);
+
                 if (functionExecutedWhileWalking != null)
                     await functionExecutedWhileWalking();// look for pokemon
-                await Task.Delay(Math.Min((int)(distanceToTarget / speedInMetersPerSecond * 100), 1000));
+                await Task.Delay(500);
+                //await Task.Delay(Math.Min((int)(distanceToTarget / speedInMetersPerSecond * 100), 1000));
             } while (LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation) >= 30);
 
             return result;
@@ -89,7 +90,9 @@ namespace PokemonGo.RocketAPI.Logic
 
             var nextWaypointBearing = LocationUtils.DegreeBearing(sourceLocation, targetLocation);
             var nextWaypointDistance = speedInMetersPerSecond;
-            var waypoint = LocationUtils.CreateWaypoint(sourceLocation, nextWaypointDistance, nextWaypointBearing, Convert.ToDouble(trk.Ele));
+            //var waypoint = LocationUtils.CreateWaypoint(sourceLocation, nextWaypointDistance, nextWaypointBearing, Convert.ToDouble(trk.Ele));
+            var waypoint = LocationUtils.CreateWaypoint(sourceLocation, nextWaypointDistance, nextWaypointBearing,
+                Convert.ToDouble(trk.Ele, CultureInfo.InvariantCulture));
 
             //Initial walking
 
@@ -106,6 +109,7 @@ namespace PokemonGo.RocketAPI.Logic
                 sourceLocation = new GeoCoordinate(_client.CurrentLat, _client.CurrentLng);
                 var currentDistanceToTarget = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
 
+                /*
                 if (currentDistanceToTarget < 40)
                 {
                     if (speedInMetersPerSecond > SpeedDownTo)
@@ -114,6 +118,7 @@ namespace PokemonGo.RocketAPI.Logic
                         speedInMetersPerSecond = SpeedDownTo;
                     }
                 }
+                */
 
                 nextWaypointDistance = Math.Min(currentDistanceToTarget,
                     millisecondsUntilGetUpdatePlayerLocationResponse / 1000 * speedInMetersPerSecond);
@@ -125,9 +130,10 @@ namespace PokemonGo.RocketAPI.Logic
                     await
                         _client.UpdatePlayerLocation(waypoint.Latitude, waypoint.Longitude,
                             waypoint.Altitude);
+
                 if (functionExecutedWhileWalking != null)
                     await functionExecutedWhileWalking();// look for pokemon
-                await Task.Delay(Math.Min((int)(distanceToTarget / speedInMetersPerSecond * 1000), 3000));
+                await Task.Delay(500);
             } while (LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation) >= 30);
 
             return result;
