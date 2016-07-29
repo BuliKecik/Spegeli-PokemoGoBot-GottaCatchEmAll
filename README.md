@@ -6,7 +6,7 @@
 <!-- disclaimer -->
 ![alt text][1.1] <strong><em> The contents of this repo are a proof of concept and are for educational use only </em></strong>![alt text][1.1]
 ![](https://github.com/Spegeli/Pokemon-Go-Rocket-API/blob/master/Screenshot.png)
-Chatting about this Repository can be done on our Discord: https://discord.gg/VsVrjgr <br/>
+Chatting about this Repository can be done on our Discord: https://discord.gg/nJNh2PM <br/>
 <br/>
 
 <h2><a name="features">Features</a></h2>
@@ -43,6 +43,7 @@ Chatting about this Repository can be done on our Discord: https://discord.gg/Vs
    (depending on Pokemon CP and IV)
  - [Creates Excel CSV File on Startup with your current Pokemon]<br />
    (including Number, Name, CP,IV Perfection in % and many more) (can be found in the Export Folder)
+ - [Softban bypass]
  - [Log File System]<br />
    (all activity will be tracked in a Log File)
  - [Statistic in the Header] ![alt tag](https://github.com/Spegeli/Pokemon-Go-Rocket-API/blob/master/StatisticScreenshot.png)
@@ -64,3 +65,12 @@ Make sure you check out our [Wiki](https://github.com/Spegeli/PokemoGoBot-GottaC
 A big thank you goes to Feroxs' hard work on the API & Console. Without him, this would not have been possible. <3
 <br/>
 Thanks to everyone who volunteered by contributing via Pull Requests!
+
+<h2><a name="donating">Donating</a></h2>
+<a name="paypal">Feel free to buy us all a beer, by using PayPal:</a><br/>
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.me/MoneyForSpegeli)<br/>
+
+<h6><em>[ All PayPal donations are distributed amongst our most active collaborators. ]</em></h6><br/>
+<a name="btc">Donate Bitcoins to FeroxRev (the API library developer): *1ExYxfBb5cERHyAfqtFscJW7vm2vWBbL3e*</a><br/>
+
+<hr/>
