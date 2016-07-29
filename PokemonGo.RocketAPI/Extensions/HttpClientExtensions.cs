@@ -42,6 +42,8 @@ namespace PokemonGo.RocketAPI.Extensions
             {
                 await RandomHelper.RandomDelay(200,300);
                 response = await PostProto<TRequest>(client, url, request);
+                if (response.Payload.Count == 0)
+                    Logger.Write("Payload ist 0", LogLevel.Debug);
             }
 
             //Decode payload
