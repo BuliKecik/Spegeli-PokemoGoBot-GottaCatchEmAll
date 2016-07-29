@@ -85,11 +85,13 @@ namespace PokemonGo.RocketAPI.Logic
 
                 return results;
             }
+            
+
             if (prioritizeIVoverCP)
             {
                 return pokemonList
                 .GroupBy(p => p.PokemonId)
-                .Where(x => x.Count() > 1)
+                .Where(x => x.Any())
                 .SelectMany(
                     p =>
                         p.OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
@@ -101,7 +103,7 @@ namespace PokemonGo.RocketAPI.Logic
             {
                 return pokemonList
                 .GroupBy(p => p.PokemonId)
-                .Where(x => x.Count() > 1)
+                .Where(x => x.Any())
                 .SelectMany(
                     p =>
                         p.OrderByDescending(x => x.Cp)
