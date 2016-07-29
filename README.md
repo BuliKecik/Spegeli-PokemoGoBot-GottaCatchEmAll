@@ -57,7 +57,7 @@ Chatting about this Repository can be done on our Discord: https://discord.gg/Vs
 <br/>
 
 <h2><a name="getting-started">Getting Started</a></h2>
-Make sure you check out our [Wiki](https://github.com/NecronomiconCoding/NecroBot/wiki) to get started.
+Make sure you check out our [Wiki](https://github.com/Spegeli/PokemoGoBot-GottaCatchEmAll/wiki) to get started.
 <br/>
 
 <h2><a name="credits">Credits</a></h2>
