@@ -7,6 +7,7 @@ using PokemonGo.RocketAPI.GeneratedCode;
 using PokemonGo.RocketAPI.Logic.Utils;
 using PokemonGo.RocketAPI.Logging;
 using PokemonGo.RocketAPI.Helpers;
+using System.Globalization;
 
 #endregion
 
