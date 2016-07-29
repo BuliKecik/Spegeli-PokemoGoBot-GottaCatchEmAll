@@ -250,7 +250,7 @@ namespace PokemonGo.RocketAPI.Logic
                                 }
                             }
 
-                            if (_clientSettings.GPXIgnorePokemon)
+                            if (!_clientSettings.GPXIgnorePokemon)
                                 await
                                     _navigation.HumanPathWalking(trackPoints.ElementAt(curTrkPt),
                                     _clientSettings.WalkingSpeedInKilometerPerHour, ExecuteCatchAllNearbyPokemons);
