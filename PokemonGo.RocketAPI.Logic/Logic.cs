@@ -116,6 +116,10 @@ namespace PokemonGo.RocketAPI.Logic
                     _stats.UpdateConsoleTitle(_client, _inventory);
                     var _currentLevelInfos = await Statistics._getcurrentLevelInfos(_inventory);
 
+                    var stats = await _inventory.GetPlayerStats();
+                    var stat = stats.FirstOrDefault();
+                    Statistics.KmWalkedOnStart = stat.KmWalked;
+
                     Logger.Write("----------------------------", LogLevel.None, ConsoleColor.Yellow);
                     if (_clientSettings.AuthType == AuthType.Ptc)
                         Logger.Write($"PTC Account: {PlayerName}\n", LogLevel.None, ConsoleColor.Cyan);
@@ -234,16 +238,43 @@ namespace PokemonGo.RocketAPI.Logic
                                     var fortInfo = await _client.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
                                     Logger.Write($"Name: {fortInfo.Name} in {distance:0.##} m distance", LogLevel.Pokestop);
 
-                                    var fortSearch =
-                                        await _client.SearchFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
-                                    if (fortSearch.ExperienceAwarded > 0)
+                                    FortSearchResponse fortSearch;
+                                    var TimesZeroXPawarded = 0;
+                                    var fortTry = 0;      //Current check
+                                    const int retryNumber = 50; //How many times it needs to check to clear softban
+                                    const int zeroCheck = 5; //How many times it checks fort before it thinks it's softban
+                                    do
                                     {
-                                        _stats.AddExperience(fortSearch.ExperienceAwarded);
-                                        _stats.UpdateConsoleTitle(_client, _inventory);
-                                        string EggReward = fortSearch.PokemonDataEgg != null ? "1" : "0";
-                                        Logger.Write($"XP: {fortSearch.ExperienceAwarded}, Gems: {fortSearch.GemsAwarded}, Eggs: {EggReward}, Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}", LogLevel.Pokestop);
-                                        recycleCounter++;
-                                    }
+                                        fortSearch = await _client.SearchFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
+                                        if (fortSearch.ExperienceAwarded > 0 && TimesZeroXPawarded > 0) TimesZeroXPawarded = 0;
+                                        if (fortSearch.ExperienceAwarded == 0)
+                                        {
+                                            TimesZeroXPawarded++;
+
+                                            if (TimesZeroXPawarded > zeroCheck)
+                                            {
+                                                if ((int)fortSearch.CooldownCompleteTimestampMs != 0)
+                                                {
+                                                    break; // Check if successfully looted, if so program can continue as this was "false alarm".
+                                                }
+                                                fortTry += 1;
+
+                                                if (_client.Settings.DebugMode)
+                                                    Logger.Write($"Seems your Soft-Banned. Trying to Unban via Pokestop Spins. Retry {fortTry} of {retryNumber}", LogLevel.Warning);
+
+                                                await Task.Delay(400);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            _stats.AddExperience(fortSearch.ExperienceAwarded);
+                                            _stats.UpdateConsoleTitle(_client, _inventory);
+                                            string EggReward = fortSearch.PokemonDataEgg != null ? "1" : "0";
+                                            Logger.Write($"XP: {fortSearch.ExperienceAwarded}, Gems: {fortSearch.GemsAwarded}, Eggs: {EggReward}, Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}", LogLevel.Pokestop);
+                                            recycleCounter++;
+                                            break; //Continue with program as loot was succesfull.
+                                        }
+                                    } while (fortTry < retryNumber - zeroCheck); //Stop trying if softban is cleaned earlier or if 40 times fort looting failed.
 
                                     if (recycleCounter >= 5)
                                         await RecycleItems();
@@ -341,22 +372,6 @@ namespace PokemonGo.RocketAPI.Logic
                 Logger.Write($"Name: {fortInfo.Name} in {distance:0.##} m distance", LogLevel.Pokestop);
                 var update = await _navigation.HumanLikeWalking(new GeoCoordinate(pokeStop.Latitude, pokeStop.Longitude), _clientSettings.WalkingSpeedInKilometerPerHour, ExecuteCatchAllNearbyPokemons);
 
-                /*
-                var fortSearch = await _client.SearchFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
-
-                if (fortSearch.ExperienceAwarded > 0)
-                {
-                    _stats.AddExperience(fortSearch.ExperienceAwarded);
-                    _stats.UpdateConsoleTitle(_client, _inventory);
-                    string EggReward = fortSearch.PokemonDataEgg != null ? "1" : "0";
-                    Logger.Write($"XP: {fortSearch.ExperienceAwarded}, Gems: {fortSearch.GemsAwarded}, Eggs: {EggReward}, Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}", LogLevel.Pokestop);
-                    recycleCounter++;
-                }
-
-                if (recycleCounter >= 5)
-                    await RecycleItems();
-                */
-
                 FortSearchResponse fortSearch;
                 var TimesZeroXPawarded = 0;
                 var fortTry = 0;      //Current check
@@ -378,7 +393,8 @@ namespace PokemonGo.RocketAPI.Logic
                             }
                             fortTry += 1;
 
-                            Logger.Write($"Seems your Soft-Banned. Trying to Unban via Pokestop Spins. Retry {fortTry} of {retryNumber}", LogLevel.Warning);
+                            if (_client.Settings.DebugMode)
+                                Logger.Write($"Seems your Soft-Banned. Trying to Unban via Pokestop Spins. Retry {fortTry} of {retryNumber}", LogLevel.Warning);
 
                             await Task.Delay(400);
                         }
@@ -640,7 +656,6 @@ namespace PokemonGo.RocketAPI.Logic
             if (razzBerryCount > 0 && pokemonCp >= 300)
                 return ItemId.ItemRazzBerry;
 
-            //return ItemId.ItemUnknown;
             return berries.OrderBy(g => g.Key).First().Key;
         }
 
@@ -661,34 +676,6 @@ namespace PokemonGo.RocketAPI.Logic
                     LogLevel.Info, ConsoleColor.Yellow);
             }
         }
-
-        /*
-        private async Task LoadAndDisplayGpxFile()
-        {
-            var xmlString = File.ReadAllText(_clientSettings.GPXFile);
-            var readgpx = new GpxReader(xmlString);
-            foreach (var trk in readgpx.Tracks)
-            {
-                foreach (var trkseg in trk.Segments)
-                {
-                    foreach (var trpkt in trkseg.TrackPoints)
-                    {
-                        Console.WriteLine(trpkt.ToString());
-                    }
-                }
-            }
-            await Task.Delay(0);
-        }
-        */
-
-        /*
-        private GPXReader.trk GetGPXTrack(string gpxFile)
-        {
-            string xmlString = File.ReadAllText(_clientSettings.GPXFile);
-            GPXReader Readgpx = new GPXReader(xmlString);
-            return Readgpx.Tracks.ElementAt(0);
-        }
-        */
 
         private List<GpxReader.Trk> GetGpxTracks()
         {

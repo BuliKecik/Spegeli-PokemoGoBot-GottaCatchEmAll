@@ -14,6 +14,7 @@ namespace PokemonGo.RocketAPI.Helpers
 {
     public static class Git
     {
+        public static string CurrentVersion = $"{Assembly.GetExecutingAssembly().GetName().Version}";
         public static void CheckVersion()
         {
             try

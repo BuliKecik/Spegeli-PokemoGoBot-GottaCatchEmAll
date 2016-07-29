@@ -50,6 +50,7 @@ namespace PokemonGo.RocketAPI.Console
         public bool UseLuckyEggs => UserSettings.Default.UseLuckyEggs;
         public bool UseIncense => UserSettings.Default.UseIncense;
         public bool PrioritizeIVOverCP => UserSettings.Default.PrioritizeIVOverCP;
+        public bool DebugMode => UserSettings.Default.DebugMode;
 
         private ICollection<PokemonId> _pokemonsToEvolve;
         private ICollection<PokemonId> _pokemonsToNotTransfer;

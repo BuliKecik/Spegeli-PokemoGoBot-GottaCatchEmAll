@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using PokemonGo.RocketAPI.GeneratedCode;
 using PokemonGo.RocketAPI.Enums;
 using System.Globalization;
+using PokemonGo.RocketAPI.Helpers;
+using PokemonGo.RocketAPI.Logging;
 
 #endregion
 
@@ -24,6 +26,8 @@ namespace PokemonGo.RocketAPI.Logic.Utils
         public static string PlayerName;
         public static int TotalPokesInBag;
         public static int TotalPokesInPokedex;
+        public static float KmWalkedOnStart;
+        public static float KmWalkedCurrent;
 
         public static DateTime InitSessionDateTime = DateTime.Now;
         public static TimeSpan Duration = DateTime.Now - InitSessionDateTime;
@@ -100,8 +104,13 @@ namespace PokemonGo.RocketAPI.Logic.Utils
 
             var inventory = await Inventory.getCachedInventory(_client);
             TotalPokesInPokedex = inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.PokedexEntry).Where(x => x != null && x.TimesCaptured >= 1).OrderBy(k => k.PokedexEntryNumber).ToArray().Length;
-            
+
             CurrentLevelInfos = await _getcurrentLevelInfos(_inventory);
+
+            var stats = await _inventory.GetPlayerStats();
+            var stat = stats.FirstOrDefault();
+            KmWalkedCurrent = stat.KmWalked-KmWalkedOnStart;
+
             Console.Title = ToString();
         }
 
@@ -109,9 +118,9 @@ namespace PokemonGo.RocketAPI.Logic.Utils
         {
             return
                 string.Format(
-                    "{0} - Runtime {1} - Lvl: {2:0} | EXP/H: {3:0} | P/H: {4:0} | Stardust: {5:0} | Transfered: {6:0} | Items Recycled: {7:0} | Pokemon: {8:0} | Pokedex: {9:0}/147",
+                    "{0} - Runtime {1} - Lvl: {2:0} | EXP/H: {3:0} | P/H: {4:0} | Stardust: {5:0} | Transfered: {6:0} | Items Recycled: {7:0} | Pokemon: {8:0} | Pokedex: {9:0}/151 | Km Walked this Session: {10:0.00} | Bot Version: {11:0}",
                     PlayerName, _getSessionRuntimeInTimeFormat(), CurrentLevelInfos, TotalExperience / _getSessionRuntime(),
-                    TotalPokemons / _getSessionRuntime(), TotalStardust, TotalPokemonsTransfered, TotalItemsRemoved, TotalPokesInBag, TotalPokesInPokedex);
+                    TotalPokemons / _getSessionRuntime(), TotalStardust, TotalPokemonsTransfered, TotalItemsRemoved, TotalPokesInBag, TotalPokesInPokedex, KmWalkedCurrent, Git.CurrentVersion);
         }
 
         public static int GetXpDiff(int level)

@@ -42,6 +42,7 @@ namespace PokemonGo.RocketAPI
         bool PrioritizeIVOverCP { get; }
         bool UseLuckyEggs { get; }
         bool UseIncense { get; }
+        bool DebugMode { get; }
 
         ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter { get; }
         ICollection<PokemonId> PokemonsToEvolve { get; }

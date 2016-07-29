@@ -45,7 +45,7 @@
       <Value Profile="(Default)">GPXFILE.gpx</Value>
     </Setting>
     <Setting Name="UseLuckyEggs" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="NotTransferPokemonsThatCanEvolve" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -87,6 +87,9 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="GPXIgnorePokestops" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="DebugMode" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>

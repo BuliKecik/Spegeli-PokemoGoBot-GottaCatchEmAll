@@ -36,14 +36,21 @@ namespace PokemonGo.RocketAPI.Extensions
         {
             //Logger.Write($"Requesting {typeof(TResponsePayload).Name}", LogLevel.Debug);
             Debug.WriteLine($"Requesting {typeof(TResponsePayload).Name}");
+            var counter = 0;
 
             var response = await PostProto<TRequest>(client, url, request);
-            while (response.Payload.Count == 0)
+            while (response.Payload.Count == 0 && counter < 5)
             {
                 await RandomHelper.RandomDelay(200,300);
                 response = await PostProto<TRequest>(client, url, request);
+                counter += 1;
                 if (response.Payload.Count == 0)
                     Logger.Write("Payload ist 0", LogLevel.Debug);
+            }
+            if (response.Payload.Count == 0)
+            {
+                Logger.Write("Payload ist 0", LogLevel.Debug);
+                throw new InvalidResponseException();
             }
 
             //Decode payload
