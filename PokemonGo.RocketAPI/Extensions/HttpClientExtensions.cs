@@ -37,14 +37,11 @@ namespace PokemonGo.RocketAPI.Extensions
             //Logger.Write($"Requesting {typeof(TResponsePayload).Name}", LogLevel.Debug);
             Debug.WriteLine($"Requesting {typeof(TResponsePayload).Name}");
 
-            RandomHelper.RandomSleep(200,300);
             var response = await PostProto<TRequest>(client, url, request);
-
-            if (response.Payload.Count == 0)
+            while (response.Payload.Count == 0)
             {
-                Logger.Write("InvalidResponseException from HttpClientExtensions.cs", LogLevel.Error);
-                //throw new InvalidResponseException();
-                //return default(TResponsePayload);
+                await RandomHelper.RandomDelay(200,300);
+                response = await PostProto<TRequest>(client, url, request);
             }
 
             //Decode payload
