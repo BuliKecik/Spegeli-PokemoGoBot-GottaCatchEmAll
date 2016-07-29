@@ -720,7 +720,7 @@ namespace PokemonGo.RocketAPI.Logic
         public async Task UseIncense()
         {
             var inventory = await _inventory.GetItems();
-            var WorstIncense = inventory.Where(p => (ItemId)p.Item_ == ItemId.ItemIncenseOrdinary).FirstOrDefault();
+            var WorstIncense = inventory.FirstOrDefault(p => (ItemId)p.Item_ == ItemId.ItemIncenseOrdinary);
 
             if (WorstIncense == null || WorstIncense.Count <= 0 || _lastIncenseTime.AddMinutes(30).Ticks > DateTime.Now.Ticks)
                 return;

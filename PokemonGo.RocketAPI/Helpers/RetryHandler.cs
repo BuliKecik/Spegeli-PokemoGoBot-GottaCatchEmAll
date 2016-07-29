@@ -25,7 +25,7 @@ namespace PokemonGo.RocketAPI.Helpers
             HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            for (int i = 0; i <= MaxRetries; i++)
+            for (var i = 0; i <= MaxRetries; i++)
             {
                 try
                 {
