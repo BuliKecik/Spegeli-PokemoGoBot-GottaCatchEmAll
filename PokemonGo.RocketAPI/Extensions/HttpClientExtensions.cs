@@ -8,6 +8,7 @@ using PokemonGo.RocketAPI.GeneratedCode;
 using PokemonGo.RocketAPI.Logging;
 using System.Diagnostics;
 using System.Threading;
+using PokemonGo.RocketAPI.Helpers;
 
 #endregion
 
@@ -36,7 +37,7 @@ namespace PokemonGo.RocketAPI.Extensions
             //Logger.Write($"Requesting {typeof(TResponsePayload).Name}", LogLevel.Debug);
             Debug.WriteLine($"Requesting {typeof(TResponsePayload).Name}");
 
-            Thread.Sleep(200);
+            RandomHelper.RandomSleep(200,300);
             var response = await PostProto<TRequest>(client, url, request);
 
             if (response.Payload.Count == 0)
