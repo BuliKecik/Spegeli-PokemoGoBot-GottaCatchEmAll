@@ -85,16 +85,15 @@ namespace PokemonGo.RocketAPI.Logic
 
                 return results;
             }
-            
 
             if (prioritizeIVoverCP)
             {
                 return pokemonList
-                .GroupBy(p => p.PokemonId)
-                .Where(x => x.Any())
-                .SelectMany(
+                    .GroupBy(p => p.PokemonId)
+                    .Where(x => x.Any())
+                    .SelectMany(
                     p =>
-                        p.OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
+                    p.OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
                             .ThenBy(n => n.StaminaMax)
                             .Skip(_client.Settings.TransferPokemonKeepDuplicateAmount)
                             .ToList());
@@ -102,9 +101,9 @@ namespace PokemonGo.RocketAPI.Logic
             else
             {
                 return pokemonList
-                .GroupBy(p => p.PokemonId)
-                .Where(x => x.Any())
-                .SelectMany(
+                    .GroupBy(p => p.PokemonId)
+                    .Where(x => x.Any())
+                    .SelectMany(
                     p =>
                         p.OrderByDescending(x => x.Cp)
                             .ThenBy(n => n.StaminaMax)
