@@ -297,7 +297,7 @@ namespace PokemonGo.RocketAPI.Logic
                     if (File.Exists(pokelist_file))
                         File.Delete(pokelist_file);
                     string ls = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator;
-                    string header = "PokemonID,Name,NickName,CP / MaxCP,IV Perfection in %,Attack 1,Attack 2,HP,Attk,Def,Stamina,Familie Candies,IsInGym,IsFavorite,previewLink";
+                    string header = "PokemonID,Name,NickName,Level,CP / MaxCP,IV Perfection in %,Attack 1,Attack 2,HP,Attk,Def,Stamina,Familie Candies,IsInGym,IsFavorite,previewLink";
                     File.WriteAllText(pokelist_file, $"{header.Replace(",", $"{ls}")}");
 
                     var AllPokemon = await GetHighestsPerfect();
@@ -334,9 +334,10 @@ namespace PokemonGo.RocketAPI.Logic
                             var familiecandies = pokemonFamilies.Single(x => settings.FamilyId == x.FamilyId).Candy;
                             string perfection = PokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00");
                             perfection = perfection.Replace(",", ls == "," ? "." : ",");
-                            string content_part1 = $"{(int)pokemon.PokemonId},{pokemon.PokemonId},{pokemon.Nickname},{pokemon.Cp}/{PokemonInfo.CalculateMaxCP(pokemon)},";
-                            string content_part2 = $",{pokemon.Move1},{pokemon.Move2},{pokemon.Stamina},{pokemon.IndividualAttack},{pokemon.IndividualDefense},{pokemon.IndividualStamina},{familiecandies},{IsInGym},{IsFavorite},http://poke.isitin.org/#{encoded}";
-                            string content = $"{content_part1.Replace(",", $"{ls}")}\"{perfection}\"{content_part2.Replace(",", $"{ls}")}";
+                            string content_part1 = $"\"{(int)pokemon.PokemonId}\",\"{pokemon.PokemonId}\",\"{pokemon.Nickname}\",";
+                            string content_part2 = $",\"{pokemon.Cp}\" / {PokemonInfo.CalculateMaxCP(pokemon)},";
+                            string content_part3 = $",\"{pokemon.Move1}\",\"{pokemon.Move2}\",\"{pokemon.Stamina}\",\"{pokemon.IndividualAttack}\",\"{pokemon.IndividualDefense}\",\"{pokemon.IndividualStamina}\",\"{familiecandies}\",\"{IsInGym}\",\"{IsFavorite}\",http://poke.isitin.org/#{encoded}";
+                            string content = $"{content_part1.Replace(",", $"{ls}")}\"{PokemonInfo.GetLevel(pokemon)}\"{content_part2.Replace(",", $"{ls}")}\"{perfection}\"{content_part3.Replace(",", $"{ls}")}";
                             w.WriteLine($"{content}");
 
                         }
