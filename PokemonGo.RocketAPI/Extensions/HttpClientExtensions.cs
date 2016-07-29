@@ -26,8 +26,8 @@ namespace PokemonGo.RocketAPI.Extensions
             var response = await PostProto<TRequest>(client, url, request);
             while (response.Payload.Count == 0 && counter <= 5)
             {
-                if (response.Payload.Count == 0)
-                    Logger.Write($"Bad Payload Repsonse. Retry {counter} of 5", LogLevel.Warning);
+                //if (response.Payload.Count == 0)
+                    //Logger.Write($"Bad Payload Repsonse. Retry {counter} of 5", LogLevel.Warning);
                 await RandomHelper.RandomDelay(200, 300);
                 response = await PostProto<TRequest>(client, url, request);
                 counter += 1;

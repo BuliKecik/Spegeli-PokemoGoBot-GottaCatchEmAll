@@ -31,15 +31,14 @@ namespace PokemonGo.RocketAPI.Logic
 
         public async Task<IEnumerable<PokemonData>> GetPokemonToTransfer(bool keepPokemonsThatCanEvolve = false, bool prioritizeIVoverCP = false, IEnumerable<PokemonId> filter = null)
         {
+            
             var myPokemon = await GetPokemons();
             var pokemonList = myPokemon.Where(p => p.DeployedFortId == 0 && p.Favorite == 0).ToList();
             if (_client.Settings.UsePokemonToNotTransferList && filter != null)
                 pokemonList = pokemonList.Where(p => !filter.Contains(p.PokemonId)).ToList();
-            if (_client.Settings.UseTransferPokemonKeepAboveCP && _client.Settings.UseTransferPokemonKeepAboveIV)
-                pokemonList = pokemonList.Where(p => p.Cp < _client.Settings.TransferPokemonKeepAboveCP && PokemonInfo.CalculatePokemonPerfection(p) < _client.Settings.TransferPokemonKeepAboveIVPercentage).ToList();
-            else if (_client.Settings.UseTransferPokemonKeepAboveCP)
+            if (_client.Settings.UseTransferPokemonKeepAboveCP)
                 pokemonList = pokemonList.Where(p => p.Cp < _client.Settings.TransferPokemonKeepAboveCP).ToList();
-            else if (_client.Settings.UseTransferPokemonKeepAboveIV)
+            if (_client.Settings.UseTransferPokemonKeepAboveIV)
                 pokemonList = pokemonList.Where(p => PokemonInfo.CalculatePokemonPerfection(p) < _client.Settings.TransferPokemonKeepAboveIVPercentage).ToList();
 
             if (keepPokemonsThatCanEvolve)
