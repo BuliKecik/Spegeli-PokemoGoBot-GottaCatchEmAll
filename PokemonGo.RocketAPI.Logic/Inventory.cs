@@ -208,13 +208,16 @@ namespace PokemonGo.RocketAPI.Logic
         }
 
 
-        public async Task<IEnumerable<PokemonData>> GetPokemonToEvolve(IEnumerable<PokemonId> filter = null)
+        public async Task<IEnumerable<PokemonData>> GetPokemonToEvolve(bool prioritizeIVoverCP = false, IEnumerable < PokemonId> filter = null)
         {
             var myPokemons = await GetPokemons();
-            myPokemons = myPokemons.Where(p => p.DeployedFortId == 0).OrderByDescending(p => p.Cp); //Don't evolve pokemon in gyms
+            myPokemons = myPokemons.Where(p => p.DeployedFortId == 0);
+            if (prioritizeIVoverCP)
+                myPokemons = myPokemons.OrderByDescending(p => PokemonInfo.CalculatePokemonPerfection(p)); //Don't evolve pokemon in gyms
+            else
+                myPokemons = myPokemons.OrderByDescending(p => p.Cp); //Don't evolve pokemon in gyms
             if (filter != null)
                 myPokemons = myPokemons.Where(p => filter.Contains(p.PokemonId));		
-
             if (_client.Settings.EvolveOnlyPokemonAboveIV)
                 myPokemons = myPokemons.Where(p => PokemonInfo.CalculatePokemonPerfection(p) >= _client.Settings.EvolveOnlyPokemonAboveIVValue);
 

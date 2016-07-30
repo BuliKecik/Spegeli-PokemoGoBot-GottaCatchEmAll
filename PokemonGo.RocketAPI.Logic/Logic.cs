@@ -139,7 +139,7 @@ namespace PokemonGo.RocketAPI.Logic
                     var PokemonsToNotCatch = _clientSettings.PokemonsToNotCatch;
                     var PokemonsToEvolve = _clientSettings.PokemonsToEvolve;
 
-                    if (_clientSettings.EvolvePokemon || _clientSettings.EvolveOnlyPokemonAboveIV) await EvolvePokemon(_clientSettings.PokemonsToEvolve);
+                    if (_clientSettings.EvolvePokemon || _clientSettings.EvolveOnlyPokemonAboveIV) await EvolvePokemon();
                     if (_clientSettings.TransferPokemon) await TransferPokemon();
                     await _inventory.ExportPokemonToCSV(_playerProfile.Profile);
                     await RecycleItems();
@@ -262,7 +262,7 @@ namespace PokemonGo.RocketAPI.Logic
                                                 if (_client.Settings.DebugMode)
                                                     Logger.Write($"Seems your Soft-Banned. Trying to Unban via Pokestop Spins. Retry {fortTry} of {retryNumber}", LogLevel.Warning);
 
-                                                await Task.Delay(400);
+                                                await RandomHelper.RandomDelay(200,400);
                                             }
                                         }
                                         else
@@ -396,7 +396,7 @@ namespace PokemonGo.RocketAPI.Logic
                             if (_client.Settings.DebugMode)
                                 Logger.Write($"Seems your Soft-Banned. Trying to Unban via Pokestop Spins. Retry {fortTry} of {retryNumber-zeroCheck}", LogLevel.Warning);
 
-                            await Task.Delay(400);
+                            await RandomHelper.RandomDelay(200, 400);
                         }
                     }
                     else
@@ -516,14 +516,14 @@ namespace PokemonGo.RocketAPI.Logic
                     Logger.Write($"Encounter problem: {encounter.Status}", LogLevel.Warning);
             }
 
-            if (_clientSettings.EvolvePokemon || _clientSettings.EvolveOnlyPokemonAboveIV) await EvolvePokemon(_clientSettings.PokemonsToEvolve);
+            if (_clientSettings.EvolvePokemon || _clientSettings.EvolveOnlyPokemonAboveIV) await EvolvePokemon();
             if (_clientSettings.TransferPokemon) await TransferPokemon();
         }
 
-        private async Task EvolvePokemon(IEnumerable<PokemonId> filter = null)
+        private async Task EvolvePokemon()
         {
             await Inventory.getCachedInventory(_client, true);
-            var pokemonToEvolve = await _inventory.GetPokemonToEvolve(filter);
+            var pokemonToEvolve = await _inventory.GetPokemonToEvolve(_clientSettings.PrioritizeIVOverCP, _clientSettings.PokemonsToEvolve);
             if (pokemonToEvolve != null && pokemonToEvolve.Any())
                 Logger.Write($"Found {pokemonToEvolve.Count()} Pokemon for Evolve:", LogLevel.Info);
 
