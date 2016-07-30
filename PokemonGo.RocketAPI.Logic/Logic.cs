@@ -394,7 +394,7 @@ namespace PokemonGo.RocketAPI.Logic
                             fortTry += 1;
 
                             if (_client.Settings.DebugMode)
-                                Logger.Write($"Seems your Soft-Banned. Trying to Unban via Pokestop Spins. Retry {fortTry} of {retryNumber}", LogLevel.Warning);
+                                Logger.Write($"Seems your Soft-Banned. Trying to Unban via Pokestop Spins. Retry {fortTry} of {retryNumber-zeroCheck}", LogLevel.Warning);
 
                             await Task.Delay(400);
                         }
