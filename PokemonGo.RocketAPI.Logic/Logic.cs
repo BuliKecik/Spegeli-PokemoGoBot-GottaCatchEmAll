@@ -226,19 +226,7 @@ namespace PokemonGo.RocketAPI.Logic
 
                             if (!_clientSettings.GPXIgnorePokestops)
                             {
-                                // Wasn't sure how to make this pretty. Edit as needed.
-                                var mapObjects = await _client.GetMapObjects();
-                                var pokeStops =
-                                    mapObjects.MapCells.SelectMany(i => i.Forts)
-                                        .Where(
-                                            i =>
-                                                i.Type == FortType.Checkpoint &&
-                                                i.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime() &&
-                                                // Make sure PokeStop is within 40 meters, otherwise we cannot hit them.
-                                                (LocationUtils.CalculateDistanceInMeters(
-                                                    _client.CurrentLat, _client.CurrentLng,
-                                                    i.Latitude, i.Longitude) < 40)
-                                        );
+                                var pokeStops = await _inventory.GetPokestops();
                                 var pokestopList = pokeStops.ToList();
 
                                 while (pokestopList.Any())
@@ -344,20 +332,7 @@ namespace PokemonGo.RocketAPI.Logic
                     _clientSettings.WalkingSpeedInKilometerPerHour, ExecuteCatchAllNearbyPokemons);
             }
 
-            var mapObjects = await _client.GetMapObjects();
-
-            var pokeStops =
-                Navigation.PathByNearestNeighbour(
-                mapObjects.MapCells.SelectMany(i => i.Forts)
-                    .Where(
-                        i =>
-                            i.Type == FortType.Checkpoint &&
-                            i.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime() &&
-                            (_clientSettings.MaxTravelDistanceInMeters == 0 ||
-                            LocationUtils.CalculateDistanceInMeters(
-                                _clientSettings.DefaultLatitude, _clientSettings.DefaultLongitude,
-                                    i.Latitude, i.Longitude) < _clientSettings.MaxTravelDistanceInMeters))
-                            .ToArray());
+            var pokeStops = await _inventory.GetPokestops();
             var pokestopList = pokeStops.ToList();
             if (pokestopList.Count <= 0)
                 Logger.Write("No usable PokeStops found in your area. Is your maximum distance too small?",

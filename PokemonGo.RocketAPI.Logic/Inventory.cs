@@ -9,6 +9,8 @@ using System;
 using System.Threading;
 using PokemonGo.RocketAPI.Logging;
 using System.IO;
+using PokemonGo.RocketAPI.Extensions;
+using PokemonGo.RocketAPI.Logic.Utils;
 
 #endregion
 
@@ -38,76 +40,52 @@ namespace PokemonGo.RocketAPI.Logic
             if (_client.Settings.UseTransferPokemonKeepAboveIV)
                 pokemonList = pokemonList.Where(p => PokemonInfo.CalculatePokemonPerfection(p) < _client.Settings.TransferPokemonKeepAboveIVPercentage).ToList();
 
-            if (keepPokemonsThatCanEvolve)
+
+            if (!keepPokemonsThatCanEvolve)
+                return pokemonList
+                    .GroupBy(p => p.PokemonId)
+                    .Where(x => x.Any())
+                    .SelectMany(
+                        p =>
+                            p.OrderByDescending(
+                                x => (prioritizeIVoverCp) ? PokemonInfo.CalculatePokemonPerfection(x) : x.Cp)
+                                .ThenBy(n => n.StaminaMax)
+                                .Skip(_client.Settings.TransferPokemonKeepDuplicateAmount)
+                                .ToList());
+
+
+            var results = new List<PokemonData>();
+            var pokemonsThatCanBeTransfered = pokemonList.GroupBy(p => p.PokemonId)
+                .Where(x => x.Count() > _client.Settings.TransferPokemonKeepDuplicateAmount).ToList();
+
+            var myPokemonSettings = await GetPokemonSettings();
+            var pokemonSettings = myPokemonSettings.ToList();
+
+            var myPokemonFamilies = await GetPokemonFamilies();
+            var pokemonFamilies = myPokemonFamilies.ToArray();
+
+            foreach (var pokemon in pokemonsThatCanBeTransfered)
             {
-                var results = new List<PokemonData>();
-                var pokemonsThatCanBeTransfered = pokemonList.GroupBy(p => p.PokemonId)
-                    .Where(x => x.Count() > _client.Settings.TransferPokemonKeepDuplicateAmount).ToList();
+                var settings = pokemonSettings.Single(x => x.PokemonId == pokemon.Key);
+                var familyCandy = pokemonFamilies.Single(x => settings.FamilyId == x.FamilyId);
+                var amountToSkip = _client.Settings.TransferPokemonKeepDuplicateAmount;
 
-                var myPokemonSettings = await GetPokemonSettings();
-                var pokemonSettings = myPokemonSettings.ToList();
-
-                var myPokemonFamilies = await GetPokemonFamilies();
-                var pokemonFamilies = myPokemonFamilies.ToArray();
-
-                foreach (var pokemon in pokemonsThatCanBeTransfered)
+                if (settings.CandyToEvolve > 0)
                 {
-                    var settings = pokemonSettings.Single(x => x.PokemonId == pokemon.Key);
-                    var familyCandy = pokemonFamilies.Single(x => settings.FamilyId == x.FamilyId);
-                    var amountToSkip = _client.Settings.TransferPokemonKeepDuplicateAmount;
-
-                    if (settings.CandyToEvolve > 0)
-                    {
-                        var amountPossible = familyCandy.Candy / settings.CandyToEvolve;
-                        if (amountPossible > amountToSkip)
-                            amountToSkip = amountPossible;
-                    }
-
-                    if (prioritizeIVoverCp)
-                    {
-                        results.AddRange(pokemonList.Where(x => x.PokemonId == pokemon.Key)
-                            .OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
-                            .ThenBy(n => n.StaminaMax)
-                            .Skip(amountToSkip)
-                            .ToList());
-                    }
-                    else
-                    {
-                        results.AddRange(pokemonList.Where(x => x.PokemonId == pokemon.Key)
-                            .OrderByDescending(x => x.Cp)
-                            .ThenBy(n => n.StaminaMax)
-                            .Skip(amountToSkip)
-                            .ToList());
-                    }
+                    var amountPossible = familyCandy.Candy/settings.CandyToEvolve;
+                    if (amountPossible > amountToSkip)
+                        amountToSkip = amountPossible;
                 }
 
-                return results;
+                results.AddRange(pokemonList.Where(x => x.PokemonId == pokemon.Key)
+                    .OrderByDescending(
+                        x => (prioritizeIVoverCp) ? PokemonInfo.CalculatePokemonPerfection(x) : x.Cp)
+                    .ThenBy(n => n.StaminaMax)
+                    .Skip(amountToSkip)
+                    .ToList());
             }
 
-            if (prioritizeIVoverCp)
-            {
-                return pokemonList
-                    .GroupBy(p => p.PokemonId)
-                    .Where(x => x.Any())
-                    .SelectMany(
-                    p =>
-                    p.OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
-                            .ThenBy(n => n.StaminaMax)
-                            .Skip(_client.Settings.TransferPokemonKeepDuplicateAmount)
-                            .ToList());
-            }
-            else
-            {
-                return pokemonList
-                    .GroupBy(p => p.PokemonId)
-                    .Where(x => x.Any())
-                    .SelectMany(
-                    p =>
-                        p.OrderByDescending(x => x.Cp)
-                            .ThenBy(n => n.StaminaMax)
-                            .Skip(_client.Settings.TransferPokemonKeepDuplicateAmount)
-                            .ToList());
-            }
+            return results;
         }
 
         public async Task<IEnumerable<PokemonData>> GetHighestsCp(int limit)
@@ -241,16 +219,14 @@ namespace PokemonGo.RocketAPI.Logic
                 var familiecandies = familyCandy.Candy;
                 if (_client.Settings.EvolveKeepCandiesValue > 0)
                 {
-                    if (familyCandy.Candy > _client.Settings.EvolveKeepCandiesValue)
-                    {
+                    if (familyCandy.Candy <= _client.Settings.EvolveKeepCandiesValue) continue;
+                    if (_client.Settings.DebugMode)
                         Logger.Write(
                             $"{pokemon.PokemonId} has {familyCandy.Candy} candies, we want to keep {_client.Settings.EvolveKeepCandiesValue}",
                             LogLevel.Debug);
-                        familiecandies = familyCandy.Candy - _client.Settings.EvolveKeepCandiesValue;
-                        if (familiecandies - pokemonCandyNeededAlready > settings.CandyToEvolve)
-                            pokemonToEvolve.Add(pokemon);
-
-                    }
+                    familiecandies = familyCandy.Candy - _client.Settings.EvolveKeepCandiesValue;
+                    if (familiecandies - pokemonCandyNeededAlready > settings.CandyToEvolve)
+                        pokemonToEvolve.Add(pokemon);
                 }
                 else if (familiecandies - pokemonCandyNeededAlready > settings.CandyToEvolve)
                     pokemonToEvolve.Add(pokemon);
@@ -289,6 +265,29 @@ namespace PokemonGo.RocketAPI.Logic
             {
                 ss.Release();
             }
+        }
+
+        public async Task<List<FortData>> GetPokestops(bool path = false)
+        {
+            var mapObjects = await _client.GetMapObjects();
+            var pokeStops = mapObjects.MapCells.SelectMany(i => i.Forts)
+                .Where(
+                    i =>
+                        i.Type == FortType.Checkpoint &&
+                        i.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime() &&
+                        (path) ? (LocationUtils.CalculateDistanceInMeters(
+                            _client.CurrentLat, _client.CurrentLng,
+                            i.Latitude, i.Longitude) < 40)
+                           : (LocationUtils.CalculateDistanceInMeters(
+                                _client.Settings.DefaultLatitude, _client.Settings.DefaultLongitude,
+                                i.Latitude, i.Longitude) < _client.Settings.MaxTravelDistanceInMeters) ||
+                                _client.Settings.MaxTravelDistanceInMeters == 0
+                      ).ToList();
+
+            return pokeStops.OrderBy(
+                        i =>
+                            LocationUtils.CalculateDistanceInMeters(_client.CurrentLat,
+                            _client.CurrentLng, i.Latitude, i.Longitude)).ToList();
         }
 
         public async Task ExportPokemonToCsv(Profile player, string filename = "PokeList.csv")
