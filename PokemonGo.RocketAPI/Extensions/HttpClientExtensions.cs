@@ -34,9 +34,6 @@ namespace PokemonGo.RocketAPI.Extensions
             {
                 throw new InvalidResponseException();
             }
-
-            //Decode payload
-            //todo: multi-payload support
             var payload = response.Payload[0];
             var parsedPayload = new TResponsePayload();
             parsedPayload.MergeFrom(payload);

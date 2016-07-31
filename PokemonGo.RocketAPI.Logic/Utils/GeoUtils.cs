@@ -6,30 +6,30 @@ using System.Globalization;
 #endregion
 
 
-namespace PokemonGo.RocketAPI.Helpers
+namespace PokemonGo.RocketAPI.Logic.Utils
 {
     //Thanks to https://gist.github.com/atsushieno/377377
-    public class GeoCoordinate : IEquatable<GeoCoordinate>
+    public class GeoUtils : IEquatable<GeoUtils>
     {
-        public static readonly GeoCoordinate Unknown = new GeoCoordinate();
+        public static readonly GeoUtils Unknown = new GeoUtils();
 
-        public GeoCoordinate()
+        public GeoUtils()
         {
         }
 
-        public GeoCoordinate(double latitude, double longitude)
+        public GeoUtils(double latitude, double longitude)
         {
             Latitude = latitude;
             Longitude = longitude;
         }
 
-        public GeoCoordinate(double latitude, double longitude, double altitude)
+        public GeoUtils(double latitude, double longitude, double altitude)
             : this(latitude, longitude)
         {
             Altitude = altitude;
         }
 
-        public GeoCoordinate(double latitude, double longitude, double altitude, double horizontalAccuracy, double verticalAccuracy, double speed, double course)
+        public GeoUtils(double latitude, double longitude, double altitude, double horizontalAccuracy, double verticalAccuracy, double speed, double course)
             : this(latitude, longitude, altitude)
         {
             HorizontalAccuracy = horizontalAccuracy;
@@ -48,29 +48,29 @@ namespace PokemonGo.RocketAPI.Helpers
 
         public bool IsUnknown => ReferenceEquals(this, Unknown);
 
-        public bool Equals(GeoCoordinate other)
+        public bool Equals(GeoUtils other)
         {
             return other != null && Latitude == other.Latitude && Longitude == other.Longitude;
         }
 
-        public static bool operator ==(GeoCoordinate left, GeoCoordinate right)
+        public static bool operator ==(GeoUtils left, GeoUtils right)
         {
             return ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.Equals(right);
         }
 
-        public static bool operator !=(GeoCoordinate left, GeoCoordinate right)
+        public static bool operator !=(GeoUtils left, GeoUtils right)
         {
             return !(left == right);
         }
 
         public override bool Equals(object obj)
         {
-            var g = obj as GeoCoordinate;
+            var g = obj as GeoUtils;
             return g != null && Equals(g);
         }
 
         //Thanks to http://stackoverflow.com/a/13429321/1798015
-        public double GetDistanceTo(GeoCoordinate other)
+        public double GetDistanceTo(GeoUtils other)
         {
             if (double.IsNaN(Latitude) || double.IsNaN(Longitude) || double.IsNaN(other.Latitude) || double.IsNaN(other.Longitude))
             {

@@ -220,10 +220,6 @@ namespace PokemonGo.RocketAPI.Logic
                 if (_client.Settings.EvolveKeepCandiesValue > 0)
                 {
                     if (familyCandy.Candy <= _client.Settings.EvolveKeepCandiesValue) continue;
-                    if (_client.Settings.DebugMode)
-                        Logger.Write(
-                            $"{pokemon.PokemonId} has {familyCandy.Candy} candies, we want to keep {_client.Settings.EvolveKeepCandiesValue}",
-                            LogLevel.Debug);
                     familiecandies = familyCandy.Candy - _client.Settings.EvolveKeepCandiesValue;
                     if (familiecandies - pokemonCandyNeededAlready > settings.CandyToEvolve)
                         pokemonToEvolve.Add(pokemon);

@@ -23,12 +23,12 @@ namespace PokemonGo.RocketAPI.Logic
             _client = client;
         }
 
-        public async Task<PlayerUpdateResponse> HumanLikeWalking(GeoCoordinate targetLocation,
+        public async Task<PlayerUpdateResponse> HumanLikeWalking(GeoUtils targetLocation,
             double walkingSpeedInKilometersPerHour, Func<Task> functionExecutedWhileWalking)
         {
             var speedInMetersPerSecond = walkingSpeedInKilometersPerHour / 3.6;
 
-            var sourceLocation = new GeoCoordinate(_client.CurrentLat, _client.CurrentLng);
+            var sourceLocation = new GeoUtils(_client.CurrentLat, _client.CurrentLng);
             var distanceToTarget = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
             Logger.Write($"Distance to target location: {distanceToTarget:0.##} meters. Will take {distanceToTarget / speedInMetersPerSecond:0.##} seconds!", LogLevel.Navigation);
 
@@ -46,7 +46,7 @@ namespace PokemonGo.RocketAPI.Logic
                 var millisecondsUntilGetUpdatePlayerLocationResponse =
                     (DateTime.Now - requestSendDateTime).TotalMilliseconds;
 
-                sourceLocation = new GeoCoordinate(_client.CurrentLat, _client.CurrentLng);
+                sourceLocation = new GeoUtils(_client.CurrentLat, _client.CurrentLng);
                 var currentDistanceToTarget = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
                 if (_client.Settings.DebugMode)
                     Logger.Write($"Distance to target location: {currentDistanceToTarget:0.##} meters. Will take {currentDistanceToTarget / speedInMetersPerSecond:0.##} seconds!", LogLevel.Navigation);
@@ -80,11 +80,11 @@ namespace PokemonGo.RocketAPI.Logic
         public async Task<PlayerUpdateResponse> HumanPathWalking(GpxReader.Trkpt trk,
             double walkingSpeedInKilometersPerHour, Func<Task> functionExecutedWhileWalking)
         {
-            var targetLocation = new GeoCoordinate(Convert.ToDouble(trk.Lat), Convert.ToDouble(trk.Lon));
+            var targetLocation = new GeoUtils(Convert.ToDouble(trk.Lat), Convert.ToDouble(trk.Lon));
 
             var speedInMetersPerSecond = walkingSpeedInKilometersPerHour / 3.6;
 
-            var sourceLocation = new GeoCoordinate(_client.CurrentLat, _client.CurrentLng);
+            var sourceLocation = new GeoUtils(_client.CurrentLat, _client.CurrentLng);
             var distanceToTarget = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
             Logger.Write($"Distance to target location: {distanceToTarget:0.##} meters. Will take {distanceToTarget/speedInMetersPerSecond:0.##} seconds!", LogLevel.Navigation);
 
@@ -104,7 +104,7 @@ namespace PokemonGo.RocketAPI.Logic
                 var millisecondsUntilGetUpdatePlayerLocationResponse =
                     (DateTime.Now - requestSendDateTime).TotalMilliseconds;
 
-                sourceLocation = new GeoCoordinate(_client.CurrentLat, _client.CurrentLng);
+                sourceLocation = new GeoUtils(_client.CurrentLat, _client.CurrentLng);
                 var currentDistanceToTarget = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
                 if (_client.Settings.DebugMode)
                     Logger.Write($"Distance to target location: {currentDistanceToTarget:0.##} meters. Will take {currentDistanceToTarget / speedInMetersPerSecond:0.##} seconds!", LogLevel.Navigation);

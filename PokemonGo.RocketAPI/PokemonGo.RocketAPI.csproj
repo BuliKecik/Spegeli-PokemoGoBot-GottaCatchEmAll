@@ -17,7 +17,7 @@
     <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
     <AssemblyVersionSettings>YearStamp.MonthStamp.DayStamp.Increment</AssemblyVersionSettings>
     <PrimaryVersionType>AssemblyVersionAttribute</PrimaryVersionType>
-    <AssemblyVersion>2016.7.31.611</AssemblyVersion>
+    <AssemblyVersion>2016.7.31.628</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -102,8 +102,6 @@
     <Compile Include="GeneratedCode\Payloads.cs" />
     <Compile Include="GeneratedCode\Request.cs" />
     <Compile Include="GeneratedCode\Response.cs" />
-    <Compile Include="Helpers\GeoCoordinate.cs" />
-    <Compile Include="Helpers\Git.cs" />
     <Compile Include="Helpers\HttpClientHelper.cs" />
     <Compile Include="Helpers\JsonHelper.cs" />
     <Compile Include="Helpers\ProtoHelper.cs" />

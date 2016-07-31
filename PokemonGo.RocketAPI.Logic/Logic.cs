@@ -22,7 +22,7 @@ namespace PokemonGo.RocketAPI.Logic
         private readonly Client _client;
         private readonly ISettings _clientSettings;
         private readonly Inventory _inventory;
-        private readonly Statistics _stats;
+        private readonly BotStats _stats;
         private readonly Navigation _navigation;
         private GetPlayerResponse _playerProfile;
         private static DateTime _lastLuckyEggTime;
@@ -38,7 +38,7 @@ namespace PokemonGo.RocketAPI.Logic
             ResetCoords();
             _client = new Client(_clientSettings);
             _inventory = new Inventory(_client);
-            _stats = new Statistics();
+            _stats = new BotStats();
             _navigation = new Navigation(_client);
         }
 
@@ -46,7 +46,7 @@ namespace PokemonGo.RocketAPI.Logic
         {
             if (!_isInitialized)
             {
-                Git.CheckVersion();
+                GitCheck.CheckVersion();
 
                 if (Math.Abs(_clientSettings.DefaultLatitude) <= 0  || Math.Abs(_clientSettings.DefaultLongitude) <= 0)
                 {
@@ -126,13 +126,13 @@ namespace PokemonGo.RocketAPI.Logic
                 {
                     await Inventory.GetCachedInventory(_client);
                     _playerProfile = await _client.GetProfile();
-                    var playerName = Statistics.GetUsername(_client, _playerProfile);
+                    var playerName = BotStats.GetUsername(_client, _playerProfile);
                     _stats.UpdateConsoleTitle(_client, _inventory);
-                    var currentLevelInfos = await Statistics._getcurrentLevelInfos(_inventory);
+                    var currentLevelInfos = await BotStats._getcurrentLevelInfos(_inventory);
 
                     var stats = await _inventory.GetPlayerStats();
                     var stat = stats.FirstOrDefault();
-                    if (stat != null) Statistics.KmWalkedOnStart = stat.KmWalked;
+                    if (stat != null) BotStats.KmWalkedOnStart = stat.KmWalked;
 
                     Logger.Write("----------------------------", LogLevel.None, ConsoleColor.Yellow);
                     if (_clientSettings.AuthType == AuthType.Ptc)
@@ -242,6 +242,8 @@ namespace PokemonGo.RocketAPI.Logic
                                     var distance = LocationUtils.CalculateDistanceInMeters(_client.CurrentLat, _client.CurrentLng, pokeStop.Latitude, pokeStop.Longitude);
                                     var fortInfo = await _client.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
                                     Logger.Write($"Name: {fortInfo.Name} in {distance:0.##} m distance", LogLevel.Pokestop);
+                                    if (_client.Settings.DebugMode)
+                                        Logger.Write($"Latitude: {pokeStop.Latitude} - Longitude: {pokeStop.Longitude}", LogLevel.Debug);
 
                                     var timesZeroXPawarded = 0;
                                     var fortTry = 0;      //Current check
@@ -255,19 +257,17 @@ namespace PokemonGo.RocketAPI.Logic
                                         {
                                             timesZeroXPawarded++;
 
-                                            if (timesZeroXPawarded > zeroCheck)
+                                            if (timesZeroXPawarded <= zeroCheck) continue;
+                                            if ((int)fortSearch.CooldownCompleteTimestampMs != 0)
                                             {
-                                                if ((int)fortSearch.CooldownCompleteTimestampMs != 0)
-                                                {
-                                                    break; // Check if successfully looted, if so program can continue as this was "false alarm".
-                                                }
-                                                fortTry += 1;
-
-                                                if (_client.Settings.DebugMode)
-                                                    Logger.Write($"Seems your Soft-Banned. Trying to Unban via Pokestop Spins. Retry {fortTry} of {retryNumber}", LogLevel.Warning);
-
-                                                await RandomHelper.RandomDelay(200,400);
+                                                break; // Check if successfully looted, if so program can continue as this was "false alarm".
                                             }
+                                            fortTry += 1;
+
+                                            if (_client.Settings.DebugMode)
+                                                Logger.Write($"Seems your Soft-Banned. Trying to Unban via Pokestop Spins. Retry {fortTry} of {retryNumber}", LogLevel.Warning);
+
+                                            await RandomHelper.RandomDelay(75, 100);
                                         }
                                         else
                                         {
@@ -328,7 +328,7 @@ namespace PokemonGo.RocketAPI.Logic
                 await Task.Delay(5000);
                 Logger.Write("Moving to start location now.");
                 await _navigation.HumanLikeWalking(
-                    new GeoCoordinate(_clientSettings.DefaultLatitude, _clientSettings.DefaultLongitude),
+                    new GeoUtils(_clientSettings.DefaultLatitude, _clientSettings.DefaultLongitude),
                     _clientSettings.WalkingSpeedInKilometerPerHour, ExecuteCatchAllNearbyPokemons);
             }
 
@@ -360,12 +360,17 @@ namespace PokemonGo.RocketAPI.Logic
                 var distance = LocationUtils.CalculateDistanceInMeters(_client.CurrentLat, _client.CurrentLng, pokeStop.Latitude, pokeStop.Longitude);
                 var fortInfo = await _client.GetFort(pokeStop.Id, pokeStop.Latitude, pokeStop.Longitude);
 
-                Logger.Write($"Name: {fortInfo.Name} in {distance:0.##} m distance", LogLevel.Pokestop);
-                await _navigation.HumanLikeWalking(new GeoCoordinate(pokeStop.Latitude, pokeStop.Longitude), _clientSettings.WalkingSpeedInKilometerPerHour, ExecuteCatchAllNearbyPokemons);
+                var latlngDebug = string.Empty;
+                if (_clientSettings.DebugMode)
+                    latlngDebug = $"| Latitude: {pokeStop.Latitude} - Longitude: {pokeStop.Longitude}";
+
+                Logger.Write($"Name: {fortInfo.Name} in {distance:0.##} m distance {latlngDebug}", LogLevel.Pokestop);
+
+                await _navigation.HumanLikeWalking(new GeoUtils(pokeStop.Latitude, pokeStop.Longitude), _clientSettings.WalkingSpeedInKilometerPerHour, ExecuteCatchAllNearbyPokemons);
 
                 var timesZeroXPawarded = 0;
                 var fortTry = 0;      //Current check
-                const int retryNumber = 50; //How many times it needs to check to clear softban
+                const int retryNumber = 45; //How many times it needs to check to clear softban
                 const int zeroCheck = 5; //How many times it checks fort before it thinks it's softban
                 do
                 {
@@ -375,19 +380,17 @@ namespace PokemonGo.RocketAPI.Logic
                     {
                         timesZeroXPawarded++;
 
-                        if (timesZeroXPawarded > zeroCheck)
+                        if (timesZeroXPawarded <= zeroCheck) continue;
+                        if ((int)fortSearch.CooldownCompleteTimestampMs != 0)
                         {
-                            if ((int)fortSearch.CooldownCompleteTimestampMs != 0)
-                            {
-                                break; // Check if successfully looted, if so program can continue as this was "false alarm".
-                            }
-                            fortTry += 1;
-
-                            if (_client.Settings.DebugMode)
-                                Logger.Write($"Seems your Soft-Banned. Trying to Unban via Pokestop Spins. Retry {fortTry} of {retryNumber-zeroCheck}", LogLevel.Warning);
-
-                            await RandomHelper.RandomDelay(200, 400);
+                            break; // Check if successfully looted, if so program can continue as this was "false alarm".
                         }
+                        fortTry += 1;
+
+                        if (_client.Settings.DebugMode)
+                            Logger.Write($"Seems your Soft-Banned. Trying to Unban via Pokestop Spins. Retry {fortTry} of {retryNumber-zeroCheck}", LogLevel.Warning);
+
+                        await RandomHelper.RandomDelay(75, 100);
                     }
                     else
                     {
@@ -497,7 +500,6 @@ namespace PokemonGo.RocketAPI.Logic
 
             foreach (var pokemon in pokemons)
             {
-                var distance = LocationUtils.CalculateDistanceInMeters(_client.CurrentLat, _client.CurrentLng, pokemon.Latitude, pokemon.Longitude);
                 var encounter = await _client.EncounterPokemon(pokemon.EncounterId, pokemon.SpawnpointId);
 
                 if (encounter.Status == EncounterResponse.Types.Status.EncounterSuccess)

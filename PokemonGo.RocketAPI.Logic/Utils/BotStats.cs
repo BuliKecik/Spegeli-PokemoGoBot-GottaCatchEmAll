@@ -13,7 +13,7 @@ using PokemonGo.RocketAPI.Helpers;
 
 namespace PokemonGo.RocketAPI.Logic.Utils
 {
-    internal class Statistics
+    internal class BotStats
     {
         public static int TotalExperience;
         public static int TotalPokemons;
@@ -119,7 +119,7 @@ namespace PokemonGo.RocketAPI.Logic.Utils
                 string.Format(
                     "{0} - Runtime {1} - Lvl: {2:0} | EXP/H: {3:0} | P/H: {4:0} | Stardust: {5:0} | Transfered: {6:0} | Items Recycled: {7:0} | Pokemon: {8:0} | Pokedex: {9:0}/151 | Km Walked this Session: {10:0.00} | Bot Version: {11:0}",
                     PlayerName, _getSessionRuntimeInTimeFormat(), CurrentLevelInfos, TotalExperience / _getSessionRuntime(),
-                    TotalPokemons / _getSessionRuntime(), TotalStardust, TotalPokemonsTransfered, TotalItemsRemoved, TotalPokesInBag, TotalPokesInPokedex, KmWalkedCurrent, Git.CurrentVersion);
+                    TotalPokemons / _getSessionRuntime(), TotalStardust, TotalPokemonsTransfered, TotalItemsRemoved, TotalPokesInBag, TotalPokesInPokedex, KmWalkedCurrent, GitCheck.CurrentVersion);
         }
 
         public static int GetXpDiff(int level)

@@ -10,9 +10,9 @@ using System.Threading;
 #endregion
 
 
-namespace PokemonGo.RocketAPI.Helpers
+namespace PokemonGo.RocketAPI.Logic.Utils
 {
-    public static class Git
+    public static class GitCheck
     {
         public static string CurrentVersion = $"{Assembly.GetExecutingAssembly().GetName().Version}";
         public static void CheckVersion()
