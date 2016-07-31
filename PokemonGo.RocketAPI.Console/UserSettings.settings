@@ -15,10 +15,10 @@
       <Value Profile="(Default)">150</Value>
     </Setting>
     <Setting Name="DefaultLatitude" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">40.758838</Value>
+      <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="DefaultLongitude" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">-73.98527</Value>
+      <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="UsePokemonToNotCatchList" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -27,10 +27,10 @@
       <Value Profile="(Default)">Google</Value>
     </Setting>
     <Setting Name="PtcUsername" Type="System.String" Scope="User">
-      <Value Profile="(Default)">JizzMaster2000</Value>
+      <Value Profile="(Default)">PtcUsername</Value>
     </Setting>
     <Setting Name="PtcPassword" Type="System.String" Scope="User">
-      <Value Profile="(Default)">MUgzN8Kb</Value>
+      <Value Profile="(Default)">PtcPassword</Value>
     </Setting>
     <Setting Name="PrioritizeIVOverCP" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -78,10 +78,10 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="GoogleEmail" Type="System.String" Scope="User">
-      <Value Profile="(Default)">andreas.spegel@gmail.com</Value>
+      <Value Profile="(Default)">GoogleEmail</Value>
     </Setting>
     <Setting Name="GooglePassword" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Spegeli0311</Value>
+      <Value Profile="(Default)">GooglePassword</Value>
     </Setting>
     <Setting Name="GPXIgnorePokemon" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -90,7 +90,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="DebugMode" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="EvolveKeepCandiesValue" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">200</Value>
