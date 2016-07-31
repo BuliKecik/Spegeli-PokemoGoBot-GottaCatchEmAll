@@ -5,9 +5,7 @@ using System.Threading.Tasks;
 using Google.Protobuf;
 using PokemonGo.RocketAPI.Exceptions;
 using PokemonGo.RocketAPI.GeneratedCode;
-using PokemonGo.RocketAPI.Logging;
 using System.Diagnostics;
-using System.Threading;
 using PokemonGo.RocketAPI.Helpers;
 
 #endregion
@@ -23,13 +21,13 @@ namespace PokemonGo.RocketAPI.Extensions
             Debug.WriteLine($"Requesting {typeof(TResponsePayload).Name}");
             var counter = 1;
 
-            var response = await PostProto<TRequest>(client, url, request);
+            var response = await PostProto(client, url, request);
             while (response.Payload.Count == 0 && counter <= 5)
             {
                 //if (response.Payload.Count == 0)
                     //Logger.Write($"Bad Payload Repsonse. Retry {counter} of 5 <- IGNORE THIS FUCKING MESSAGE...I KNOW IT", LogLevel.Warning);
                 await RandomHelper.RandomDelay(200, 300);
-                response = await PostProto<TRequest>(client, url, request);
+                response = await PostProto(client, url, request);
                 counter += 1;
             }
             if (response.Payload.Count == 0)

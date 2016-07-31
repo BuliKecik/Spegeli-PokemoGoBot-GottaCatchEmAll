@@ -1,4 +1,9 @@
-﻿namespace PokemonGo.RocketAPI.Enums
+﻿#region
+
+#endregion
+
+
+namespace PokemonGo.RocketAPI.Enums
 {
     public class MiscEnums
     {

@@ -7,7 +7,6 @@ using PokemonGo.RocketAPI.GeneratedCode;
 using PokemonGo.RocketAPI.Logic.Utils;
 using PokemonGo.RocketAPI.Logging;
 using PokemonGo.RocketAPI.Helpers;
-using System.Globalization;
 
 #endregion
 
@@ -81,8 +80,6 @@ namespace PokemonGo.RocketAPI.Logic
         public async Task<PlayerUpdateResponse> HumanPathWalking(GpxReader.Trkpt trk,
             double walkingSpeedInKilometersPerHour, Func<Task> functionExecutedWhileWalking)
         {
-            //PlayerUpdateResponse result = null;
-
             var targetLocation = new GeoCoordinate(Convert.ToDouble(trk.Lat), Convert.ToDouble(trk.Lon));
 
             var speedInMetersPerSecond = walkingSpeedInKilometersPerHour / 3.6;
@@ -142,7 +139,7 @@ namespace PokemonGo.RocketAPI.Logic
             return result;
         }
 
-        public static FortData[] pathByNearestNeighbour(FortData[] pokeStops)
+        public static FortData[] PathByNearestNeighbour(FortData[] pokeStops)
         {
             for (var i = 1; i < pokeStops.Length - 1; i++)
             {
@@ -152,12 +149,9 @@ namespace PokemonGo.RocketAPI.Logic
                 {
                     var initialDist = cloestDist;
                     var newDist = LocationUtils.CalculateDistanceInMeters(pokeStops[i].Latitude, pokeStops[i].Longitude, pokeStops[j].Latitude, pokeStops[j].Longitude);
-                    if (initialDist > newDist)
-                    {
-                        cloestDist = newDist;
-                        closest = j;
-                    }
-
+                    if (!(initialDist > newDist)) continue;
+                    cloestDist = newDist;
+                    closest = j;
                 }
                 var tmpPok = pokeStops[closest];
                 pokeStops[closest] = pokeStops[i + 1];

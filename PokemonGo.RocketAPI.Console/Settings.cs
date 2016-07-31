@@ -16,7 +16,7 @@ namespace PokemonGo.RocketAPI.Console
 {
     public class Settings : ISettings
     {
-        private string configs_path = Path.Combine(Directory.GetCurrentDirectory(), "Settings");
+        private readonly string _configsPath = Path.Combine(Directory.GetCurrentDirectory(), "Settings");
 
         public AuthType AuthType => (AuthType)Enum.Parse(typeof(AuthType), UserSettings.Default.AuthType, true);
         public string PtcUsername => UserSettings.Default.PtcUsername;
@@ -39,6 +39,8 @@ namespace PokemonGo.RocketAPI.Console
         public bool EvolvePokemon => UserSettings.Default.EvolvePokemon;
         public bool EvolveOnlyPokemonAboveIV => UserSettings.Default.EvolveOnlyPokemonAboveIV;
         public float EvolveOnlyPokemonAboveIVValue => UserSettings.Default.EvolveOnlyPokemonAboveIVValue;
+        public int EvolveKeepCandiesValue => UserSettings.Default.EvolveKeepCandiesValue;
+
         public bool TransferPokemon => UserSettings.Default.TransferPokemon;
         public int TransferPokemonKeepDuplicateAmount => UserSettings.Default.TransferPokemonKeepDuplicateAmount;
         public bool NotTransferPokemonsThatCanEvolve => UserSettings.Default.NotTransferPokemonsThatCanEvolve;
@@ -67,10 +69,10 @@ namespace PokemonGo.RocketAPI.Console
             new KeyValuePair<ItemId, int>(ItemId.ItemPotion, 0),
             new KeyValuePair<ItemId, int>(ItemId.ItemSuperPotion, 10),
             new KeyValuePair<ItemId, int>(ItemId.ItemHyperPotion, 25),
-            new KeyValuePair<ItemId, int>(ItemId.ItemMaxPotion, 75),
+            new KeyValuePair<ItemId, int>(ItemId.ItemMaxPotion, 25),
 
             new KeyValuePair<ItemId, int>(ItemId.ItemRevive, 15),
-            new KeyValuePair<ItemId, int>(ItemId.ItemMaxRevive, 50),
+            new KeyValuePair<ItemId, int>(ItemId.ItemMaxRevive, 25),
 
             new KeyValuePair<ItemId, int>(ItemId.ItemLuckyEgg, 200),
 
@@ -102,7 +104,7 @@ namespace PokemonGo.RocketAPI.Console
             get
             {
                 //Type of pokemons to evolve
-                List<PokemonId> defaultPokemon = new List<PokemonId> {
+                var defaultPokemon = new List<PokemonId> {
                     PokemonId.Zubat, PokemonId.Pidgey, PokemonId.Rattata
                 };
                 _pokemonsToEvolve = _pokemonsToEvolve ?? LoadPokemonList("PokemonsToEvolve.ini", defaultPokemon);
@@ -115,7 +117,7 @@ namespace PokemonGo.RocketAPI.Console
             get
             {
                 //Type of pokemons not to transfer
-                List<PokemonId> defaultPokemon = new List<PokemonId> {
+                var defaultPokemon = new List<PokemonId> {
                     PokemonId.Dragonite, PokemonId.Charizard, PokemonId.Zapdos, PokemonId.Snorlax, PokemonId.Alakazam, PokemonId.Mew, PokemonId.Mewtwo
                 };
                 _pokemonsToNotTransfer = _pokemonsToNotTransfer ?? LoadPokemonList("PokemonsToNotTransfer.ini", defaultPokemon);
@@ -128,7 +130,7 @@ namespace PokemonGo.RocketAPI.Console
             get
             {
                 //Type of pokemons not to catch
-                List<PokemonId> defaultPokemon = new List<PokemonId> {
+                var defaultPokemon = new List<PokemonId> {
                     PokemonId.Zubat, PokemonId.Pidgey, PokemonId.Rattata
                 };
                 _pokemonsToNotCatch = _pokemonsToNotCatch ?? LoadPokemonList("PokemonsToNotCatch.ini", defaultPokemon);
@@ -139,44 +141,46 @@ namespace PokemonGo.RocketAPI.Console
         private ICollection<PokemonId> LoadPokemonList(string filename, List<PokemonId> defaultPokemon)
         {
             ICollection<PokemonId> result = new List<PokemonId>();
-            if (!Directory.Exists(configs_path))
-                Directory.CreateDirectory(configs_path);
-            string pokemonlist_file = Path.Combine(configs_path, filename);
-            if (!File.Exists(pokemonlist_file))
+            if (!Directory.Exists(_configsPath))
+                Directory.CreateDirectory(_configsPath);
+            var pokemonlistFile = Path.Combine(_configsPath, filename);
+            if (!File.Exists(pokemonlistFile))
             {
                 Logger.Write($"Settings File: \"{filename}\" not found, creating new...", LogLevel.Warning);
-                using (var w = File.AppendText(pokemonlist_file))
+                using (var w = File.AppendText(pokemonlistFile))
                 {
                     defaultPokemon.ForEach(pokemon => w.WriteLine(pokemon.ToString()));
-                    defaultPokemon.ForEach(pokemon => result.Add((PokemonId)pokemon));
+                    defaultPokemon.ForEach(pokemon => result.Add(pokemon));
                     w.Close();
                 }
             }
-            if (File.Exists(pokemonlist_file))
+
+            if (File.Exists(pokemonlistFile))
             {
                 Logger.Write($"Loading Settings File: \"{filename}\"", LogLevel.Info);
 
-                var content = string.Empty;
-                using (StreamReader reader = new StreamReader(pokemonlist_file))
+                string content;
+                using (var reader = new StreamReader(pokemonlistFile))
                 {
                     content = reader.ReadToEnd();
                     reader.Close();
                 }
                 content = Regex.Replace(content, @"\\/\*(.|\n)*?\*\/", ""); //todo: supposed to remove comment blocks
 
-                StringReader tr = new StringReader(content);
+                var tr = new StringReader(content);
 
                 var pokemonName = tr.ReadLine();
                 while (pokemonName != null)
                 {
                     PokemonId pokemon;
-                    if (Enum.TryParse<PokemonId>(pokemonName, out pokemon))
+                    if (Enum.TryParse(pokemonName, out pokemon))
                     {
-                        result.Add((PokemonId)pokemon);
+                        result.Add(pokemon);
                     }
                     pokemonName = tr.ReadLine();
                 }
             }
+
             return result;
         }
     }

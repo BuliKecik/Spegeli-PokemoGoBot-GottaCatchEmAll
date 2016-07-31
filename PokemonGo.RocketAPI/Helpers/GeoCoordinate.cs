@@ -38,18 +38,15 @@ namespace PokemonGo.RocketAPI.Helpers
             Course = course;
         }
 
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
+        public double Latitude { get; }
+        public double Longitude { get; }
         public double Altitude { get; set; }
         public double HorizontalAccuracy { get; set; }
         public double VerticalAccuracy { get; set; }
         public double Speed { get; set; }
         public double Course { get; set; }
 
-        public bool IsUnknown
-        {
-            get { return Object.ReferenceEquals(this, Unknown); }
-        }
+        public bool IsUnknown => ReferenceEquals(this, Unknown);
 
         public bool Equals(GeoCoordinate other)
         {
@@ -58,9 +55,7 @@ namespace PokemonGo.RocketAPI.Helpers
 
         public static bool operator ==(GeoCoordinate left, GeoCoordinate right)
         {
-            if (Object.ReferenceEquals(left, null))
-                return Object.ReferenceEquals(right, null);
-            return left.Equals(right);
+            return ReferenceEquals(left, null) ? ReferenceEquals(right, null) : left.Equals(right);
         }
 
         public static bool operator !=(GeoCoordinate left, GeoCoordinate right)
@@ -77,23 +72,20 @@ namespace PokemonGo.RocketAPI.Helpers
         //Thanks to http://stackoverflow.com/a/13429321/1798015
         public double GetDistanceTo(GeoCoordinate other)
         {
-            if (double.IsNaN(this.Latitude) || double.IsNaN(this.Longitude) || double.IsNaN(other.Latitude) || double.IsNaN(other.Longitude))
+            if (double.IsNaN(Latitude) || double.IsNaN(Longitude) || double.IsNaN(other.Latitude) || double.IsNaN(other.Longitude))
             {
                 throw new ArgumentException(/*SR.GetString(*/"Argument_LatitudeOrLongitudeIsNotANumber"/*)*/);
             }
-            else
-            {
-                double latitude = this.Latitude * 0.0174532925199433;
-                double longitude = this.Longitude * 0.0174532925199433;
-                double num = other.Latitude * 0.0174532925199433;
-                double longitude1 = other.Longitude * 0.0174532925199433;
-                double num1 = longitude1 - longitude;
-                double num2 = num - latitude;
-                double num3 = Math.Pow(Math.Sin(num2 / 2), 2) + Math.Cos(latitude) * Math.Cos(num) * Math.Pow(Math.Sin(num1 / 2), 2);
-                double num4 = 2 * Math.Atan2(Math.Sqrt(num3), Math.Sqrt(1 - num3));
-                double num5 = 6376500 * num4;
-                return num5;
-            }
+            var latitude = Latitude * 0.0174532925199433;
+            var longitude = Longitude * 0.0174532925199433;
+            var num = other.Latitude * 0.0174532925199433;
+            var longitude1 = other.Longitude * 0.0174532925199433;
+            var num1 = longitude1 - longitude;
+            var num2 = num - latitude;
+            var num3 = Math.Pow(Math.Sin(num2 / 2), 2) + Math.Cos(latitude) * Math.Cos(num) * Math.Pow(Math.Sin(num1 / 2), 2);
+            var num4 = 2 * Math.Atan2(Math.Sqrt(num3), Math.Sqrt(1 - num3));
+            var num5 = 6376500 * num4;
+            return num5;
         }
 
         public override int GetHashCode()

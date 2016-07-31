@@ -16,26 +16,25 @@ namespace PokemonGo.RocketAPI.Logging
     public class Logger
     {
         static string _currentFile = string.Empty;
-        static string path = Path.Combine(Directory.GetCurrentDirectory(), "Logs");
+        private static readonly string Path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Logs");
 
         //private static Logger _logger;
 
         /// <summary>
-        /// Set the logger. All future requests to <see cref="Write(string, LogLevel)"/> will use that logger, any old will be unset.
+        /// Set the logger. All future requests to <see cref="Write(string,LogLevel,ConsoleColor)"/> will use that logger, any old will be unset.
         /// </summary>
-        /// <param name="logger"></param>
         public static void SetLogger()
 		{
-            if (!Directory.Exists(path))
+            if (!Directory.Exists(Path))
             {
-                DirectoryInfo di = Directory.CreateDirectory(path);
+                Directory.CreateDirectory(Path);
             }
             _currentFile = DateTime.Now.ToString("yyyy-MM-dd - HH.mm.ss");
             Log($"Initializing Rocket logger @ {DateTime.Now}...");
         }
 
         /// <summary>
-        ///     Log a specific message to the logger setup by <see cref="SetLogger(ILogger)" /> .
+        ///     Log a specific message to the logger setup by <see cref="SetLogger()" /> .
         /// </summary>
         /// <param name="message">The message to log.</param>
         /// <param name="level">Optional level to log. Default <see cref="LogLevel.Info" />.</param>
@@ -47,64 +46,64 @@ namespace PokemonGo.RocketAPI.Logging
             switch (level)
             {
                 case LogLevel.Info:
-                    System.Console.ForegroundColor = ConsoleColor.DarkGreen;
-                    System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (INFO) {message}");
+                    Console.ForegroundColor = ConsoleColor.DarkGreen;
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (INFO) {message}");
                     break;
                 case LogLevel.Warning:
-                    System.Console.ForegroundColor = ConsoleColor.DarkYellow;
-                    System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (ATTENTION) {message}");
+                    Console.ForegroundColor = ConsoleColor.DarkYellow;
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (ATTENTION) {message}");
                     break;
                 case LogLevel.Error:
-                    System.Console.ForegroundColor = ConsoleColor.Red;
-                    System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (ERROR) {message}");
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (ERROR) {message}");
                     break;
                 case LogLevel.Debug:
-                    System.Console.ForegroundColor = ConsoleColor.Gray;
-                    System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (DEBUG) {message}");
+                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (DEBUG) {message}");
                     break;
                 case LogLevel.Navigation:
-                    System.Console.ForegroundColor = ConsoleColor.DarkCyan;
-                    System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (NAVIGATION) {message}");
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (NAVIGATION) {message}");
                     break;
                 case LogLevel.Pokestop:
-                    System.Console.ForegroundColor = ConsoleColor.Cyan;
-                    System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (POKESTOP) {message}");
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (POKESTOP) {message}");
                     break;
                 case LogLevel.Pokemon:
-                    System.Console.ForegroundColor = ConsoleColor.Yellow;
-                    System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (PKMN) {message}");
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (PKMN) {message}");
                     break;
                 case LogLevel.Transfer:
-                    System.Console.ForegroundColor = ConsoleColor.White;
-                    System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (TRANSFER) {message}");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (TRANSFER) {message}");
                     break;
                 case LogLevel.Evolve:
-                    System.Console.ForegroundColor = ConsoleColor.White;
-                    System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (EVOLVE) {message}");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (EVOLVE) {message}");
                     break;
                 case LogLevel.Berry:
-                    System.Console.ForegroundColor = ConsoleColor.Magenta;
-                    System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (BERRY) {message}");
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (BERRY) {message}");
                     break;
                 case LogLevel.Egg:
-                    System.Console.ForegroundColor = ConsoleColor.White;
-                    System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (EGG) {message}");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (EGG) {message}");
                     break;
                 case LogLevel.Incense:
-                    System.Console.ForegroundColor = ConsoleColor.White;
-                    System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (INSENCE) {message}");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (INSENCE) {message}");
                     break;
                 case LogLevel.Recycling:
-                    System.Console.ForegroundColor = ConsoleColor.DarkMagenta;
-                    System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (RECYCLING) {message}");
+                    Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (RECYCLING) {message}");
                     break;
                 case LogLevel.None:
-                    System.Console.ForegroundColor = color;
-                    System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] {message}");
+                    Console.ForegroundColor = color;
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] {message}");
                     break;
                 default:
-                    System.Console.ForegroundColor = ConsoleColor.White;
-                    System.Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] {message}");
+                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] {message}");
                     break;
             }
             Log(string.Concat($"[{DateTime.Now.ToString("HH:mm:ss")}] ", message));
@@ -113,7 +112,7 @@ namespace PokemonGo.RocketAPI.Logging
         private static void Log(string message)
         {
             // maybe do a new log rather than appending?
-            using (var log = File.AppendText(Path.Combine(path, _currentFile + ".txt")))
+            using (var log = File.AppendText(System.IO.Path.Combine(Path, _currentFile + ".txt")))
             {
                 log.WriteLine(message);
                 log.Flush();

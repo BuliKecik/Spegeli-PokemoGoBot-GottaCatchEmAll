@@ -1,15 +1,11 @@
 ﻿#region
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using PokemonGo.RocketAPI.Helpers;
-using PokemonGo.RocketAPI.Logging;
 
 #endregion
+
 
 namespace PokemonGo.RocketAPI.Login
 {
@@ -29,9 +25,9 @@ namespace PokemonGo.RocketAPI.Login
             do
             {
                 await Task.Delay(2000);
-                tokenResponse = await PollSubmittedToken(deviceCode.device_code);
+                tokenResponse = await PollSubmittedToken(deviceCode.DeviceCode);
                 count++;
-            } while (tokenResponse.access_token == null || tokenResponse.refresh_token == null && count < 100);
+            } while (tokenResponse.AccessToken == null || tokenResponse.RefreshToken == null && count < 100);
 
             return tokenResponse;
         }
@@ -67,27 +63,27 @@ namespace PokemonGo.RocketAPI.Login
 
         internal class ErrorResponseModel
         {
-            public string error { get; set; }
-            public string error_description { get; set; }
+            public string Error { get; set; }
+            public string ErrorDescription { get; set; }
         }
 
         public class TokenResponseModel
         {
-            public string access_token { get; set; }
-            public string token_type { get; set; }
-            public int expires_in { get; set; }
-            public string refresh_token { get; set; }
-            public string id_token { get; set; }
+            public string AccessToken { get; set; }
+            public string TokenType { get; set; }
+            public int ExpiresIn { get; set; }
+            public string RefreshToken { get; set; }
+            public string IdToken { get; set; }
         }
 
 
         public class DeviceCodeModel
         {
-            public string verification_url { get; set; }
-            public int expires_in { get; set; }
-            public int interval { get; set; }
-            public string device_code { get; set; }
-            public string user_code { get; set; }
+            public string VerificationUrl { get; set; }
+            public int ExpiresIn { get; set; }
+            public int Interval { get; set; }
+            public string DeviceCode { get; set; }
+            public string UserCode { get; set; }
         }
 
     }

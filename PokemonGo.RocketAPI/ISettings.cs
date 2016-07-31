@@ -31,6 +31,7 @@ namespace PokemonGo.RocketAPI
         bool EvolvePokemon { get; }
         bool EvolveOnlyPokemonAboveIV { get; }
         float EvolveOnlyPokemonAboveIVValue { get; }
+        int EvolveKeepCandiesValue { get; }
         bool TransferPokemon { get; }
         int TransferPokemonKeepDuplicateAmount { get; }
         bool NotTransferPokemonsThatCanEvolve { get; }

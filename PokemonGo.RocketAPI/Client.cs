@@ -15,7 +15,6 @@ using PokemonGo.RocketAPI.Helpers;
 using PokemonGo.RocketAPI.Login;
 using static PokemonGo.RocketAPI.GeneratedCode.Response.Types;
 using PokemonGo.RocketAPI.Logging;
-using System.Collections.Generic;
 
 #endregion
 
@@ -28,24 +27,24 @@ namespace PokemonGo.RocketAPI
         private string _apiUrl;
         private AuthType _authType = AuthType.Google;
         private Request.Types.UnknownAuth _unknownAuth;
-        Random rand = null;
+        private Random _rand;
 
-        private static string configs_path = Path.Combine(Directory.GetCurrentDirectory(), "Settings");
-        private static string lastcoords_file = Path.Combine(configs_path, "LastCoords.ini");
+        private static readonly string ConfigsPath = Path.Combine(Directory.GetCurrentDirectory(), "Settings");
+        private static readonly string LastcoordsFile = Path.Combine(ConfigsPath, "LastCoords.ini");
 
         public Client(ISettings settings)
         {
             Settings = settings;
 
-            Tuple<double, double> latLngFromFile = GetLatLngFromFile();
+            var latLngFromFile = GetLatLngFromFile();
 
-            if (latLngFromFile != null && latLngFromFile.Item1 != 0 && latLngFromFile.Item2 != 0)
+            if (latLngFromFile != null && Math.Abs(latLngFromFile.Item1) > 0 && Math.Abs(latLngFromFile.Item2) > 0)
             {
                 SetCoordinates(latLngFromFile.Item1, latLngFromFile.Item2, Settings.DefaultAltitude);
             }
             else
             {
-                if (!File.Exists(lastcoords_file) || !File.ReadAllText(lastcoords_file).Contains(":"))
+                if (!File.Exists(LastcoordsFile) || !File.ReadAllText(LastcoordsFile).Contains(":"))
                     Logger.Write("Missing Settings File \"LastCoords.ini\", using default settings for coordinates and create a new one...");
                 SetCoordinates(Settings.DefaultLatitude, Settings.DefaultLongitude, Settings.DefaultAltitude);
             }
@@ -72,33 +71,33 @@ namespace PokemonGo.RocketAPI
         /// <returns>Tuple&lt;System.Double, System.Double&gt;.</returns>
         public static Tuple<double, double> GetLatLngFromFile()
         {
-            if (!Directory.Exists(configs_path))
-                Directory.CreateDirectory(configs_path);
-            if (File.Exists(lastcoords_file) && File.ReadAllText(lastcoords_file).Contains(":"))
+            if (!Directory.Exists(ConfigsPath))
+                Directory.CreateDirectory(ConfigsPath);
+            if (File.Exists(LastcoordsFile) && File.ReadAllText(LastcoordsFile).Contains(":"))
             {
-                var latlngFromFile = File.ReadAllText(lastcoords_file);
+                var latlngFromFile = File.ReadAllText(LastcoordsFile);
                 var latlng = latlngFromFile.Split(':');
                 if (latlng[0].Length != 0 && latlng[1].Length != 0)
                 {
                     try
                     {
-                        double temp_lat = Convert.ToDouble(latlng[0]);
-                        double temp_long = Convert.ToDouble(latlng[1]);
+                        var tempLat = Convert.ToDouble(latlng[0]);
+                        var tempLong = Convert.ToDouble(latlng[1]);
 
-                        if (temp_lat >= -90 && temp_lat <= 90 && temp_long >= -180 && temp_long <= 180)
+                        if (tempLat >= -90 && tempLat <= 90 && tempLong >= -180 && tempLong <= 180)
                         {
                             //SetCoordinates(Convert.ToDouble(latlng[0]), Convert.ToDouble(latlng[1]), Settings.DefaultAltitude);
-                            return new Tuple<double, double>(temp_lat, temp_long);
+                            return new Tuple<double, double>(tempLat, tempLong);
                         }
                         else
                         {
-                            Logger.Write("Coordinates in \"\\Configs\\Coords.ini\" file are invalid, using the default coordinates", LogLevel.Error);
+                            Logger.Write("Coordinates in \"\\Settings\\LastCoords.ini\" file are invalid, using the default coordinates", LogLevel.Error);
                             return null;
                         }
                     }
                     catch (FormatException)
                     {
-                        Logger.Write("Coordinates in \"\\Configs\\Coords.ini\" file are invalid, using the default coordinates", LogLevel.Error);
+                        Logger.Write("Coordinates in \"\\Settings\\LastCoords.ini\" file are invalid, using the default coordinates", LogLevel.Error);
                         return null;
                     }
                 }
@@ -301,7 +300,7 @@ namespace PokemonGo.RocketAPI
         public void SaveLatLng(double lat, double lng, string filename = "LastCoords.ini")
         {
             var latlng = lat + ":" + lng;
-            File.WriteAllText(Path.Combine(configs_path, filename), latlng);
+            File.WriteAllText(Path.Combine(ConfigsPath, filename), latlng);
         }
 
         public async Task<FortSearchResponse> SearchFort(string fortId, double fortLat, double fortLng)
@@ -341,14 +340,14 @@ namespace PokemonGo.RocketAPI
             double mean = 0.0;// just for fun
             double stdDev = 2.09513120352; //-> so 50% of the noised coordinates will have a maximal distance of 4 m to orginal ones
 
-            if (rand == null)
+            if (_rand == null)
             {
-                rand = new Random();
+                _rand = new Random();
             }
-            double u1 = rand.NextDouble();
-            double u2 = rand.NextDouble();
-            double u3 = rand.NextDouble();
-            double u4 = rand.NextDouble();
+            double u1 = _rand.NextDouble();
+            double u2 = _rand.NextDouble();
+            double u3 = _rand.NextDouble();
+            double u4 = _rand.NextDouble();
 
             double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2);
             double randNormal = mean + stdDev * randStdNormal;
@@ -363,8 +362,8 @@ namespace PokemonGo.RocketAPI
         {
             if (double.IsNaN(lat) || double.IsNaN(lng)) return;
 
-            double latNoised = 0.0;
-            double lngNoised = 0.0;
+            var latNoised = 0.0;
+            var lngNoised = 0.0;
             CalcNoisedCoordinates(lat, lng, out latNoised, out lngNoised);
             CurrentLat = latNoised;
             CurrentLng = lngNoised;

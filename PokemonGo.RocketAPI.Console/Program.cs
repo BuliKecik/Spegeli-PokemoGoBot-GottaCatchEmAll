@@ -22,7 +22,7 @@ namespace PokemonGo.RocketAPI.Console
                 += delegate (object sender, UnhandledExceptionEventArgs eargs)
                 {
                     Exception exception = (Exception)eargs.ExceptionObject;
-                    System.Console.WriteLine("Unhandled exception: " + exception);
+                    System.Console.WriteLine(@"Unhandled exception: " + exception);
                     Environment.Exit(1);
                 };
 
