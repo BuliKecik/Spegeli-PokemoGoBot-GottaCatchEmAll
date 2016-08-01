@@ -46,7 +46,7 @@ namespace PokemonGo.RocketAPI.Logic
         {
             if (!_isInitialized)
             {
-                GitCheck.CheckVersion();
+                GitChecker.CheckVersion();
 
                 if (Math.Abs(_clientSettings.DefaultLatitude) <= 0  || Math.Abs(_clientSettings.DefaultLongitude) <= 0)
                 {
@@ -559,7 +559,7 @@ namespace PokemonGo.RocketAPI.Logic
                 var bestPokemonOfType = _client.Settings.PrioritizeIVOverCP
                     ? await _inventory.GetHighestPokemonOfTypeByIv(pokemon)
                     : await _inventory.GetHighestPokemonOfTypeByCp(pokemon);
-                string bestPokemonInfo = "NONE";
+                var bestPokemonInfo = "NONE";
                 if (bestPokemonOfType != null)
                     bestPokemonInfo = $"CP: {bestPokemonOfType.Cp}/{PokemonInfo.CalculateMaxCp(bestPokemonOfType)} | IV: {PokemonInfo.CalculatePokemonPerfection(bestPokemonOfType).ToString("0.00")}% perfect";
 

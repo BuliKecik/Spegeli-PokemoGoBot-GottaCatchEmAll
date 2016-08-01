@@ -12,7 +12,7 @@ using System.Threading;
 
 namespace PokemonGo.RocketAPI.Logic.Utils
 {
-    public static class GitCheck
+    public static class GitChecker
     {
         public static string CurrentVersion = $"{Assembly.GetExecutingAssembly().GetName().Version}";
         public static void CheckVersion()
@@ -28,6 +28,7 @@ namespace PokemonGo.RocketAPI.Logic.Utils
                 var gitVersion =
                     new Version(
                         $"{match.Groups[1]}.{match.Groups[2]}.{match.Groups[3]}.{match.Groups[4]}");
+                
                 if (gitVersion <= Assembly.GetExecutingAssembly().GetName().Version)
                 {
                     Logger.Write(
@@ -37,6 +38,7 @@ namespace PokemonGo.RocketAPI.Logic.Utils
                 }
 
                 Logger.Write("There is a new Version available: https://github.com/Spegeli/Pokemon-Go-Rocket-API", LogLevel.Info);
+                Logger.Write($"GitHub Version: {gitVersion} | Local Version: {CurrentVersion}", LogLevel.Info);
                 Thread.Sleep(1000);
             }
             catch (Exception)
@@ -51,7 +53,7 @@ namespace PokemonGo.RocketAPI.Logic.Utils
             using (var wC = new WebClient())
                 return
                     wC.DownloadString(
-                        "https://raw.githubusercontent.com/Spegeli/Pokemon-Go-Rocket-API/master/PokemonGo.RocketAPI/Properties/AssemblyInfo.cs");
+                        "https://raw.githubusercontent.com/Spegeli/Pokemon-Go-Rocket-API/master/PokemonGo.RocketAPI.Logic/Properties/AssemblyInfo.cs");
         }
     }
 }

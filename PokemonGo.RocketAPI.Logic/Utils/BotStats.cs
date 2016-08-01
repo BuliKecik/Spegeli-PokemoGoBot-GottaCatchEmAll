@@ -7,6 +7,7 @@ using PokemonGo.RocketAPI.GeneratedCode;
 using PokemonGo.RocketAPI.Enums;
 using System.Globalization;
 using PokemonGo.RocketAPI.Helpers;
+using PokemonGo.RocketAPI.Logging;
 
 #endregion
 
@@ -36,23 +37,19 @@ namespace PokemonGo.RocketAPI.Logic.Utils
             var stats = await inventory.GetPlayerStats();
             var output = string.Empty;
             var stat = stats.FirstOrDefault();
-            if (stat != null)
-            {
-                var ep = (stat.NextLevelXp - stat.PrevLevelXp) - (stat.Experience - stat.PrevLevelXp);
-                var time = Math.Round(ep / (TotalExperience / _getSessionRuntime()), 2);
-                var hours = 0.00;
-                var minutes = 0.00;
-                if (Double.IsInfinity(time) == false && time > 0)
-                {
-                    time = Convert.ToDouble(TimeSpan.FromHours(time).ToString("h\\.mm"), CultureInfo.InvariantCulture);
-                    hours = Math.Truncate(time);
-                    minutes = Math.Round((time - hours) * 100);
-                }
+            if (stat == null) return output;
 
-                output = $"{stat.Level} (LvLUp in {hours}h {minutes}m | {stat.Experience - stat.PrevLevelXp - GetXpDiff(stat.Level)}/{stat.NextLevelXp - stat.PrevLevelXp - GetXpDiff(stat.Level)} XP)";
-                //output = $"{stat.Level} (LvLUp in {_hours}hours // EXP required: {_ep})";
+            var ep = stat.NextLevelXp - stat.PrevLevelXp - (stat.Experience - stat.PrevLevelXp);
+            var time = Math.Round(ep / (TotalExperience / _getSessionRuntime()), 2);
+            var hours = 0.00;
+            var minutes = 0.00;
+            if (double.IsInfinity(time) == false && time > 0)
+            {
+                hours = Math.Truncate(TimeSpan.FromHours(time).TotalHours);
+                minutes = TimeSpan.FromHours(time).Minutes;
             }
-            return output;
+
+            return $"{stat.Level} (LvLUp in {hours}h {minutes}m | {stat.Experience - stat.PrevLevelXp - GetXpDiff(stat.Level)}/{stat.NextLevelXp - stat.PrevLevelXp - GetXpDiff(stat.Level)} XP)";
         }
 
         public static string GetUsername(Client client, GetPlayerResponse profile)
@@ -119,7 +116,7 @@ namespace PokemonGo.RocketAPI.Logic.Utils
                 string.Format(
                     "{0} - Runtime {1} - Lvl: {2:0} | EXP/H: {3:0} | P/H: {4:0} | Stardust: {5:0} | Transfered: {6:0} | Items Recycled: {7:0} | Pokemon: {8:0} | Pokedex: {9:0}/151 | Km Walked this Session: {10:0.00} | Bot Version: {11:0}",
                     PlayerName, _getSessionRuntimeInTimeFormat(), CurrentLevelInfos, TotalExperience / _getSessionRuntime(),
-                    TotalPokemons / _getSessionRuntime(), TotalStardust, TotalPokemonsTransfered, TotalItemsRemoved, TotalPokesInBag, TotalPokesInPokedex, KmWalkedCurrent, GitCheck.CurrentVersion);
+                    TotalPokemons / _getSessionRuntime(), TotalStardust, TotalPokemonsTransfered, TotalItemsRemoved, TotalPokesInBag, TotalPokesInPokedex, KmWalkedCurrent, GitChecker.CurrentVersion);
         }
 
         public static int GetXpDiff(int level)
