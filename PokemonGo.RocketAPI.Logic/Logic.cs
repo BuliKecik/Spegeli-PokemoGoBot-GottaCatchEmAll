@@ -10,7 +10,9 @@ using PokemonGo.RocketAPI.GeneratedCode;
 using PokemonGo.RocketAPI.Logic.Utils;
 using PokemonGo.RocketAPI.Helpers;
 using System.IO;
+using PokemonGo.RocketAPI.Exceptions;
 using PokemonGo.RocketAPI.Logging;
+using System.Diagnostics;
 
 #endregion
 
@@ -90,6 +92,39 @@ namespace PokemonGo.RocketAPI.Logic
                     await _client.SetServer();
 
                     await PostLoginExecute();
+                }
+                catch (AccountNotVerifiedException)
+                {
+                    Logger.Write("Account not verified! Exiting...", LogLevel.Error);
+                    await Task.Delay(5000);
+                    Environment.Exit(0);
+                }
+                catch (GoogleException e)
+                {
+                    if (e.Message.Contains("NeedsBrowser"))
+                    {
+                        Logger.Write("As you have Google Two Factor Auth enabled, you will need to insert an App Specific Password into the UserSettings.", LogLevel.Error);
+                        Logger.Write("Opening Google App-Passwords. Please make a new App Password (use Other as Device)", LogLevel.Error);
+                        await Task.Delay(7000);
+                        try
+                        {
+                            Process.Start("https://security.google.com/settings/security/apppasswords");
+                        }
+                        catch (Exception)
+                        {
+                            Logger.Write("https://security.google.com/settings/security/apppasswords");
+                            throw;
+                        }
+                    }
+                    Logger.Write("Make sure you have entered the right Email & Password.", LogLevel.Error);
+                    await Task.Delay(5000);
+                    Environment.Exit(0);
+                }
+                catch (InvalidProtocolBufferException ex) when (ex.Message.Contains("SkipLastField"))
+                {
+                    Logger.Write("Connection refused. Your IP might have been Blacklisted by Niantic. Exiting..", LogLevel.Error);
+                    await Task.Delay(5000);
+                    Environment.Exit(0);
                 }
                 catch (Exception e)
                 {
