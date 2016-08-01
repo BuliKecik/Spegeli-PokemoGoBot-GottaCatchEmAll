@@ -53,12 +53,7 @@ namespace PokemonGo.RocketAPI.Logic
                 if (Math.Abs(_clientSettings.DefaultLatitude) <= 0  || Math.Abs(_clientSettings.DefaultLongitude) <= 0)
                 {
                     Logger.Write($"Please change first Latitude and/or Longitude because currently your using default values!", LogLevel.Error);
-                    for (int i = 3; i > 0; i--)
-                    {
-                        Logger.Write($"Script will auto closed in {i * 5} seconds!", LogLevel.Warning);
-                        await Task.Delay(5000);
-                    }
-                    System.Environment.Exit(1);
+                    Environment.Exit(1);
                 }
                 else
                 {
@@ -513,7 +508,7 @@ namespace PokemonGo.RocketAPI.Logic
                         ? $"{caughtPokemonResponse.Status} Attempt #{attemptCounter}"
                         : $"{caughtPokemonResponse.Status}";
 
-                    var receivedXp = catchStatus == "CatchSuccess" 
+                    var receivedXp = caughtPokemonResponse.Status == CatchPokemonResponse.Types.CatchStatus.CatchSuccess
                         ? $"and received XP {caughtPokemonResponse.Scores.Xp.Sum()}" 
                         : $"";
 
@@ -780,12 +775,12 @@ namespace PokemonGo.RocketAPI.Logic
             if (!File.Exists(lastcoordsFile)) return;
             var latLngFromFile = Client.GetLatLngFromFile();
             if (latLngFromFile == null) return;
-            var DistanceInMeters = LocationUtils.CalculateDistanceInMeters(latLngFromFile.Item1, latLngFromFile.Item2, _clientSettings.DefaultLatitude, _clientSettings.DefaultLongitude);
+            var distanceInMeters = LocationUtils.CalculateDistanceInMeters(latLngFromFile.Item1, latLngFromFile.Item2, _clientSettings.DefaultLatitude, _clientSettings.DefaultLongitude);
             var lastModified = File.Exists(lastcoordsFile) ? (DateTime?)File.GetLastWriteTime(lastcoordsFile) : null;
             if (lastModified == null) return;
             var minutesSinceModified = (DateTime.Now - lastModified).HasValue ? (double?)((DateTime.Now - lastModified).Value.Minutes) : null;
-            if (minutesSinceModified == null || minutesSinceModified < 60) return; // Shouldn't really be null, but can be 0 and that's bad for division.
-            var kmph = (DistanceInMeters / 1000) / (minutesSinceModified);
+            if (minutesSinceModified == null || minutesSinceModified < 30) return; // Shouldn't really be null, but can be 0 and that's bad for division.
+            var kmph = (distanceInMeters / 1000) / (minutesSinceModified / 60);
             if (kmph < 80) // If speed required to get to the default location is < 80km/hr
             {
                 File.Delete(lastcoordsFile);
