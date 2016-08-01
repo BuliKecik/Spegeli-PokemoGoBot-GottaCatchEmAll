@@ -401,7 +401,19 @@ namespace PokemonGo.RocketAPI.Logic
 
                 Logger.Write($"Name: {fortInfo.Name} in {distance:0.##} m distance {latlngDebug}", LogLevel.Pokestop);
 
-                await _navigation.HumanLikeWalking(new GeoUtils(pokeStop.Latitude, pokeStop.Longitude), _clientSettings.WalkingSpeedInKilometerPerHour, ExecuteCatchAllNearbyPokemons);
+                if (_clientSettings.UseTeleportInsteadOfWalking)
+                {
+                    await
+                        _client.UpdatePlayerLocation(pokeStop.Latitude, pokeStop.Longitude,
+                            _clientSettings.DefaultAltitude);
+                    Logger.Write($"Using Teleport instead of Walking!", LogLevel.Debug);
+                }
+                else
+                {
+                    await
+                        _navigation.HumanLikeWalking(new GeoUtils(pokeStop.Latitude, pokeStop.Longitude),
+                            _clientSettings.WalkingSpeedInKilometerPerHour, ExecuteCatchAllNearbyPokemons);
+                }
 
                 var timesZeroXPawarded = 0;
                 var fortTry = 0;      //Current check
