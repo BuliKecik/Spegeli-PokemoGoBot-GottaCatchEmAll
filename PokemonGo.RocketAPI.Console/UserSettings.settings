@@ -83,8 +83,8 @@
     <Setting Name="GooglePassword" Type="System.String" Scope="User">
       <Value Profile="(Default)">GooglePassword</Value>
     </Setting>
-    <Setting Name="GPXIgnorePokemon" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+    <Setting Name="CatchPokemon" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="GPXIgnorePokestops" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>

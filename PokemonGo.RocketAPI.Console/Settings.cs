@@ -29,7 +29,6 @@ namespace PokemonGo.RocketAPI.Console
         public bool UseGPXPathing => UserSettings.Default.UseGPXPathing;
         public string GPXFile => UserSettings.Default.GPXFile;
         public bool GPXIgnorePokestops => UserSettings.Default.GPXIgnorePokestops;
-        public bool GPXIgnorePokemon => UserSettings.Default.GPXIgnorePokemon;
 
         public double WalkingSpeedInKilometerPerHour => UserSettings.Default.WalkingSpeedInKilometerPerHour;
         public int MaxTravelDistanceInMeters => UserSettings.Default.MaxTravelDistanceInMeters;
@@ -37,6 +36,9 @@ namespace PokemonGo.RocketAPI.Console
 
         public bool UsePokemonToNotCatchList => UserSettings.Default.UsePokemonToNotCatchList;
         public bool UsePokemonToNotTransferList => UserSettings.Default.UsePokemonToNotTransferList;
+
+        public bool CatchPokemon => UserSettings.Default.CatchPokemon;
+
         public bool EvolvePokemon => UserSettings.Default.EvolvePokemon;
         public bool EvolveOnlyPokemonAboveIV => UserSettings.Default.EvolveOnlyPokemonAboveIV;
         public float EvolveOnlyPokemonAboveIVValue => UserSettings.Default.EvolveOnlyPokemonAboveIVValue;

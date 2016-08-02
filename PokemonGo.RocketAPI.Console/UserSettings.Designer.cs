@@ -349,13 +349,13 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool GPXIgnorePokemon {
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool CatchPokemon {
             get {
-                return ((bool)(this["GPXIgnorePokemon"]));
+                return ((bool)(this["CatchPokemon"]));
             }
             set {
-                this["GPXIgnorePokemon"] = value;
+                this["CatchPokemon"] = value;
             }
         }
         

@@ -251,7 +251,7 @@ namespace PokemonGo.RocketAPI.Logic
                             if (_clientSettings.UseIncense)
                                 await UseIncense();
 
-                            if (!_clientSettings.GPXIgnorePokemon)
+                            if (_clientSettings.CatchPokemon)
                                 await ExecuteCatchAllNearbyPokemons();
 
                             if (!_clientSettings.GPXIgnorePokestops)
@@ -315,7 +315,7 @@ namespace PokemonGo.RocketAPI.Logic
                                 }
                             }
 
-                            if (!_clientSettings.GPXIgnorePokemon)
+                            if (_clientSettings.CatchPokemon)
                                 await
                                     _navigation.HumanPathWalking(trackPoints.ElementAt(curTrkPt),
                                     _clientSettings.WalkingSpeedInKilometerPerHour, ExecuteCatchAllNearbyPokemons);
@@ -377,7 +377,8 @@ namespace PokemonGo.RocketAPI.Logic
                 if (_clientSettings.UseIncense)
                     await UseIncense();
 
-                await ExecuteCatchAllNearbyPokemons();
+                if (_clientSettings.CatchPokemon)
+                    await ExecuteCatchAllNearbyPokemons();
 
                 pokestopList =
                     pokestopList.OrderBy(
@@ -405,9 +406,14 @@ namespace PokemonGo.RocketAPI.Logic
                 }
                 else
                 {
-                    await
-                        _navigation.HumanLikeWalking(new GeoUtils(pokeStop.Latitude, pokeStop.Longitude),
+                    if (_clientSettings.CatchPokemon)
+                        await
+                            _navigation.HumanLikeWalking(new GeoUtils(pokeStop.Latitude, pokeStop.Longitude),
                             _clientSettings.WalkingSpeedInKilometerPerHour, ExecuteCatchAllNearbyPokemons);
+                    else
+                        await
+                            _navigation.HumanLikeWalking(new GeoUtils(pokeStop.Latitude, pokeStop.Longitude),
+                            _clientSettings.WalkingSpeedInKilometerPerHour, null);
                 }
 
                 var timesZeroXPawarded = 0;
