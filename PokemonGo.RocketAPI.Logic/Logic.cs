@@ -402,7 +402,7 @@ namespace PokemonGo.RocketAPI.Logic
                     await
                         _client.UpdatePlayerLocation(pokeStop.Latitude, pokeStop.Longitude,
                             _clientSettings.DefaultAltitude);
-                    Logger.Write($"Using Teleport instead of Walking!", LogLevel.Debug);
+                    Logger.Write($"Using Teleport instead of Walking!", LogLevel.Warning);
                 }
                 else
                 {
