@@ -1,11 +1,11 @@
 <!-- define warning icon -->
 [1.1]: http://i.imgur.com/M4fJ65n.png (ATTENTION)
 [1.2]: http://i.imgur.com/NNcGs1n.png (BTC)
-[1.3]: https://github.com/Spegeli/Pokemon-Go-Rocket-API/blob/master/Screenshot.png (SCREENSHOT)
+[1.3]: http://i.epvpimg.com/ZTsdb.png (SCREENSHOT)
 <!-- title -->
 <h1>A Pokemon Go Bot based on FeroxRevs API</h1>
 <!-- disclaimer -->
-![alt text][1.1] <strong><em> The contents of this repo are a proof of concept and are for educational use only </em></strong>![alt text][1.1]<br />
+![alt text][1.1]<strong><em> The contents of this repo are a proof of concept and are for educational use only </em></strong>![alt text][1.1]<br />
 <br />
 Chatting about this Repository can be done on our Discord: https://discord.gg/KzJUjDE <br/>
 <br/>
@@ -55,10 +55,7 @@ Chatting about this Repository can be done on our Discord: https://discord.gg/Kz
 <br/>
 
 <h2><a name="screenshots">Screenshots</a></h2><br/>
-
-![alt text][1.3]
-
-<br/>
+![alt text][1.3]<br/>
 <hr/>
 <br/>
 
