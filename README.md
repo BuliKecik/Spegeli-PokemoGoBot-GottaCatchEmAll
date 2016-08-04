@@ -54,10 +54,8 @@ Chatting about this Repository can be done on our Discord: https://discord.gg/Kz
  - and many more ;-)
 <br/>
 
-<h2><a name="screenshots">Screenshots</a></h2><br/>
-[![](https://github.com/Spegeli/Pokemon-Go-Rocket-API/blob/master/StatisticScreenshot.png)]
- ![alt tag](https://github.com/Spegeli/Pokemon-Go-Rocket-API/blob/master/StatisticScreenshot.png)
-<hr/>
+<h2><a name="screenshots">Screenshots</a></h2>
+[![](http://i.epvpimg.com/vI2ch.gif)](https://www.paypal.me/MoneyForSpegeli)
 <br/>
 
 <h2><a name="getting-started">Getting Started</a></h2>
