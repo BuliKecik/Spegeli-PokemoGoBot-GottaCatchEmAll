@@ -55,7 +55,7 @@ Chatting about this Repository can be done on our Discord: https://discord.gg/Kz
 <br/>
 
 <h2><a name="screenshots">Screenshots</a></h2>
-[![](http://i.epvpimg.com/vI2ch.gif)](https://www.paypal.me/MoneyForSpegeli)
+![alt text][1.3]
 <br/>
 
 <h2><a name="getting-started">Getting Started</a></h2>
