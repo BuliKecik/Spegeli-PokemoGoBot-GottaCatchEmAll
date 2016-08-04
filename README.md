@@ -55,7 +55,10 @@ Chatting about this Repository can be done on our Discord: https://discord.gg/Kz
 <br/>
 
 <h2><a name="screenshots">Screenshots</a></h2><br/>
-![alt text][1.3]<br/>
+
+![alt text][1.3]
+
+<br/>
 <hr/>
 <br/>
 
