@@ -9,10 +9,7 @@
 <br />
 Chatting about this Repository can be done on our Discord: https://discord.gg/KzJUjDE <br/>
 <br/>
-<strong><em>UPDATE (8/4/2016)</em></strong> - Any program utilizing PoGO's API will not function. <strong>Read more [here](https://www.reddit.com/r/pokemongodev/comments/4w1cvr/pokemongo_current_api_status/)</strong><br />
-<br />
-<strong><em>UPDATE (8/7/2016)</em></strong> - Currently we are doing some last Tests and expect a Stable Public Version later the Day.<br />
-<br />
+<strong><em>UPDATE (8/7/2016)</em></strong> - Back online!<br />
 
 <h2><a name="features">Features</a></h2>
  
