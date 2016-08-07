@@ -62,7 +62,8 @@ namespace PokemonGo.RocketAPI.Helpers
             };
             sig.DeviceInfo = new POGOProtos.Networking.Signature.Types.DeviceInfo()
             {
-                DeviceId = "529e8aa6201f78b5",
+                //DeviceId = "529e8aa6201f78b5",
+                DeviceId = Guid.NewGuid().ToString(),
                 AndroidBoardName = "msm8994", // might al
                 AndroidBootloader = "unknown",
                 DeviceBrand = "OnePlus",
