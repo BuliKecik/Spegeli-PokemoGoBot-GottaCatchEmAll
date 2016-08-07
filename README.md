@@ -11,6 +11,9 @@ Chatting about this Repository can be done on our Discord: https://discord.gg/Kz
 <br/>
 <strong><em>UPDATE (8/4/2016)</em></strong> - Any program utilizing PoGO's API will not function. <strong>Read more [here](https://www.reddit.com/r/pokemongodev/comments/4w1cvr/pokemongo_current_api_status/)</strong><br />
 <br />
+<strong><em>UPDATE (8/7/2016)</em></strong> - Currently we are doing some last Tests and expect a Stable Public Version later the Day.<br />
+<br />
+
 <h2><a name="features">Features</a></h2>
  
  - [PTC Login / Google]
@@ -68,11 +71,14 @@ A big thank you goes to Feroxs' hard work on the API & Console. Without him, thi
 Thanks to everyone who volunteered by contributing via Pull Requests!
 
 <h2><a name="donating">Donating</a></h2>
-<a name="paypal">Feel free to buy us all a beer, by using PayPal:</a><br/>
+<a name="paypal">Feel free to buy us all a beer, all the PayPal donations are distributed among our most active collaborators.<br />
+<br />
+After Donation contact @Spegeli in our Discord server with a screenshot to get a shiny @Donator green rank with its own channel and priority support.</a><br/>
+<br />
 [![](http://i.epvpimg.com/vI2ch.gif)](https://www.paypal.me/MoneyForSpegeli) OR 
 [![](http://i.epvpimg.com/vI2ch.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YE3KBU2RGZYPY) <br/>
 
 <h6><em>[ All PayPal donations are distributed amongst our most active collaborators. ]</em></h6><br/>
-<a name="btc">Donate Bitcoins to FeroxRev (the API library developer): *1KRBmNN8y9hwaXGR7rCoJWmzJHfBp2ybRb*</a><br/>
+<a name="btc">Donate Bitcoins to FeroxRev (the API library developer): *1ExYxfBb5cERHyAfqtFscJW7vm2vWBbL3e*</a><br/>
 
 <hr/>
