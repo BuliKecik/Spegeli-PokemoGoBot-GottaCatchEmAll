@@ -11,7 +11,7 @@ Chatting about this Repository can be done on our Discord: https://discord.gg/Kz
 <br/>
 <strong><em>UPDATE (8/7/2016)</em></strong> - Back online!<br />
 <br />
-In order for the bot to function. You will need to supply a encrypt.dll file. To to legal reasons, We will not supply this file.<br/>
+In order for the bot to function. You will need to supply a encrypt.dll file. Due to to legal reasons, We will not supply this file. <br/>
 The dll needs to be placed within the folder:<br/>
 PokemoGoBot-GottaCatchEmAll-master\PokemonGo.RocketAPI.Console\bin\Debug<br/>
 <br/>
