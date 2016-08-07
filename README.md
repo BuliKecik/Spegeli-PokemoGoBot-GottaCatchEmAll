@@ -75,14 +75,5 @@ A big thank you goes to Feroxs' hard work on the API & Console. Without him, thi
 Thanks to everyone who volunteered by contributing via Pull Requests!
 
 <h2><a name="donating">Donating</a></h2>
-<a name="paypal">Feel free to buy us all a beer, all the PayPal donations are distributed among our most active collaborators.<br />
-<br />
-After Donation contact @Spegeli in our Discord server with a screenshot to get a shiny @Donator green rank with its own channel and priority support.</a><br/>
-<br />
-[![](http://i.epvpimg.com/vI2ch.gif)](https://www.paypal.me/MoneyForSpegeli) OR 
-[![](http://i.epvpimg.com/vI2ch.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YE3KBU2RGZYPY) <br/>
-
-<h6><em>[ All PayPal donations are distributed amongst our most active collaborators. ]</em></h6><br/>
-<a name="btc">Donate Bitcoins to FeroxRev (the API library developer): *1ExYxfBb5cERHyAfqtFscJW7vm2vWBbL3e*</a><br/>
-
+<a name="Donating">All infos about how you can do a donate can you find in the [Wiki](https://github.com/Spegeli/PokemoGoBot-GottaCatchEmAll/wiki/Donations#donating)</a><br/>
 <hr/>
