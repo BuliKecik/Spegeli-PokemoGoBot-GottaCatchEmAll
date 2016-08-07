@@ -63,7 +63,7 @@ namespace PokemonGo.RocketAPI.Helpers
             sig.DeviceInfo = new POGOProtos.Networking.Signature.Types.DeviceInfo()
             {
                 //DeviceId = "529e8aa6201f78b5",
-                DeviceId = Guid.NewGuid().ToString(),
+                DeviceId = GetDeviceId(),
                 AndroidBoardName = "msm8994", // might al
                 AndroidBootloader = "unknown",
                 DeviceBrand = "OnePlus",
@@ -211,6 +211,14 @@ namespace PokemonGo.RocketAPI.Helpers
             var randomMax = (num * (1 + randomFactor));
             var randomizedDelay = RandomDevice.NextDouble() * (randomMax - randomMin) + randomMin; ;
             return randomizedDelay; ;
+        }
+
+        public static string GetDeviceId()
+        {
+            byte[] DeviceUUID = new byte[8];
+            Random random = new Random();
+            random.NextBytes(DeviceUUID);
+            return BitConverter.ToString(DeviceUUID).Replace("-", "");
         }
     }
 }
