@@ -73,6 +73,6 @@ Thanks to everyone who volunteered by contributing via Pull Requests!
 [![](http://i.epvpimg.com/vI2ch.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YE3KBU2RGZYPY) <br/>
 
 <h6><em>[ All PayPal donations are distributed amongst our most active collaborators. ]</em></h6><br/>
-<a name="btc">Donate Bitcoins to FeroxRev (the API library developer): *1ExYxfBb5cERHyAfqtFscJW7vm2vWBbL3e*</a><br/>
+<a name="btc">Donate Bitcoins to FeroxRev (the API library developer): *1KRBmNN8y9hwaXGR7rCoJWmzJHfBp2ybRb*</a><br/>
 
 <hr/>
