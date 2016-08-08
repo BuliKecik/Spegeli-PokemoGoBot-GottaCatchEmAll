@@ -16,11 +16,11 @@ Die Datei ist nicht schwer zu finden und Fragen zu diesem oder anderen algemeine
 
 ############################################
 
-Pour permettre au BOT the fonctionner, vous devez fournir vous-même une copie du fichier encrypt.dll. Pour des raisons légales il nous est impossible de distribuer ce fichier.
+Pour permettre au BOT de fonctionner, vous devez fournir vous-même une copie du fichier encrypt.dll. Pour des raisons légales il nous est impossible de distribuer ce fichier.
 
 Ce fichier est assez facile à trouver et doit être placer dans le dossier:
 PokemoGoBot-GottaCatchEmAll-master\PokemonGo.RocketAPI.Console\bin\Debug
 
-Pour plus d'information consulté le chan: #readme sur notre Discord.
+Pour plus d'information consultez le canal: #readme sur notre serveur Discord.
 
 ############################################
