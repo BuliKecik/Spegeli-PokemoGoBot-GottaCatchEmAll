@@ -31,26 +31,27 @@ namespace PokemonGo.RocketAPI
         bool UsePokemonToNotTransferList { get; }
         bool UsePokemonToEvolveList { get; }
         bool CatchPokemon { get; }
-
+        bool CatchIncensePokemon { get; }
+        bool CatchLuredPokemon { get; }
         bool EvolvePokemon { get; }
         bool EvolveOnlyPokemonAboveIV { get; }
         float EvolveOnlyPokemonAboveIVValue { get; }
         int EvolveKeepCandiesValue { get; }
 
         bool TransferPokemon { get; }
-        int TransferPokemonKeepDuplicateAmount { get; }
         bool NotTransferPokemonsThatCanEvolve { get; }
-        bool UseTransferPokemonKeepAboveCP { get; }
-        int TransferPokemonKeepAboveCP { get; }
-        bool UseTransferPokemonKeepAboveIV { get; }
-        float TransferPokemonKeepAboveIVPercentage { get; }
+        bool UseTransferPokemonKeepAllAboveCP { get; }
+        int TransferPokemonKeepAllAboveCP { get; }
+        bool UseTransferPokemonKeepAllAboveIV { get; }
+        float TransferPokemonKeepAllAboveIV { get; }
+        int TransferPokemonKeepAmountHighestCP { get; }
+        int TransferPokemonKeepAmountHighestIV { get; }
 
         bool PrioritizeIVOverCP { get; }
         bool UseLuckyEggs { get; }
-        bool UseIncense { get; }
         bool DebugMode { get; }
 
-        ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter { get; }
+        ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter(IEnumerable<ItemData> myItems);
         ICollection<PokemonId> PokemonsToEvolve { get; }
         ICollection<PokemonId> PokemonsToNotTransfer { get; }
         ICollection<PokemonId> PokemonsToNotCatch { get; }

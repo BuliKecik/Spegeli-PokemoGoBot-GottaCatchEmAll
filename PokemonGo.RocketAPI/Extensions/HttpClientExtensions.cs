@@ -8,7 +8,6 @@ using POGOProtos.Networking.Envelopes;
 
 namespace PokemonGo.RocketAPI.Extensions
 {
-    using Logging;
     using System;
 
     public enum ApiOperation

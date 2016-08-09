@@ -115,7 +115,6 @@
     <Compile Include="Helpers\Utils.cs" />
     <Compile Include="HttpClient\PokemonClient.cs" />
     <Compile Include="ISettings.cs" />
-    <Compile Include="Logging\Logger.cs" />
     <Compile Include="Login\GoogleLogin.cs" />
     <Compile Include="Login\ILoginType.cs" />
     <Compile Include="Login\PtcLogin.cs" />

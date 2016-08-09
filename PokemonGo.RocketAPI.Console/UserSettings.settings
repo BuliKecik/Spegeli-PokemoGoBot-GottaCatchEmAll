@@ -5,14 +5,14 @@
     <Setting Name="DefaultAltitude" Type="System.Double" Scope="User">
       <Value Profile="(Default)">10</Value>
     </Setting>
-    <Setting Name="TransferPokemonKeepAboveIVPercentage" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">95</Value>
+    <Setting Name="TransferPokemonKeepAllAboveIV" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">100</Value>
     </Setting>
-    <Setting Name="TransferPokemonKeepAboveCP" Type="System.Int32" Scope="User">
+    <Setting Name="TransferPokemonKeepAllAboveCP" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">2000</Value>
     </Setting>
     <Setting Name="WalkingSpeedInKilometerPerHour" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">50</Value>
+      <Value Profile="(Default)">75</Value>
     </Setting>
     <Setting Name="DefaultLatitude" Type="System.Double" Scope="User">
       <Value Profile="(Default)">0</Value>
@@ -42,7 +42,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="GPXFile" Type="System.String" Scope="User">
-      <Value Profile="(Default)">GPXFILE.gpx</Value>
+      <Value Profile="(Default)">AmsterdamTest.gpx</Value>
     </Setting>
     <Setting Name="UseLuckyEggs" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -62,20 +62,14 @@
     <Setting Name="TransferPokemon" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="TransferPokemonKeepDuplicateAmount" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1</Value>
-    </Setting>
-    <Setting Name="UseTransferPokemonKeepAboveCP" Type="System.Boolean" Scope="User">
+    <Setting Name="UseTransferPokemonKeepAllAboveCP" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="UseTransferPokemonKeepAboveIV" Type="System.Boolean" Scope="User">
+    <Setting Name="UseTransferPokemonKeepAllAboveIV" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="UsePokemonToNotTransferList" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="UseIncense" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="GoogleEmail" Type="System.String" Scope="User">
       <Value Profile="(Default)">GoogleEmail</Value>
@@ -100,6 +94,18 @@
     </Setting>
     <Setting Name="UsePokemonToEvolveList" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="CatchIncensePokemon" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TransferPokemonKeepAmountHighestCP" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="TransferPokemonKeepAmountHighestIV" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="CatchLuredPokemon" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>

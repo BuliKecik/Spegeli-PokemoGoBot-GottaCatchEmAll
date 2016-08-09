@@ -1,19 +1,20 @@
 ﻿#region
 
 using System;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.Text;
 
 #endregion
 
 
-namespace PokemonGo.RocketAPI.Logging
+namespace PokemonGo.RocketAPI.Logic.Logging
 {
     /// <summary>
     /// Generic logger which can be used across the projects.
     /// Logger should be set to properly log.
     /// </summary>
-    public class Logger
+    public static class Logger
     {
         private static string _currentFile = string.Empty;
         private static readonly string Path = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Logs");
@@ -43,70 +44,91 @@ namespace PokemonGo.RocketAPI.Logging
         {
             Console.OutputEncoding = Encoding.Unicode;
 
+            var dateFormat = DateTime.Now.ToString("HH:mm:ss");
+            if (Logic._client.Settings.DebugMode)
+                dateFormat = DateTime.Now.ToString("HH:mm:ss:fff");
+
             switch (level)
             {
                 case LogLevel.Info:
                     Console.ForegroundColor = ConsoleColor.DarkGreen;
-                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (INFO) {message}");
+                    Console.WriteLine($"[{dateFormat}] (INFO) {message}");
+                    Log(string.Concat($"[{dateFormat}] ", message));
                     break;
                 case LogLevel.Warning:
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
-                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (ATTENTION) {message}");
+                    Console.WriteLine($"[{dateFormat}] (ATTENTION) {message}");
+                    Log(string.Concat($"[{dateFormat}] ", message));
                     break;
                 case LogLevel.Error:
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (ERROR) {message}");
+                    Console.WriteLine($"[{dateFormat}] (ERROR) {message}");
+                    Log(string.Concat($"[{dateFormat}] ", message));
                     break;
                 case LogLevel.Debug:
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (DEBUG) {message}");
+                    if (Logic._client.Settings.DebugMode)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                        Console.WriteLine($"[{dateFormat}] (DEBUG) {message}");
+                        Log(string.Concat($"[{dateFormat}] ", message));
+                    }
                     break;
                 case LogLevel.Navigation:
                     Console.ForegroundColor = ConsoleColor.DarkCyan;
-                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (NAVIGATION) {message}");
+                    Console.WriteLine($"[{dateFormat}] (NAVIGATION) {message}");
+                    Log(string.Concat($"[{dateFormat}] ", message));
                     break;
                 case LogLevel.Pokestop:
                     Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (POKESTOP) {message}");
+                    Console.WriteLine($"[{dateFormat}] (POKESTOP) {message}");
+                    Log(string.Concat($"[{dateFormat}] ", message));
                     break;
                 case LogLevel.Pokemon:
                     Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (PKMN) {message}");
+                    Console.WriteLine($"[{dateFormat}] (PKMN) {message}");
+                    Log(string.Concat($"[{dateFormat}] ", message));
                     break;
                 case LogLevel.Transfer:
                     Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (TRANSFER) {message}");
+                    Console.WriteLine($"[{dateFormat}] (TRANSFER) {message}");
+                    Log(string.Concat($"[{dateFormat}] ", message));
                     break;
                 case LogLevel.Evolve:
                     Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (EVOLVE) {message}");
+                    Console.WriteLine($"[{dateFormat}] (EVOLVE) {message}");
+                    Log(string.Concat($"[{dateFormat}] ", message));
                     break;
                 case LogLevel.Berry:
                     Console.ForegroundColor = ConsoleColor.Magenta;
-                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (BERRY) {message}");
+                    Console.WriteLine($"[{dateFormat}] (BERRY) {message}");
+                    Log(string.Concat($"[{dateFormat}] ", message));
                     break;
                 case LogLevel.Egg:
                     Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (EGG) {message}");
+                    Console.WriteLine($"[{dateFormat}] (EGG) {message}");
+                    Log(string.Concat($"[{dateFormat}] ", message));
                     break;
                 case LogLevel.Incense:
                     Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (INSENCE) {message}");
+                    Console.WriteLine($"[{dateFormat}] (INSENCE) {message}");
+                    Log(string.Concat($"[{dateFormat}] ", message));
                     break;
                 case LogLevel.Recycling:
                     Console.ForegroundColor = ConsoleColor.DarkMagenta;
-                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] (RECYCLING) {message}");
+                    Console.WriteLine($"[{dateFormat}] (RECYCLING) {message}");
+                    Log(string.Concat($"[{dateFormat}] ", message));
                     break;
                 case LogLevel.None:
                     Console.ForegroundColor = color;
-                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] {message}");
+                    Console.WriteLine($"[{dateFormat}] {message}");
+                    Log(string.Concat($"[{dateFormat}] ", message));
                     break;
                 default:
                     Console.ForegroundColor = ConsoleColor.White;
-                    Console.WriteLine($"[{DateTime.Now.ToString("HH:mm:ss")}] {message}");
+                    Console.WriteLine($"[{dateFormat}] {message}");
+                    Log(string.Concat($"[{dateFormat}] ", message));
                     break;
             }
-            Log(string.Concat($"[{DateTime.Now.ToString("HH:mm:ss")}] ", message));
         }
 
         private static void Log(string message)

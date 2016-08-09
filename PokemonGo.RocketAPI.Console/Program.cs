@@ -1,13 +1,14 @@
 ﻿#region
 
 using System;
+using System.Globalization;
 using System.Net;
 using System.Net.Security;
 using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 using PokemonGo.RocketAPI.Exceptions;
-using PokemonGo.RocketAPI.Logging;
+using PokemonGo.RocketAPI.Logic.Logging;
 
 #endregion
 
@@ -18,6 +19,11 @@ namespace PokemonGo.RocketAPI.Console
     {
         private static void Main()
         {
+            var culture = CultureInfo.CreateSpecificCulture("en-US");
+
+            CultureInfo.DefaultThreadCurrentCulture = culture;
+            Thread.CurrentThread.CurrentCulture = culture;
+
             AppDomain.CurrentDomain.UnhandledException
                 += delegate (object sender, UnhandledExceptionEventArgs eargs)
                 {

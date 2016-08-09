@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using PokemonGo.RocketAPI.Enums;
 using System.Globalization;
 using PokemonGo.RocketAPI.Helpers;
-using PokemonGo.RocketAPI.Logging;
 using POGOProtos.Networking.Responses;
 
 #endregion
@@ -14,33 +13,41 @@ using POGOProtos.Networking.Responses;
 
 namespace PokemonGo.RocketAPI.Logic.Utils
 {
-    internal class BotStats
+    public class BotStats
     {
-        public static int TotalExperience;
-        public static int TotalPokemons;
-        public static int TotalItemsRemoved;
-        public static int TotalPokemonsTransfered;
-        public static int TotalStardust;
+        public static string _exportStats;
+        public static string _playerName;
         public static string CurrentLevelInfos;
         public static int Currentlevel = -1;
-        public static string PlayerName;
+
+        public static int ExperienceThisSession;
+        public static int ItemsRemovedThisSession;
+        public static int PokemonCaughtThisSession;
+        public static int PokemonTransferedThisSession;
+
+        public static int TotalStardust;
         public static int TotalPokesInBag;
+
         public static int TotalPokesInPokedex;
+        public static int TotalPokesInPokedexCaptured;
+
         public static float KmWalkedOnStart;
         public static float KmWalkedCurrent;
 
         public static DateTime InitSessionDateTime = DateTime.Now;
         public static TimeSpan Duration = DateTime.Now - InitSessionDateTime;
 
-        public static async Task<string> _getcurrentLevelInfos(Inventory inventory)
+        public static string GetCurrentInfo()
         {
-            var stats = await inventory.GetPlayerStats();
+            var stats = Inventory.GetPlayerStats().Result;
             var output = string.Empty;
             var stat = stats.FirstOrDefault();
             if (stat == null) return output;
 
+            KmWalkedCurrent = stat.KmWalked - KmWalkedOnStart;
+
             var ep = stat.NextLevelXp - stat.PrevLevelXp - (stat.Experience - stat.PrevLevelXp);
-            var time = Math.Round(ep / (TotalExperience / _getSessionRuntime()), 2);
+            var time = Math.Round(ep / (ExperienceThisSession / GetRuntime()), 2);
             var hours = 0.00;
             var minutes = 0.00;
             if (double.IsInfinity(time) == false && time > 0)
@@ -52,71 +59,41 @@ namespace PokemonGo.RocketAPI.Logic.Utils
             return $"{stat.Level} (LvLUp in {hours}h {minutes}m | {stat.Experience - stat.PrevLevelXp - GetXpDiff(stat.Level)}/{stat.NextLevelXp - stat.PrevLevelXp - GetXpDiff(stat.Level)} XP)";
         }
 
-        public static string GetUsername(Client client, GetPlayerResponse profile)
+        public static string GetUsername(GetPlayerResponse profile)
         {
-            return PlayerName = client.Settings.AuthType == AuthType.Ptc ? client.Settings.PtcUsername : profile.PlayerData.Username;
+            return _playerName = Logic._client.Settings.AuthType == AuthType.Ptc ? Logic._client.Settings.PtcUsername : profile.PlayerData.Username;
         }
 
-        public static double _getSessionRuntime()
+        public static double GetRuntime()
         {
-            return (DateTime.Now - InitSessionDateTime).TotalSeconds/3600;
+            return (DateTime.Now - InitSessionDateTime).TotalSeconds / 3600;
         }
 
-        public static string _getSessionRuntimeInTimeFormat()
+        public static string FormatRuntime()
         {
             return (DateTime.Now - InitSessionDateTime).ToString(@"dd\.hh\:mm\:ss");
         }
 
-        public void AddExperience(int xp)
+        public static async Task GetPokemonCount()
         {
-            TotalExperience += xp;
-        }
-
-        public void AddItemsRemoved(int count)
-        {
-            TotalItemsRemoved += count;
-        }
-
-        public void GetStardust(int stardust)
-        {
-            TotalStardust = stardust;
-        }
-
-        public void IncreasePokemons()
-        {
-            TotalPokemons += 1;
-        }
-
-        public void IncreasePokemonsTransfered()
-        {
-            TotalPokemonsTransfered += 1;
-        }
-
-        public async void UpdateConsoleTitle(Client client, Inventory _inventory)
-        {
-            //appears to give incorrect info?		
-            var pokes = await _inventory.GetPokemons();
+            var pokes = await Inventory.GetPokemons();
             TotalPokesInBag = pokes.Count();
-
-            var inventory = await Inventory.GetCachedInventory(client);
-            TotalPokesInPokedex = inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.PokedexEntry).Where(x => x != null && x.TimesCaptured >= 1).OrderBy(k => k.PokemonId).ToArray().Length;
-
-            CurrentLevelInfos = await _getcurrentLevelInfos(_inventory);
-
-            var stats = await _inventory.GetPlayerStats();
-            var stat = stats.FirstOrDefault();
-            if (stat != null) KmWalkedCurrent = stat.KmWalked-KmWalkedOnStart;
-
-            Console.Title = ToString();
         }
 
-        public override string ToString()
+        public static async Task GetPokeDexCount()
         {
-            return
-                string.Format(
-                    "{0} - Runtime {1} - Lvl: {2:0} | EXP/H: {3:0} | P/H: {4:0} | Stardust: {5:0} | Transfered: {6:0} | Items Recycled: {7:0} | Pokemon: {8:0} | Pokedex: {9:0}/151 | Km Walked this Session: {10:0.00} | Bot Version: {11:0}",
-                    PlayerName, _getSessionRuntimeInTimeFormat(), CurrentLevelInfos, TotalExperience / _getSessionRuntime(),
-                    TotalPokemons / _getSessionRuntime(), TotalStardust, TotalPokemonsTransfered, TotalItemsRemoved, TotalPokesInBag, TotalPokesInPokedex, KmWalkedCurrent, GitChecker.CurrentVersion);
+            var PokeDex = await Inventory.GetPokeDexItems();
+            var _totalUniqueEncounters = PokeDex.Select(i => new { Pokemon = i.InventoryItemData.PokedexEntry.PokemonId, Captures = i.InventoryItemData.PokedexEntry.TimesCaptured });
+            TotalPokesInPokedexCaptured = _totalUniqueEncounters.Count(i => i.Captures > 0);
+            TotalPokesInPokedex = PokeDex.Count();
+        }
+
+        public static async Task UpdateConsoleTitle()
+        {
+            Console.Title = string.Format(
+                "{0} - Runtime {1} - Lvl: {2:0} | EXP/H: {3:0} | P/H: {4:0} | Stardust: {5:0} | Transfered: {6:0} | Items Recycled: {7:0} | Pokemon: {8:0} | Pokedex: [Captured: {9:0} - Saw: {10:0}] | Km Walked this Session: {11:0.00} | Bot Version: {12:0}",
+                _playerName, FormatRuntime(), GetCurrentInfo(), ExperienceThisSession / GetRuntime(),
+                PokemonCaughtThisSession / GetRuntime(), TotalStardust, PokemonTransferedThisSession, ItemsRemovedThisSession, TotalPokesInBag, TotalPokesInPokedexCaptured, TotalPokesInPokedex, KmWalkedCurrent, GitChecker.CurrentVersion);
         }
 
         public static int GetXpDiff(int level)

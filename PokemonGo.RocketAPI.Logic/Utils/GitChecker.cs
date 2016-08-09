@@ -1,11 +1,12 @@
 ﻿#region
 
-using PokemonGo.RocketAPI.Logging;
 using System;
 using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
+using Logger = PokemonGo.RocketAPI.Logic.Logging.Logger;
+using LogLevel = PokemonGo.RocketAPI.Logic.Logging.LogLevel;
 
 #endregion
 

@@ -1,9 +1,11 @@
 ﻿#region using directives
 
-using PokemonGo.RocketAPI.Logging;
 using System;
 using System.Collections.Generic;
 using System.Xml;
+using Logger = PokemonGo.RocketAPI.Logic.Logging.Logger;
+using LogLevel = PokemonGo.RocketAPI.Logic.Logging.LogLevel;
+
 // ReSharper disable All
 
 #endregion
@@ -677,11 +679,8 @@ namespace PokemonGo.RocketAPI.Logic.Utils
 
             public Trkpt(XmlNode node)
             {
-                string ls = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ListSeparator;
-                Lat = node.Attributes?["lat"].Value.Replace(".", ls == "," ? "." : ",");
-                Lon = node.Attributes?["lon"].Value.Replace(".", ls == "," ? "." : ",");
-                //Lat = node.Attributes?["lat"].Value;
-                //Lon = node.Attributes?["lon"].Value;
+                Lat = node.Attributes?["lat"].Value;
+                Lon = node.Attributes?["lon"].Value;
                 foreach (XmlNode childNode in node)
                 {
                     switch (childNode.Name)

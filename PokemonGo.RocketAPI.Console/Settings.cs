@@ -3,9 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using PokemonGo.RocketAPI.Enums;
-using PokemonGo.RocketAPI.Logging;
+using PokemonGo.RocketAPI.Logic.Logging;
 using POGOProtos.Enums;
 using POGOProtos.Inventory.Item;
 
@@ -39,22 +40,23 @@ namespace PokemonGo.RocketAPI.Console
         public bool UsePokemonToEvolveList => UserSettings.Default.UsePokemonToEvolveList;
 
         public bool CatchPokemon => UserSettings.Default.CatchPokemon;
-
+        public bool CatchIncensePokemon => UserSettings.Default.CatchIncensePokemon;
+        public bool CatchLuredPokemon => UserSettings.Default.CatchLuredPokemon;
         public bool EvolvePokemon => UserSettings.Default.EvolvePokemon;
         public bool EvolveOnlyPokemonAboveIV => UserSettings.Default.EvolveOnlyPokemonAboveIV;
         public float EvolveOnlyPokemonAboveIVValue => UserSettings.Default.EvolveOnlyPokemonAboveIVValue;
         public int EvolveKeepCandiesValue => UserSettings.Default.EvolveKeepCandiesValue;
 
         public bool TransferPokemon => UserSettings.Default.TransferPokemon;
-        public int TransferPokemonKeepDuplicateAmount => UserSettings.Default.TransferPokemonKeepDuplicateAmount;
         public bool NotTransferPokemonsThatCanEvolve => UserSettings.Default.NotTransferPokemonsThatCanEvolve;
-        public bool UseTransferPokemonKeepAboveCP => UserSettings.Default.UseTransferPokemonKeepAboveCP;
-        public int TransferPokemonKeepAboveCP => UserSettings.Default.TransferPokemonKeepAboveCP;
-        public bool UseTransferPokemonKeepAboveIV => UserSettings.Default.UseTransferPokemonKeepAboveIV;
-        public float TransferPokemonKeepAboveIVPercentage => UserSettings.Default.TransferPokemonKeepAboveIVPercentage;
+        public bool UseTransferPokemonKeepAllAboveCP => UserSettings.Default.UseTransferPokemonKeepAllAboveCP;
+        public int TransferPokemonKeepAllAboveCP => UserSettings.Default.TransferPokemonKeepAllAboveCP;
+        public bool UseTransferPokemonKeepAllAboveIV => UserSettings.Default.UseTransferPokemonKeepAllAboveIV;
+        public float TransferPokemonKeepAllAboveIV => UserSettings.Default.TransferPokemonKeepAllAboveIV;
+        public int TransferPokemonKeepAmountHighestCP => UserSettings.Default.TransferPokemonKeepAmountHighestCP;
+        public int TransferPokemonKeepAmountHighestIV => UserSettings.Default.TransferPokemonKeepAmountHighestIV;
 
         public bool UseLuckyEggs => UserSettings.Default.UseLuckyEggs;
-        public bool UseIncense => UserSettings.Default.UseIncense;
         public bool PrioritizeIVOverCP => UserSettings.Default.PrioritizeIVOverCP;
         public bool DebugMode => UserSettings.Default.DebugMode;
 
@@ -62,46 +64,128 @@ namespace PokemonGo.RocketAPI.Console
         private ICollection<PokemonId> _pokemonsToNotTransfer;
         private ICollection<PokemonId> _pokemonsToNotCatch;
 
-        public ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter => new[]
+        // Create our group of inventory items
+        private readonly SortedList<int, ItemId> _inventoryBalls = new SortedList<int, ItemId>();
+        private readonly SortedList<int, ItemId> _inventoryBerries = new SortedList<int, ItemId>();
+        private readonly SortedList<int, ItemId> _inventoryPotions = new SortedList<int, ItemId>();
+
+        //TODO: make these configurable settings
+        // Set our maximum value for all items in this group
+        private const int MaxBalls = 100;
+        private const int MaxBerries = 20;
+        private const int MaxPotions = 30;
+
+        public Settings()
         {
-            new KeyValuePair<ItemId, int>(ItemId.ItemUnknown, 0),
-            new KeyValuePair<ItemId, int>(ItemId.ItemPokeBall, 25),
-            new KeyValuePair<ItemId, int>(ItemId.ItemGreatBall, 50),
-            new KeyValuePair<ItemId, int>(ItemId.ItemUltraBall, 75),
-            new KeyValuePair<ItemId, int>(ItemId.ItemMasterBall, 100),
+            _inventoryBalls.Add(1, ItemId.ItemMasterBall);
+            _inventoryBalls.Add(2, ItemId.ItemUltraBall);
+            _inventoryBalls.Add(3, ItemId.ItemGreatBall);
+            _inventoryBalls.Add(4, ItemId.ItemPokeBall);
 
-            new KeyValuePair<ItemId, int>(ItemId.ItemPotion, 0),
-            new KeyValuePair<ItemId, int>(ItemId.ItemSuperPotion, 10),
-            new KeyValuePair<ItemId, int>(ItemId.ItemHyperPotion, 25),
-            new KeyValuePair<ItemId, int>(ItemId.ItemMaxPotion, 25),
+            _inventoryPotions.Add(1, ItemId.ItemMaxPotion);
+            _inventoryPotions.Add(2, ItemId.ItemHyperPotion);
+            _inventoryPotions.Add(3, ItemId.ItemSuperPotion);
+            _inventoryPotions.Add(4, ItemId.ItemPotion);
 
-            new KeyValuePair<ItemId, int>(ItemId.ItemRevive, 15),
-            new KeyValuePair<ItemId, int>(ItemId.ItemMaxRevive, 25),
+            _inventoryBerries.Add(0, ItemId.ItemPinapBerry);
+            _inventoryBerries.Add(1, ItemId.ItemWeparBerry);
+            _inventoryBerries.Add(2, ItemId.ItemNanabBerry);
+            _inventoryBerries.Add(3, ItemId.ItemBlukBerry);
+            _inventoryBerries.Add(4, ItemId.ItemRazzBerry);
+        }
 
-            new KeyValuePair<ItemId, int>(ItemId.ItemLuckyEgg, 200),
+        private IDictionary<ItemId, int> _itemRecycleFilter;
+        public ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter(IEnumerable<ItemData> myItems)
+        {
+            if (_itemRecycleFilter == null)
+            {
+                _itemRecycleFilter = new Dictionary<ItemId, int>
+                {
+                    {ItemId.ItemUnknown, 0},
 
-            new KeyValuePair<ItemId, int>(ItemId.ItemIncenseOrdinary, 100),
-            new KeyValuePair<ItemId, int>(ItemId.ItemIncenseSpicy, 100),
-            new KeyValuePair<ItemId, int>(ItemId.ItemIncenseCool, 100),
-            new KeyValuePair<ItemId, int>(ItemId.ItemIncenseFloral, 100),
+                    // These will be overwritten by the CalculateGroupAmounts calculations below
+                    /*
+                    {ItemId.ItemPokeBall, 25},
+                    {ItemId.ItemGreatBall, 50},
+                    {ItemId.ItemUltraBall, 75},
+                    {ItemId.ItemMasterBall, 100},
+                    {ItemId.ItemPotion, 0},
+                    {ItemId.ItemSuperPotion, 10},
+                    {ItemId.ItemHyperPotion, 25},
+                    {ItemId.ItemMaxPotion, 25},
+                    {ItemId.ItemRazzBerry, 20},
+                    {ItemId.ItemBlukBerry, 10},
+                    {ItemId.ItemNanabBerry, 10},
+                    {ItemId.ItemWeparBerry, 30},
+                    {ItemId.ItemPinapBerry, 30},
+                    */
 
-            new KeyValuePair<ItemId, int>(ItemId.ItemTroyDisk, 100),
-            new KeyValuePair<ItemId, int>(ItemId.ItemXAttack, 100),
-            new KeyValuePair<ItemId, int>(ItemId.ItemXDefense, 100),
-            new KeyValuePair<ItemId, int>(ItemId.ItemXMiracle, 100),
+                    {ItemId.ItemRevive, 15},
+                    {ItemId.ItemMaxRevive, 25},
+                    {ItemId.ItemLuckyEgg, 200},
+                    {ItemId.ItemIncenseOrdinary, 100},
+                    {ItemId.ItemIncenseSpicy, 100},
+                    {ItemId.ItemIncenseCool, 100},
+                    {ItemId.ItemIncenseFloral, 100},
+                    {ItemId.ItemTroyDisk, 100},
+                    {ItemId.ItemXAttack, 100},
+                    {ItemId.ItemXDefense, 100},
+                    {ItemId.ItemXMiracle, 100},
+                    {ItemId.ItemSpecialCamera, 100},
+                    {ItemId.ItemIncubatorBasicUnlimited, 100},
+                    {ItemId.ItemIncubatorBasic, 100},
+                    {ItemId.ItemPokemonStorageUpgrade, 100},
+                    {ItemId.ItemItemStorageUpgrade, 100}
+                };
+            }
 
-            new KeyValuePair<ItemId, int>(ItemId.ItemRazzBerry, 20),
-            new KeyValuePair<ItemId, int>(ItemId.ItemBlukBerry, 10),
-            new KeyValuePair<ItemId, int>(ItemId.ItemNanabBerry, 10),
-            new KeyValuePair<ItemId, int>(ItemId.ItemWeparBerry, 30),
-            new KeyValuePair<ItemId, int>(ItemId.ItemPinapBerry, 30),
+            // Calculate how many balls of each type we should keep
+            CalculateGroupAmounts(_inventoryBalls, MaxBalls, myItems);
 
-            new KeyValuePair<ItemId, int>(ItemId.ItemSpecialCamera, 100),
-            new KeyValuePair<ItemId, int>(ItemId.ItemIncubatorBasicUnlimited, 100),
-            new KeyValuePair<ItemId, int>(ItemId.ItemIncubatorBasic, 100),
-            new KeyValuePair<ItemId, int>(ItemId.ItemPokemonStorageUpgrade, 100),
-            new KeyValuePair<ItemId, int>(ItemId.ItemItemStorageUpgrade, 100),
-        };
+            // Calculate how many berries of each type we should keep
+            CalculateGroupAmounts(_inventoryBerries, MaxBerries, myItems);
+
+            // Calculate how many potions of each type we should keep
+            CalculateGroupAmounts(_inventoryPotions, MaxPotions, myItems);
+
+            return _itemRecycleFilter;
+        }
+
+        private void CalculateGroupAmounts(SortedList<int, ItemId> inventoryGroup, int maxQty, IEnumerable<ItemData> myItems)
+        {
+            var amountRemaining = maxQty;
+            var amountToKeep = 0;
+            foreach (KeyValuePair<int, ItemId> listItem in inventoryGroup)
+            {
+                ItemId itemId = listItem.Value;
+                int itemQty = 0;
+
+                ItemData item = myItems.FirstOrDefault(x => x.ItemId == itemId);
+                if (item != null)
+                {
+                    itemQty = myItems.FirstOrDefault(x => x.ItemId == itemId).Count;
+                }
+
+                amountToKeep = amountRemaining >= itemQty ? amountRemaining : Math.Min(itemQty, amountRemaining);
+
+                amountRemaining = amountRemaining - itemQty;
+
+                if (amountRemaining < 0)
+                {
+                    amountRemaining = 0;
+                }
+
+                try
+                {
+                    _itemRecycleFilter[itemId] = amountToKeep;  // Update the filter with amounts to keep
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+
+        }
 
         public ICollection<PokemonId> PokemonsToEvolve
         {

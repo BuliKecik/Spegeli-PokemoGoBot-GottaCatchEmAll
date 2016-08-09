@@ -68,7 +68,7 @@ namespace PokemonGo.RocketAPI.Rpc
             lngNoise = lng + randNormal2 / 100000.0;
         }
 
-        internal void SetCoordinates(double latitude, double longitude, double altitude)
+        public void SetCoordinates(double latitude, double longitude, double altitude)
         {
             if (double.IsNaN(latitude) || double.IsNaN(longitude)) return;
 

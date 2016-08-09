@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,9 +18,14 @@ namespace PokemonGo.RocketAPI.Helpers
             return Math.Abs(longRand % (max - min)) + min;
         }
 
-        public static async Task RandomDelay(int maxDelay = 5000)
+        public static async Task RandomDelay(int delay)
         {
-            await Task.Delay(Random.Next((maxDelay > 500) ? 500 : 0, maxDelay));
+            var randomFactor = 0.3f;
+            var randomMin = (int)(delay * (1 - randomFactor));
+            var randomMax = (int)(delay * (1 + randomFactor));
+            var randomizedDelay = Random.Next(randomMin, randomMax);
+
+            await Task.Delay(randomizedDelay);
         }
 
         public static async Task RandomDelay(int min, int max)
