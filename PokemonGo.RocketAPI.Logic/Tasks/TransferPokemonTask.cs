@@ -15,9 +15,10 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
         {
             await Inventory.GetCachedInventory(true);
             var pokemonToTransfer = await Inventory.GetPokemonToTransfer(Logic._clientSettings.NotTransferPokemonsThatCanEvolve, Logic._clientSettings.PrioritizeIVOverCP, Logic._clientSettings.PokemonsToNotTransfer);
-            if (pokemonToTransfer != null && pokemonToTransfer.Any())
-                Logger.Write($"Found {pokemonToTransfer.Count()} Pokemon for Transfer:", LogLevel.Info);
+            if (pokemonToTransfer == null || !pokemonToTransfer.Any())
+                return;
 
+            Logger.Write($"Found {pokemonToTransfer.Count()} Pokemon for Transfer:", LogLevel.Debug);
             foreach (var pokemon in pokemonToTransfer)
             {
                 await Logic._client.Inventory.TransferPokemon(pokemon.Id);
@@ -44,7 +45,7 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
             }
 
             await BotStats.GetPokemonCount();
-            await BotStats.UpdateConsoleTitle();
+            BotStats.UpdateConsoleTitle();
         }
     }
 }

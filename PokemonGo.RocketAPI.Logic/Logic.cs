@@ -171,7 +171,7 @@ namespace PokemonGo.RocketAPI.Logic
                 {
                     await Inventory.GetCachedInventory();
                     _playerProfile = await _client.Player.GetPlayer();
-                    await BotStats.UpdateConsoleTitle();
+                    BotStats.UpdateConsoleTitle();
 
                     var stats = await Inventory.GetPlayerStats();
                     var stat = stats.FirstOrDefault();
@@ -196,12 +196,12 @@ namespace PokemonGo.RocketAPI.Logic
                     var pokemonsToNotCatch = _clientSettings.PokemonsToNotCatch;
                     var pokemonsToEvolve = _clientSettings.PokemonsToEvolve;
 
-                    if (_client.Settings.UseLuckyEggs) await UseLuckyEggTask.Execute();
-                    if (_client.Settings.CatchIncensePokemon) await UseIncenseTask.Execute();
                     await RecycleItemsTask.Execute();
+                    if (_client.Settings.UseLuckyEggs) await UseLuckyEggTask.Execute();
                     if (_client.Settings.EvolvePokemon || _client.Settings.EvolveOnlyPokemonAboveIV) await EvolvePokemonTask.Execute();
                     if (_client.Settings.TransferPokemon) await TransferPokemonTask.Execute();
                     await ExportPokemonToCsv.Execute(_playerProfile.PlayerData);
+                    if (_clientSettings.HatchEggs) await HatchEggsTask.Execute();
                 }
                 _isInitialized = true;
                 await Main();

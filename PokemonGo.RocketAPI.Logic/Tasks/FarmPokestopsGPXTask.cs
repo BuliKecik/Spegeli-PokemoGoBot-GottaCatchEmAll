@@ -34,13 +34,18 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
                         if (distanceCheck > 5000)
                         {
                             Logger.Write(
-                                $"Your desired destination of {nextPoint.Lat}, {nextPoint.Lon} is too far from your current position of {Logic._client.CurrentLatitude}, {Logic._client.CurrentLongitude}",
+                                $"Your Target destination of {nextPoint.Lat}, {nextPoint.Lon} is too far from your current position of {Logic._client.CurrentLatitude}, {Logic._client.CurrentLongitude} - Distance: {distanceCheck:0.##}",
                                 LogLevel.Error);
                             break;
                         }
 
-                        Logger.Write($"Your desired destination is {nextPoint.Lat}, {nextPoint.Lon} your location is {Logic._client.CurrentLatitude}, {Logic._client.CurrentLongitude}", LogLevel.Debug);
+                        Logger.Write($"Your Target destination is {nextPoint.Lat}, {nextPoint.Lon} your location is {Logic._client.CurrentLatitude}, {Logic._client.CurrentLongitude} - Distance: {distanceCheck:0.##}", LogLevel.Debug);
 
+                        if (Logic._client.Settings.ExportPokemonToCsvEveryMinutes > 0 && ExportPokemonToCsv._lastExportTime.AddMinutes(Logic._client.Settings.ExportPokemonToCsvEveryMinutes).Ticks < DateTime.Now.Ticks)
+                        {
+                            var _playerProfile = await Logic._client.Player.GetPlayer();
+                            await ExportPokemonToCsv.Execute(_playerProfile.PlayerData);
+                        }
                         if (Logic._client.Settings.UseLuckyEggs)
                             await UseLuckyEggTask.Execute();
                         if (Logic._client.Settings.CatchIncensePokemon)
@@ -53,10 +58,10 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
                                     //await CatchNearbyPokemonsTask.Execute(session, cancellationToken);
                                     // Catch normal map Pokemon
                                     await CatchMapPokemonsTask.Execute();
-                                    //Catch Incense Pokemon
-                                    await CatchIncensePokemonsTask.Execute();
                                     //Catch Pokestops on the Way
                                     await UseNearbyPokestopsTask.Execute();
+                                    //Catch Incense Pokemon
+                                    await CatchIncensePokemonsTask.Execute();
                                     return true;
                                 });
 
@@ -136,9 +141,10 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
                     else
                     {
                         BotStats.ExperienceThisSession += fortSearch.ExperienceAwarded;
-                        await BotStats.UpdateConsoleTitle();
+                        BotStats.UpdateConsoleTitle();
                         Logger.Write($"XP: {fortSearch.ExperienceAwarded}, Gems: {fortSearch.GemsAwarded}, Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}", LogLevel.Pokestop);
                         RecycleItemsTask._recycleCounter++;
+                        HatchEggsTask._hatchUpdateDelayGPX++;
                         break; //Continue with program as loot was succesfull.
                     }
                 } while (fortTry < retryNumber - zeroCheck);
@@ -146,6 +152,8 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
 
                 if (RecycleItemsTask._recycleCounter >= 5)
                     await RecycleItemsTask.Execute();
+                if (HatchEggsTask._hatchUpdateDelayGPX >= 5)
+                    await HatchEggsTask.Execute();
             }
 
         }

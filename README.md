@@ -23,11 +23,10 @@ Make sure you check out our [Wiki](https://github.com/Spegeli/PokemoGoBot-GottaC
 <br/>
 
 <h2><a name="donating">Donating</a></h2>
-<a name="Donating">All infos about how you can do a donate can you find in the [Wiki](https://github.com/Spegeli/PokemoGoBot-GottaCatchEmAll/wiki/Donations#donating)</a><br/>
+<a name="Donating">All infos about how you can do a donate can you find in the [Wiki](https://github.com/Spegeli/PokemoGoBot-GottaCatchEmAll/wiki/Donations#donating)</a><br />
 <br />
 
 <h2><a name="features">Features</a></h2>
- 
  - [PTC Login / Google]
  - [Get Map Objects and Inventory]
  - [Humanlike Walking]<br />
@@ -39,6 +38,7 @@ Make sure you check out our [Wiki](https://github.com/Spegeli/PokemoGoBot-GottaC
  - [Throws away unneeded items]<br />
  - [Use Lucky Eggs]<br />
  - [Use Incense]<br />
+ - [Egg Hatching Automatically]
  - [Use best Pokeball & Berry]<br />
  - [Creates Excel CSV File on Startup with your current Pokemon]<br />
  - [Softban bypass]<br />

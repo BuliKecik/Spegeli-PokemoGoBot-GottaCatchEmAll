@@ -21,12 +21,10 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
                 return;
 
             var pokemons = await GetNearbyPokemons();
-
-            if (pokemons.Any())
-                Logger.Write($"Found {pokemons.Count()} catchable Pokemon", LogLevel.Info);
-            else
+            if (pokemons == null || !pokemons.Any())
                 return;
 
+            Logger.Write($"Found {pokemons.Count} catchable Pokemon", LogLevel.Debug);
             foreach (var pokemon in pokemons)
             {
                 if (Logic._client.Settings.UsePokemonToNotCatchList && Logic._client.Settings.PokemonsToNotCatch.Contains(pokemon.PokemonId))
@@ -34,12 +32,6 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
                     Logger.Write($"Pokemon - {pokemon.PokemonId} - is on ToNotCatch List");
                     continue;
                 }
-
-                /*
-                var distance = LocationUtils.CalculateDistanceInMeters(Logic._client.CurrentLatitude,
-                    Logic._client.CurrentLongitude, pokemon.Latitude, pokemon.Longitude);
-                await Task.Delay(distance > 100 ? 3000 : 500);
-                */
 
                 var encounter = await Logic._client.Encounter.EncounterPokemon(pokemon.EncounterId, pokemon.SpawnPointId);
 

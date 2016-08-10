@@ -43,14 +43,19 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
 
             var pokestops = await Inventory.GetPokestops();
 
-            if (!pokestops.Any())
-                Logger.Write("No usable PokeStops found in your area. Is your maximum distance too small?",
+            if (pokestops == null || !pokestops.Any())
+                Logger.Write("No usable PokeStops found in your area. Reasons: Softbanned - Server Issues - MaxTravelDistanceInMeters too small",
                     LogLevel.Warning);
             else
                 Logger.Write($"Found {pokestops.Count()} {(pokestops.Count() == 1 ? "Pokestop" : "Pokestops")}", LogLevel.Info);
 
             while (pokestops.Any())
             {
+                if (Logic._client.Settings.ExportPokemonToCsvEveryMinutes > 0 && ExportPokemonToCsv._lastExportTime.AddMinutes(Logic._client.Settings.ExportPokemonToCsvEveryMinutes).Ticks < DateTime.Now.Ticks)
+                {
+                    var _playerProfile = await Logic._client.Player.GetPlayer();
+                    await ExportPokemonToCsv.Execute(_playerProfile.PlayerData);
+                }
                 if (Logic._client.Settings.UseLuckyEggs)
                     await UseLuckyEggTask.Execute();
                 if (Logic._client.Settings.CatchIncensePokemon)
@@ -141,21 +146,23 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
                                     LogLevel.Warning);
 
                             await RandomHelper.RandomDelay(450);
-                            Logger.Write($"{fortSearch}", LogLevel.Debug);
                         }
                     }
                     else if (fortSearch.ExperienceAwarded != 0)
                     {
                         BotStats.ExperienceThisSession += fortSearch.ExperienceAwarded;
-                        await BotStats.UpdateConsoleTitle();
+                        BotStats.UpdateConsoleTitle();
                         Logger.Write($"XP: {fortSearch.ExperienceAwarded}, Gems: {fortSearch.GemsAwarded}, Items: {StringUtils.GetSummedFriendlyNameOfItemAwardList(fortSearch.ItemsAwarded)}", LogLevel.Pokestop);
                         RecycleItemsTask._recycleCounter++;
+                        HatchEggsTask._hatchUpdateDelay++;
                         break; //Continue with program as loot was succesfull.
                     }
                 } while (fortTry < retryNumber - zeroCheck); //Stop trying if softban is cleaned earlier or if 40 times fort looting failed.
 
                 if (RecycleItemsTask._recycleCounter >= 5)
                     await RecycleItemsTask.Execute();
+                if (HatchEggsTask._hatchUpdateDelay >= 15)
+                    await HatchEggsTask.Execute();
             }
         }
     }

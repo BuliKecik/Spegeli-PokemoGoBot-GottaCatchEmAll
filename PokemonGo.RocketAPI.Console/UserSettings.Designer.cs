@@ -37,7 +37,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        [global::System.Configuration.DefaultSettingValueAttribute("95")]
         public float TransferPokemonKeepAllAboveIV {
             get {
                 return ((float)(this["TransferPokemonKeepAllAboveIV"]));
@@ -61,7 +61,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("75")]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
         public double WalkingSpeedInKilometerPerHour {
             get {
                 return ((double)(this["WalkingSpeedInKilometerPerHour"]));
@@ -440,6 +440,42 @@ namespace PokemonGo.RocketAPI.Console {
             }
             set {
                 this["CatchLuredPokemon"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("15")]
+        public int ExportPokemonToCsvEveryMinutes {
+            get {
+                return ((int)(this["ExportPokemonToCsvEveryMinutes"]));
+            }
+            set {
+                this["ExportPokemonToCsvEveryMinutes"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool HatchEggs {
+            get {
+                return ((bool)(this["HatchEggs"]));
+            }
+            set {
+                this["HatchEggs"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseOnlyBasicIncubator {
+            get {
+                return ((bool)(this["UseOnlyBasicIncubator"]));
+            }
+            set {
+                this["UseOnlyBasicIncubator"] = value;
             }
         }
     }

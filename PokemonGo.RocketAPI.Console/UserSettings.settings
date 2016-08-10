@@ -6,13 +6,13 @@
       <Value Profile="(Default)">10</Value>
     </Setting>
     <Setting Name="TransferPokemonKeepAllAboveIV" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">100</Value>
+      <Value Profile="(Default)">95</Value>
     </Setting>
     <Setting Name="TransferPokemonKeepAllAboveCP" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">2000</Value>
     </Setting>
     <Setting Name="WalkingSpeedInKilometerPerHour" Type="System.Double" Scope="User">
-      <Value Profile="(Default)">75</Value>
+      <Value Profile="(Default)">10</Value>
     </Setting>
     <Setting Name="DefaultLatitude" Type="System.Double" Scope="User">
       <Value Profile="(Default)">0</Value>
@@ -106,6 +106,15 @@
     </Setting>
     <Setting Name="CatchLuredPokemon" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ExportPokemonToCsvEveryMinutes" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">15</Value>
+    </Setting>
+    <Setting Name="HatchEggs" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UseOnlyBasicIncubator" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
     </Setting>
   </Settings>
 </SettingsFile>

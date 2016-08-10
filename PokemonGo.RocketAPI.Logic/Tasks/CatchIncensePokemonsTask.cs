@@ -39,12 +39,6 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
                     return;
                 }
 
-                /*
-                var distance = LocationUtils.CalculateDistanceInMeters(Logic._client.CurrentLatitude,
-                    Logic._client.CurrentLongitude, pokemon.Latitude, pokemon.Longitude);
-                await Task.Delay(distance > 100 ? 3000 : 500);
-                */
-
                 var encounter =
                     await Logic._client.Encounter.EncounterIncensePokemon(pokemon.EncounterId, pokemon.SpawnPointId);
 

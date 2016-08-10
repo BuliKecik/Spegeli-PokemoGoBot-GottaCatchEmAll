@@ -57,7 +57,10 @@ namespace PokemonGo.RocketAPI.Console
         public int TransferPokemonKeepAmountHighestIV => UserSettings.Default.TransferPokemonKeepAmountHighestIV;
 
         public bool UseLuckyEggs => UserSettings.Default.UseLuckyEggs;
+        public bool HatchEggs => UserSettings.Default.HatchEggs;
+        public bool UseOnlyBasicIncubator => UserSettings.Default.UseOnlyBasicIncubator;
         public bool PrioritizeIVOverCP => UserSettings.Default.PrioritizeIVOverCP;
+        public int ExportPokemonToCsvEveryMinutes => UserSettings.Default.ExportPokemonToCsvEveryMinutes;
         public bool DebugMode => UserSettings.Default.DebugMode;
 
         private ICollection<PokemonId> _pokemonsToEvolve;
@@ -71,9 +74,9 @@ namespace PokemonGo.RocketAPI.Console
 
         //TODO: make these configurable settings
         // Set our maximum value for all items in this group
-        private const int MaxBalls = 100;
+        private const int MaxBalls = 200;
         private const int MaxBerries = 20;
-        private const int MaxPotions = 30;
+        private const int MaxPotions = 50;
 
         public Settings()
         {

@@ -17,9 +17,10 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
         {
             await Inventory.GetCachedInventory(true);
             var pokemonToEvolve = await Inventory.GetPokemonToEvolve(Logic._client.Settings.PrioritizeIVOverCP, Logic._client.Settings.PokemonsToEvolve);
-            if (pokemonToEvolve != null && pokemonToEvolve.Any())
-                Logger.Write($"Found {pokemonToEvolve.Count()} Pokemon for Evolve:", LogLevel.Info);
+            if (pokemonToEvolve == null || !pokemonToEvolve.Any())
+                return;
 
+            Logger.Write($"Found {pokemonToEvolve.Count()} Pokemon for Evolve:", LogLevel.Debug);
             foreach (var pokemon in pokemonToEvolve)
             {
                 var evolvePokemonOutProto = await Logic._client.Inventory.EvolvePokemon(pokemon.Id);
@@ -35,7 +36,7 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
                     BotStats.ExperienceThisSession += evolvePokemonOutProto.ExperienceAwarded;
             }
             await BotStats.GetPokeDexCount();
-            await BotStats.UpdateConsoleTitle();
+            BotStats.UpdateConsoleTitle();
         }
 
     }

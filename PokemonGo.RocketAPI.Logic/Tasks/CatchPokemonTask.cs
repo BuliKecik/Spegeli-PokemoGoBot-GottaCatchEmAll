@@ -63,7 +63,7 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
                     await BotStats.GetPokemonCount();
                     var profile = await Logic._client.Player.GetPlayer();
                     BotStats.TotalStardust = profile.PlayerData.Currencies.ToArray()[1].Amount;
-                    await BotStats.UpdateConsoleTitle();
+                    BotStats.UpdateConsoleTitle();
                 }
                 
                 if (encounter?.CaptureProbability?.CaptureProbability_ != null)

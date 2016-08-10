@@ -45,7 +45,7 @@ namespace PokemonGo.RocketAPI.Logic.Logging
             Console.OutputEncoding = Encoding.Unicode;
 
             var dateFormat = DateTime.Now.ToString("HH:mm:ss");
-            if (Logic._client.Settings.DebugMode)
+            if (Logic._client != null && Logic._client.Settings.DebugMode)
                 dateFormat = DateTime.Now.ToString("HH:mm:ss:fff");
 
             switch (level)
@@ -118,6 +118,11 @@ namespace PokemonGo.RocketAPI.Logic.Logging
                     Console.WriteLine($"[{dateFormat}] (RECYCLING) {message}");
                     Log(string.Concat($"[{dateFormat}] ", message));
                     break;
+                case LogLevel.Incubation:
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"[{dateFormat}] (INCUBATION) {message}");
+                    Log(string.Concat($"[{dateFormat}] ", message));
+                    break;
                 case LogLevel.None:
                     Console.ForegroundColor = color;
                     Console.WriteLine($"[{dateFormat}] {message}");
@@ -157,6 +162,7 @@ namespace PokemonGo.RocketAPI.Logic.Logging
         Berry = 10,
         Egg = 11,
         Incense = 12,
-        Recycling = 13
+        Recycling = 13,
+        Incubation = 14
     }
 }

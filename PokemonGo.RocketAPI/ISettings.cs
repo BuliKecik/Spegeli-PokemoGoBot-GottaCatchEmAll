@@ -47,8 +47,11 @@ namespace PokemonGo.RocketAPI
         int TransferPokemonKeepAmountHighestCP { get; }
         int TransferPokemonKeepAmountHighestIV { get; }
 
-        bool PrioritizeIVOverCP { get; }
+        bool HatchEggs { get; }
+        bool UseOnlyBasicIncubator { get; }
         bool UseLuckyEggs { get; }
+        bool PrioritizeIVOverCP { get; }
+        int ExportPokemonToCsvEveryMinutes { get; }
         bool DebugMode { get; }
 
         ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter(IEnumerable<ItemData> myItems);

@@ -18,9 +18,10 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
         {
             await Inventory.GetCachedInventory(true);
             var items = await Inventory.GetItemsToRecycle(Logic._clientSettings);
-            if (items != null && items.Any())
-                Logger.Write($"Found {items.Count()} Recyclable {(items.Count() == 1 ? "Item" : "Items")}:", LogLevel.Info);
+            if (items == null || !items.Any())
+                return;
 
+            Logger.Write($"Found {items.Count()} Recyclable {(items.Count() == 1 ? "Item" : "Items")}:", LogLevel.Debug);
             foreach (var item in items)
             {
                 await Logic._client.Inventory.RecycleItem((ItemId)item.ItemId, item.Count);
@@ -29,7 +30,7 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
                 BotStats.ItemsRemovedThisSession += item.Count;
             }
 
-            await BotStats.UpdateConsoleTitle();
+            BotStats.UpdateConsoleTitle();
             _recycleCounter = 0;
         }
     }

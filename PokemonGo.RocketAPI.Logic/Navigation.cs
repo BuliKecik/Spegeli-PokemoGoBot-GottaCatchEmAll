@@ -45,12 +45,6 @@ namespace PokemonGo.RocketAPI.Logic
                 var currentDistanceToTarget = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
                 Logger.Write($"Distance to target location: {currentDistanceToTarget:0.##} meters. Will take {currentDistanceToTarget / speedInMetersPerSecond:0.##} seconds!", LogLevel.Debug);
 
-                if (currentDistanceToTarget < 25 && speedInMetersPerSecond > SpeedDownTo)
-                {
-                    Logger.Write($"We are within 25 meters of the target. Speeding down to 10 km/h to not pass the target.", LogLevel.Debug);
-                    speedInMetersPerSecond = SpeedDownTo;
-                }
-
                 nextWaypointDistance = Math.Min(currentDistanceToTarget,
                     millisecondsUntilGetUpdatePlayerLocationResponse / 1000 * speedInMetersPerSecond);
                 nextWaypointBearing = LocationUtils.DegreeBearing(sourceLocation, targetLocation);
@@ -65,7 +59,7 @@ namespace PokemonGo.RocketAPI.Logic
                 if (functionExecutedWhileWalking != null)
                     await functionExecutedWhileWalking();// look for pokemon
 
-            } while (LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation) >= 20);
+            } while (LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation) >= 35);
 
             return result;
         }
@@ -97,12 +91,6 @@ namespace PokemonGo.RocketAPI.Logic
                 sourceLocation = new GeoUtils(Logic._client.CurrentLatitude, Logic._client.CurrentLongitude);
                 var currentDistanceToTarget = LocationUtils.CalculateDistanceInMeters(sourceLocation, targetLocation);
                 Logger.Write($"Distance to target location: {currentDistanceToTarget:0.##} meters. Will take {currentDistanceToTarget / speedInMetersPerSecond:0.##} seconds!", LogLevel.Debug);
-
-                if (currentDistanceToTarget < 40 && speedInMetersPerSecond > SpeedDownTo)
-                {
-                    Logger.Write($"We are within 25 meters of the target. Speeding down to 10 km/h to not pass the target.", LogLevel.Debug);
-                    speedInMetersPerSecond = SpeedDownTo;
-                }
 
                 nextWaypointDistance = Math.Min(currentDistanceToTarget,
                     millisecondsUntilGetUpdatePlayerLocationResponse / 1000 * speedInMetersPerSecond);

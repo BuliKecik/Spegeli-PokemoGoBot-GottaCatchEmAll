@@ -42,7 +42,7 @@ namespace PokemonGo.RocketAPI.Logic.Utils
         {
             if (!Directory.Exists(ConfigsPath))
                 Directory.CreateDirectory(ConfigsPath);
-            if(File.Exists(LastcoordsFile) && File.ReadAllText(LastcoordsFile).Contains(":"))
+            if (File.Exists(LastcoordsFile) && File.ReadAllText(LastcoordsFile).Contains(":"))
             {
                 var latlngFromFile = File.ReadAllText(LastcoordsFile);
                 var latlng = latlngFromFile.Split(':');

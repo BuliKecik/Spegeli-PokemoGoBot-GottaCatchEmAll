@@ -17,7 +17,7 @@
     <UpdateAssemblyFileVersion>False</UpdateAssemblyFileVersion>
     <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
     <AssemblyVersionSettings>YearStamp.MonthStamp.DayStamp.Increment</AssemblyVersionSettings>
-    <AssemblyVersion>2016.8.9.251</AssemblyVersion>
+    <AssemblyVersion>2016.8.10.329</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -66,10 +66,12 @@
     <Compile Include="Tasks\ExportPokemonToCsv.cs" />
     <Compile Include="Tasks\FarmPokestopsGPXTask.cs" />
     <Compile Include="Tasks\FarmPokestopsTask.cs" />
+    <Compile Include="Tasks\HatchEggsTask.cs" />
     <Compile Include="Tasks\RecycleItemsTask.cs" />
     <Compile Include="Tasks\UseIncenseTask.cs" />
     <Compile Include="Tasks\UseLuckyEggTask.cs" />
     <Compile Include="Tasks\TransferPokemonTask.cs" />
+    <Compile Include="Utils\CsvExport.cs" />
     <Compile Include="Utils\GeoUtils.cs" />
     <Compile Include="Utils\GitChecker.cs" />
     <Compile Include="Utils\GPXReader.cs" />

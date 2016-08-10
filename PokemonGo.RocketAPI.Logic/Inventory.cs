@@ -28,6 +28,54 @@ namespace PokemonGo.RocketAPI.Logic
         public static DateTime LastRefresh;
         public static GetInventoryResponse CachedInventory;
 
+        public static async Task<IEnumerable<PokemonData>> GetPokemonToEvolve(bool prioritizeIVoverCp = false, IEnumerable<PokemonId> filter = null)
+        {
+            var myPokemons = await GetPokemons();
+            myPokemons = myPokemons.Where(p => p.DeployedFortId == string.Empty);
+            if (Logic._client.Settings.UsePokemonToEvolveList && filter != null)
+                myPokemons = myPokemons.Where(p => filter.Contains(p.PokemonId));
+            if (Logic._client.Settings.EvolveOnlyPokemonAboveIV)
+                myPokemons = myPokemons.Where(p => PokemonInfo.CalculatePokemonPerfection(p) >= Logic._client.Settings.EvolveOnlyPokemonAboveIVValue);
+            myPokemons = prioritizeIVoverCp ? myPokemons.OrderByDescending(PokemonInfo.CalculatePokemonPerfection) : myPokemons.OrderByDescending(p => p.Cp);
+
+            var pokemons = myPokemons.ToList();
+
+            var myPokemonSettings = await GetPokemonSettings();
+            var pokemonSettings = myPokemonSettings.ToList();
+
+            var myPokemonFamilies = await GetPokemonFamilies();
+            var pokemonFamilies = myPokemonFamilies.ToArray();
+
+            var pokemonToEvolve = new List<PokemonData>();
+            foreach (var pokemon in pokemons)
+            {
+                var settings = pokemonSettings.Single(x => x.PokemonId == pokemon.PokemonId);
+                var familyCandy = pokemonFamilies.Single(x => settings.FamilyId == x.FamilyId);
+
+                //Don't evolve if we can't evolve it
+                if (settings.EvolutionIds.Count == 0)
+                    continue;
+
+                var pokemonCandyNeededAlready =
+                    pokemonToEvolve.Count(
+                        p => pokemonSettings.Single(x => x.PokemonId == p.PokemonId).FamilyId == settings.FamilyId) *
+                        settings.CandyToEvolve;
+
+                var familiecandies = familyCandy.Candy_;
+                if (Logic._client.Settings.EvolveKeepCandiesValue > 0)
+                {
+                    if (familyCandy.Candy_ <= Logic._client.Settings.EvolveKeepCandiesValue) continue;
+                    familiecandies = familyCandy.Candy_ - Logic._client.Settings.EvolveKeepCandiesValue;
+                    if (familiecandies - pokemonCandyNeededAlready > settings.CandyToEvolve)
+                        pokemonToEvolve.Add(pokemon);
+                }
+                else if (familiecandies - pokemonCandyNeededAlready > settings.CandyToEvolve)
+                    pokemonToEvolve.Add(pokemon);
+            }
+
+            return pokemonToEvolve;
+        }
+
         public static async Task<IEnumerable<PokemonData>> GetPokemonToTransfer(bool keepPokemonsThatCanEvolve = false, bool prioritizeIVoverCp = false, IEnumerable<PokemonId> filter = null)
         {    
             IEnumerable<PokemonData> myPokemons = await GetPokemons();
@@ -218,7 +266,6 @@ namespace PokemonGo.RocketAPI.Logic
 
         public static async Task<List<InventoryItem>> GetPokeDexItems()
         {
-            List<InventoryItem> PokeDex = new List<InventoryItem>();
             var inventory = await Logic._client.Inventory.GetInventory();
 
             return (from items in inventory.InventoryDelta.InventoryItems
@@ -226,52 +273,22 @@ namespace PokemonGo.RocketAPI.Logic
                     select items).ToList();
         }
 
-        public static async Task<IEnumerable<PokemonData>> GetPokemonToEvolve(bool prioritizeIVoverCp = false, IEnumerable < PokemonId> filter = null)
+        public static async Task<IEnumerable<EggIncubator>> GetEggIncubators()
         {
-            var myPokemons = await GetPokemons();
-            myPokemons = myPokemons.Where(p => p.DeployedFortId == string.Empty);
-            if (Logic._client.Settings.UsePokemonToEvolveList && filter != null)
-                myPokemons = myPokemons.Where(p => filter.Contains(p.PokemonId));		
-            if (Logic._client.Settings.EvolveOnlyPokemonAboveIV)
-                myPokemons = myPokemons.Where(p => PokemonInfo.CalculatePokemonPerfection(p) >= Logic._client.Settings.EvolveOnlyPokemonAboveIVValue);
-            myPokemons = prioritizeIVoverCp ? myPokemons.OrderByDescending(PokemonInfo.CalculatePokemonPerfection) : myPokemons.OrderByDescending(p => p.Cp);
+            var inventory = await GetCachedInventory();
+            return
+                inventory.InventoryDelta.InventoryItems
+                    .Where(x => x.InventoryItemData.EggIncubators != null)
+                    .SelectMany(i => i.InventoryItemData.EggIncubators.EggIncubator)
+                    .Where(i => i != null);
+        }
 
-            var pokemons = myPokemons.ToList();
-
-            var myPokemonSettings = await GetPokemonSettings();
-            var pokemonSettings = myPokemonSettings.ToList();
-
-            var myPokemonFamilies = await GetPokemonFamilies();
-            var pokemonFamilies = myPokemonFamilies.ToArray();
-
-            var pokemonToEvolve = new List<PokemonData>();
-            foreach (var pokemon in pokemons)
-            {
-                var settings = pokemonSettings.Single(x => x.PokemonId == pokemon.PokemonId);
-                var familyCandy = pokemonFamilies.Single(x => settings.FamilyId == x.FamilyId);
-
-                //Don't evolve if we can't evolve it
-                if (settings.EvolutionIds.Count == 0)
-                    continue;
-
-                var pokemonCandyNeededAlready =
-                    pokemonToEvolve.Count(
-                        p => pokemonSettings.Single(x => x.PokemonId == p.PokemonId).FamilyId == settings.FamilyId) *
-                        settings.CandyToEvolve;
-
-                var familiecandies = familyCandy.Candy_;
-                if (Logic._client.Settings.EvolveKeepCandiesValue > 0)
-                {
-                    if (familyCandy.Candy_ <= Logic._client.Settings.EvolveKeepCandiesValue) continue;
-                    familiecandies = familyCandy.Candy_ - Logic._client.Settings.EvolveKeepCandiesValue;
-                    if (familiecandies - pokemonCandyNeededAlready > settings.CandyToEvolve)
-                        pokemonToEvolve.Add(pokemon);
-                }
-                else if (familiecandies - pokemonCandyNeededAlready > settings.CandyToEvolve)
-                    pokemonToEvolve.Add(pokemon);
-            }
-
-            return pokemonToEvolve;
+        public static async Task<IEnumerable<PokemonData>> GetEggs()
+        {
+            var inventory = await GetCachedInventory();
+            return
+                inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.PokemonData)
+                    .Where(p => p != null && p.IsEgg);
         }
 
         public static async Task<GetInventoryResponse> GetCachedInventory(bool request = false)
@@ -306,18 +323,18 @@ namespace PokemonGo.RocketAPI.Logic
             }
         }
 
-        public static async Task<List<FortData>> GetPokestops(bool gpx = false)
+        public static async Task<List<FortData>> GetPokestops(bool gpxpathing = false)
         {
             var mapObjects = await Logic._client.Map.GetMapObjects();
- 
+
             var pokeStops = mapObjects.Item1.MapCells.SelectMany(i => i.Forts)
                 .Where(
                     i =>
                         i.Type == FortType.Checkpoint &&
                         i.CooldownCompleteTimestampMs < DateTime.UtcNow.ToUnixTime()
-                      ).ToList();
+                ).ToList();
 
-            if (gpx)
+            if (gpxpathing)
                 pokeStops = pokeStops.Where(p => LocationUtils.CalculateDistanceInMeters(
                     Logic._client.CurrentLatitude, Logic._client.CurrentLongitude,
                     p.Latitude, p.Longitude) < 40).ToList();
@@ -325,12 +342,12 @@ namespace PokemonGo.RocketAPI.Logic
                 pokeStops = pokeStops.Where(p => LocationUtils.CalculateDistanceInMeters(
                     Logic._client.Settings.DefaultLatitude, Logic._client.Settings.DefaultLongitude,
                     p.Latitude, p.Longitude) < Logic._client.Settings.MaxTravelDistanceInMeters ||
-                    Logic._client.Settings.MaxTravelDistanceInMeters == 0).ToList();
+                                                 Logic._client.Settings.MaxTravelDistanceInMeters == 0).ToList();
 
             return pokeStops.OrderBy(
-                        i =>
-                            LocationUtils.CalculateDistanceInMeters(Logic._client.CurrentLatitude,
-                            Logic._client.CurrentLongitude, i.Latitude, i.Longitude)).ToList();
+                i =>
+                    LocationUtils.CalculateDistanceInMeters(Logic._client.CurrentLatitude,
+                        Logic._client.CurrentLongitude, i.Latitude, i.Longitude)).ToList();
         }
 
     }
