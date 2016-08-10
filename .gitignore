@@ -1,8 +1,23 @@
-﻿################################################################################
+﻿﻿################################################################################
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
 packages
 bin/
 obj/
 /PokemonGo/RocketAPI/Proto/google/protobuf
+
+# sensitive data
+UserSettings.settings
+App.config
+UserSettings.Designer.cs
+
+# Visual Studio 2015 cache/options directory
+.vs/
