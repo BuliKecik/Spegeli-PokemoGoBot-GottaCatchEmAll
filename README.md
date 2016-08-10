@@ -3,7 +3,7 @@
 [1.1]: http://i.epvpimg.com/puj4b.png (SCREENSHOT)
 [1.2]: http://i.epvpimg.com/RN2Ue.png (STATISTICSCREENSHOT)
 <!-- logo -->
-<center>![LOGO][1.2]</center><br/>
+<center>![LOGO][1.0]</center><br/>
 <br/>
 <!-- title -->
 <h1>Pokemo GO Bot - Gotta Catch 'Em All Edition</h1>
