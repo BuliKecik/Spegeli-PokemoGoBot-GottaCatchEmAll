@@ -1,6 +1,10 @@
 <!-- define warning icon -->
+[1.0]: http://i.epvpimg.com/Zgehf.jpg (LOGO)
 [1.1]: http://i.epvpimg.com/puj4b.png (SCREENSHOT)
 [1.2]: http://i.epvpimg.com/RN2Ue.png (STATISTICSCREENSHOT)
+<!-- logo -->
+<center>![LOGO][1.2]</center><br/>
+<br/>
 <!-- title -->
 <h1>Pokemo GO Bot - Gotta Catch 'Em All Edition</h1>
 <!-- disclaimer -->
@@ -40,14 +44,14 @@ Make sure you check out our [Wiki](https://github.com/Spegeli/PokemoGoBot-GottaC
  - [Creates Excel CSV File on Startup with your current Pokemon]<br />
  - [Softban bypass]<br />
  - [Log File System]<br />
- - [Statistic in the Header] - ![spegelibot_statisticbar][1.1]<br />
+ - [Statistic in the Header] - ![STATISTICSCREENSHOT][1.1]<br />
  - [Very color and useful Logging]<br />
  - and many more ;-)
 <br/>
 
 <h2><a name="screenshots">Screenshots</a></h2>
-![spegelibot_screen](https://cloud.githubusercontent.com/assets/20632191/17541319/4abcef36-5e8c-11e6-8bce-bd0d593a01c9.png)
-![spegelibot_screen][1.2]
+![SCREENSHOT](https://cloud.githubusercontent.com/assets/20632191/17541319/4abcef36-5e8c-11e6-8bce-bd0d593a01c9.png)
+![SCREENSHOT][1.2]
 <br/>
 
 <h2><a name="credits">Credits</a></h2>
