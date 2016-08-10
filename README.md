@@ -39,13 +39,13 @@ The file is not hard to find and any questions about this or other common items 
    (Optional: UseTransferPokemonKeepAboveCP - Keeps all Pokemon with CP > TransferPokemonKeepAboveCP, Enabled by default, can be Disabled vis UserSettings)
    (Optional: UseTransferPokemonKeepAboveIV - Keeps all Pokemon with IV > TransferPokemonKeepAboveIVPercentage, Enabled by default, can be Disabled vis UserSettings)
    (Optional: PrioritizeIVOverCP - Determines the sorting sequence - CP or IV, Enabled by default, can be Disabled via UserSettings.)<br />
-   TransferPokemonKeepAmountHighestCP = Keep X Highest Pokemon based on CP (when doing Transfer) - Default 0 (because CP are useless)<br />
-   TransferPokemonKeepAmountHighestIV = Keep X Highest Pokemon based on IV (when doing Transfer) - Default 1<br />
+ - TransferPokemonKeepAmountHighestCP = Keep X Highest Pokemon based on CP (when doing Transfer) - Default 0 (because CP are useless)<br />
+ - TransferPokemonKeepAmountHighestIV = Keep X Highest Pokemon based on IV (when doing Transfer) - Default 1<br />
    (Optional: PokemonsNotToTransfer List. Enabled by default, can be Disabled via UserSettings, configurable Names via File in Config Folder)
    (Optional: NotTransferPokemonsThatCanEvolve - Will keep ALL Pokemons which can be Evolve not matter if they on PokemonsToEvolve List or not, Disabled by default, can be Enabled via UserSettings)
-   CatchIncensePokemon & CatchLuredPokemon = The Name says all, disabled by Default because it seems it slows down the EP instead of increase it<br />
+ - CatchIncensePokemon & CatchLuredPokemon = The Name says all, disabled by Default because it seems it slows down the EP    instead of increase it<br />
    UseIncense gets removed from the Settings Options, when CatchIncensePokemon is enabled he will use Incense<br />
-   In the Settings.cs you found now the following Options:<br />
+ - In the Settings.cs you found now the following Options:<br />
     private const int MaxBalls = 100;<br />
     private const int MaxBerries = 20;<br />
     private const int MaxPotions = 30;<br />
