@@ -43,14 +43,16 @@ Make sure you check out our [Wiki](https://github.com/Spegeli/PokemoGoBot-GottaC
  - [Creates Excel CSV File on Startup with your current Pokemon]<br />
  - [Softban bypass]<br />
  - [Log File System]<br />
- - [Statistic in the Header] - ![STATISTICSCREENSHOT][1.1]<br />
+ - [Statistic in the Header]
+   ![STATISTICSCREENSHOT][1.2]<br />
  - [Very color and useful Logging]<br />
  - and many more ;-)
 <br/>
 
 <h2><a name="screenshots">Screenshots</a></h2>
-![SCREENSHOT](https://cloud.githubusercontent.com/assets/20632191/17541319/4abcef36-5e8c-11e6-8bce-bd0d593a01c9.png)
-![SCREENSHOT][1.2]
+![SCREENSHOT](https://cloud.githubusercontent.com/assets/20632191/17541319/4abcef36-5e8c-11e6-8bce-bd0d593a01c9.png)<br />
+<br />
+![SCREENSHOT][1.1]<br />
 <br/>
 
 <h2><a name="credits">Credits</a></h2>
@@ -64,5 +66,4 @@ Thanks to everyone who volunteered by contributing via Pull Requests!<br />
 This Website and Project is in no way affiliated with, authorized, maintained, sponsored or endorsed by Niantic, The Pokémon Company, Nintendo or any of its affiliates or subsidiaries. This is an independent and unofficial API for educational use ONLY. Using the Project might be against the TOS<br />
 <br/>
 Inquiries: EMAIL COMING SOON<br />
-<br />
 <hr/>
