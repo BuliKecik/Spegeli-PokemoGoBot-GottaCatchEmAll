@@ -53,16 +53,16 @@ The file is not hard to find and any questions about this or other common items 
  - [Throws away unneeded items]<br />
    (configurable via Settings.cs)
  - [Use Lucky Eggs]<br />
-   (Disbaled by default, can be Enabled via UserSettings)
+   (Disbaled by default, can be Enabled via UserSettings)<br />
  - [Use best Pokeball & Berry]<br />
    (depending on Pokemon CP and IV)
  - [Creates Excel CSV File on Startup with your current Pokemon]<br />
-   (including Number, Name, CP,IV Perfection in % and many more) (can be found in the Export Folder)
- - [Softban bypass]
+   (including Number, Name, CP,IV Perfection in % and many more) (can be found in the Export Folder)<br />
+ - [Softban bypass]<br />
  - [Log File System]<br />
-   (all activity will be tracked in a Log File)
- - [Statistic in the Header] ![alt tag](https://github.com/Spegeli/Pokemon-Go-Rocket-API/blob/master/StatisticScreenshot.png)
- - Pokedex count: Captured / Saw added to the Status Bar
+   (all activity will be tracked in a Log File)<br />
+ - [Statistic in the Header] - ![spegelibot_statisticbar](https://cloud.githubusercontent.com/assets/20632191/17541376/bcfdfad6-5e8c-11e6-9340-003f44653def.png)<br />
+ - Pokedex count: Captured / Saw added to the Status Bar<br />
  - [Very color and useful Logging]<br />
    (so you every time up2date what currently happened)
  - and many more ;-)
