@@ -12,7 +12,7 @@ In order for the bot to function. You will need to supply a encrypt.dll file. Du
 The dll needs to be placed within the folder:<br/>
 PokemoGoBot-GottaCatchEmAll-master\PokemonGo.RocketAPI.Console\bin\Debug<br/>
 <br/>
-The file is not hard to find and any questions about this or other common items can be found within our Discord community in the channel #readme<br/>
+The file is not hard to find and any questions about this or other common items can be found within our [Discord community](https://discord.gg/KzJUjDE) in the channel [#readme](https://discord.gg/U2bz3JT)<br/>
 <br />
 
 <h2><a name="getting-started">Getting Started</a></h2>
