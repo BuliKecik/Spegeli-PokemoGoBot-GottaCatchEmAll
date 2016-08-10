@@ -69,7 +69,7 @@ The file is not hard to find and any questions about this or other common items 
 <br/>
 
 <h2><a name="screenshots">Screenshots</a></h2>
-![alt text][1.3]
+![spegelibot_screen](https://cloud.githubusercontent.com/assets/20632191/17541319/4abcef36-5e8c-11e6-8bce-bd0d593a01c9.png)
 <br/>
 
 <h2><a name="getting-started">Getting Started</a></h2>
