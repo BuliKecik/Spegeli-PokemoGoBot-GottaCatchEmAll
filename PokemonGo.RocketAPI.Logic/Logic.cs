@@ -207,6 +207,7 @@ namespace PokemonGo.RocketAPI.Logic
                 await Main();
 
                 await RefreshTokens();
+
                 /*
                 * Example calls below
                 *
@@ -232,7 +233,7 @@ namespace PokemonGo.RocketAPI.Logic
         private async Task DisplayHighests()
         {
             Logger.Write("====== DisplayHighestsCP ======", LogLevel.Info, ConsoleColor.Yellow);
-            var highestsPokemonCp = await Inventory.GetHighestsCp(10);
+            var highestsPokemonCp = await Inventory.GetHighestsCp(15);
             string space = " ";
             foreach (var pokemon in highestsPokemonCp)
             {
@@ -245,7 +246,7 @@ namespace PokemonGo.RocketAPI.Logic
             }
 
             Logger.Write("====== DisplayHighestsPerfect ======", LogLevel.Info, ConsoleColor.Yellow);
-            var highestsPokemonPerfect = await Inventory.GetHighestsPerfect(10);
+            var highestsPokemonPerfect = await Inventory.GetHighestsIv(15);
             foreach (var pokemon in highestsPokemonPerfect)
             {
                 if (PokemonInfo.CalculatePokemonPerfection(pokemon) > 100)

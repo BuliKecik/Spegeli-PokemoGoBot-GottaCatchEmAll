@@ -2,11 +2,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Xml.Serialization;
 using PokemonGo.RocketAPI.Enums;
 using PokemonGo.RocketAPI.Logic.Logging;
+using PokemonGo.RocketAPI.Logic.Utils;
 using POGOProtos.Enums;
 using POGOProtos.Inventory.Item;
 
@@ -17,67 +20,284 @@ namespace PokemonGo.RocketAPI.Console
 {
     public class Settings : ISettings
     {
-        public readonly string ConfigsPath = Path.Combine(Directory.GetCurrentDirectory(), "Settings");
+        [XmlIgnore]
+        private readonly string _configsPath = Path.Combine(Directory.GetCurrentDirectory(), "Settings");
 
-        public AuthType AuthType => (AuthType)Enum.Parse(typeof(AuthType), UserSettings.Default.AuthType, true);
-        public string PtcUsername => UserSettings.Default.PtcUsername;
-        public string PtcPassword => UserSettings.Default.PtcPassword;
-        public string GoogleEmail => UserSettings.Default.GoogleEmail;
-        public string GooglePassword => UserSettings.Default.GooglePassword;
-        public double DefaultLatitude => UserSettings.Default.DefaultLatitude;
-        public double DefaultLongitude => UserSettings.Default.DefaultLongitude;
-        public double DefaultAltitude => UserSettings.Default.DefaultAltitude;
-        public bool UseGPXPathing => UserSettings.Default.UseGPXPathing;
-        public string GPXFile => UserSettings.Default.GPXFile;
-        public bool GPXIgnorePokestops => UserSettings.Default.GPXIgnorePokestops;
+        public AuthType AuthType
+        {
+            get { return (AuthType)Enum.Parse(typeof(AuthType), UserSettings.Default.AuthType, true); }
+            set { UserSettings.Default.AuthType = value.ToString(); }
+        }
 
-        public double WalkingSpeedInKilometerPerHour => UserSettings.Default.WalkingSpeedInKilometerPerHour;
-        public int MaxTravelDistanceInMeters => UserSettings.Default.MaxTravelDistanceInMeters;
-        public bool UseTeleportInsteadOfWalking => UserSettings.Default.UseTeleportInsteadOfWalking;
+        public string PtcUsername
+        {
+            get { return UserSettings.Default.PtcUsername; }
+            set { UserSettings.Default.PtcUsername = value; }
+        }
 
-        public bool UsePokemonToNotCatchList => UserSettings.Default.UsePokemonToNotCatchList;
-        public bool UsePokemonToNotTransferList => UserSettings.Default.UsePokemonToNotTransferList;
-        public bool UsePokemonToEvolveList => UserSettings.Default.UsePokemonToEvolveList;
+        public string PtcPassword
+        {
+            get { return UserSettings.Default.PtcPassword; }
+            set { UserSettings.Default.PtcPassword = value; }
+        }
 
-        public bool CatchPokemon => UserSettings.Default.CatchPokemon;
-        public bool CatchIncensePokemon => UserSettings.Default.CatchIncensePokemon;
-        public bool CatchLuredPokemon => UserSettings.Default.CatchLuredPokemon;
-        public bool EvolvePokemon => UserSettings.Default.EvolvePokemon;
-        public bool EvolveOnlyPokemonAboveIV => UserSettings.Default.EvolveOnlyPokemonAboveIV;
-        public float EvolveOnlyPokemonAboveIVValue => UserSettings.Default.EvolveOnlyPokemonAboveIVValue;
-        public int EvolveKeepCandiesValue => UserSettings.Default.EvolveKeepCandiesValue;
+        public string GoogleEmail
+        {
+            get { return UserSettings.Default.GoogleEmail; }
+            set { UserSettings.Default.GoogleEmail = value; }
+        }
 
-        public bool TransferPokemon => UserSettings.Default.TransferPokemon;
-        public bool NotTransferPokemonsThatCanEvolve => UserSettings.Default.NotTransferPokemonsThatCanEvolve;
-        public bool UseTransferPokemonKeepAllAboveCP => UserSettings.Default.UseTransferPokemonKeepAllAboveCP;
-        public int TransferPokemonKeepAllAboveCP => UserSettings.Default.TransferPokemonKeepAllAboveCP;
-        public bool UseTransferPokemonKeepAllAboveIV => UserSettings.Default.UseTransferPokemonKeepAllAboveIV;
-        public float TransferPokemonKeepAllAboveIV => UserSettings.Default.TransferPokemonKeepAllAboveIV;
-        public int TransferPokemonKeepAmountHighestCP => UserSettings.Default.TransferPokemonKeepAmountHighestCP;
-        public int TransferPokemonKeepAmountHighestIV => UserSettings.Default.TransferPokemonKeepAmountHighestIV;
+        public string GooglePassword
+        {
+            get { return UserSettings.Default.GooglePassword; }
+            set { UserSettings.Default.GooglePassword = value; }
+        }
 
-        public bool UseLuckyEggs => UserSettings.Default.UseLuckyEggs;
-        public bool HatchEggs => UserSettings.Default.HatchEggs;
-        public bool UseOnlyBasicIncubator => UserSettings.Default.UseOnlyBasicIncubator;
-        public bool PrioritizeIVOverCP => UserSettings.Default.PrioritizeIVOverCP;
-        public int ExportPokemonToCsvEveryMinutes => UserSettings.Default.ExportPokemonToCsvEveryMinutes;
-        public bool DebugMode => UserSettings.Default.DebugMode;
+        public double DefaultLatitude
+        {
+            get { return UserSettings.Default.DefaultLatitude; }
+            set { UserSettings.Default.DefaultLatitude = value; }
+        }
 
+        public double DefaultLongitude
+        {
+            get { return UserSettings.Default.DefaultLongitude; }
+            set { UserSettings.Default.DefaultLongitude = value; }
+        }
+
+        public double DefaultAltitude
+        {
+            get { return UserSettings.Default.DefaultAltitude; }
+            set { UserSettings.Default.DefaultAltitude = value; }
+        }
+
+        public bool UseGPXPathing
+        {
+            get { return UserSettings.Default.UseGPXPathing; }
+            set { UserSettings.Default.UseGPXPathing = value; }
+        }
+
+        public string GPXFile
+        {
+            get { return UserSettings.Default.GPXFile; }
+            set { UserSettings.Default.GPXFile = value; }
+        }
+
+        public bool GPXIgnorePokestops
+        {
+            get { return UserSettings.Default.GPXIgnorePokestops; }
+            set { UserSettings.Default.GPXIgnorePokestops = value; }
+        }
+
+        public double WalkingSpeedInKilometerPerHour
+        {
+            get { return UserSettings.Default.WalkingSpeedInKilometerPerHour; }
+            set { UserSettings.Default.WalkingSpeedInKilometerPerHour = value; }
+        }
+
+        public int MaxTravelDistanceInMeters
+        {
+            get { return UserSettings.Default.MaxTravelDistanceInMeters; }
+            set { UserSettings.Default.MaxTravelDistanceInMeters = value; }
+        }
+
+        public bool UseTeleportInsteadOfWalking
+        {
+            get { return UserSettings.Default.UseTeleportInsteadOfWalking; }
+            set { UserSettings.Default.UseTeleportInsteadOfWalking = value; }
+        }
+
+        public bool UsePokemonToNotCatchList
+        {
+            get { return UserSettings.Default.UsePokemonToNotCatchList; }
+            set { UserSettings.Default.UsePokemonToNotCatchList = value; }
+        }
+
+        public bool UsePokemonToNotTransferList
+        {
+            get { return UserSettings.Default.UsePokemonToNotTransferList; }
+            set { UserSettings.Default.UsePokemonToNotTransferList = value; }
+        }
+
+        public bool UsePokemonToEvolveList
+        {
+            get { return UserSettings.Default.UsePokemonToEvolveList; }
+            set { UserSettings.Default.UsePokemonToEvolveList = value; }
+        }
+
+        public bool CatchPokemon
+        {
+            get { return UserSettings.Default.CatchPokemon; }
+            set { UserSettings.Default.CatchPokemon = value; }
+        }
+
+        public bool CatchIncensePokemon
+        {
+            get { return UserSettings.Default.CatchIncensePokemon; }
+            set { UserSettings.Default.CatchIncensePokemon = value; }
+        }
+
+        public bool CatchLuredPokemon
+        {
+            get { return UserSettings.Default.CatchLuredPokemon; }
+            set { UserSettings.Default.CatchLuredPokemon = value; }
+        }
+
+        public bool EvolvePokemon
+        {
+            get { return UserSettings.Default.EvolvePokemon; }
+            set { UserSettings.Default.EvolvePokemon = value; }
+        }
+
+        public bool EvolveOnlyPokemonAboveIV
+        {
+            get { return UserSettings.Default.EvolveOnlyPokemonAboveIV; }
+            set { UserSettings.Default.EvolveOnlyPokemonAboveIV = value; }
+        }
+
+        public float EvolveOnlyPokemonAboveIVValue
+        {
+            get { return UserSettings.Default.EvolveOnlyPokemonAboveIVValue; }
+            set { UserSettings.Default.EvolveOnlyPokemonAboveIVValue = value; }
+        }
+
+        public int EvolveKeepCandiesValue
+        {
+            get { return UserSettings.Default.EvolveKeepCandiesValue; }
+            set { UserSettings.Default.EvolveKeepCandiesValue = value; }
+        }
+
+        public bool TransferPokemon
+        {
+            get { return UserSettings.Default.TransferPokemon; }
+            set { UserSettings.Default.TransferPokemon = value; }
+        }
+
+        public bool NotTransferPokemonsThatCanEvolve
+        {
+            get { return UserSettings.Default.NotTransferPokemonsThatCanEvolve; }
+            set { UserSettings.Default.NotTransferPokemonsThatCanEvolve = value; }
+        }
+
+        public bool UseTransferPokemonKeepAllAboveCP
+        {
+            get { return UserSettings.Default.UseTransferPokemonKeepAllAboveCP; }
+            set { UserSettings.Default.UseTransferPokemonKeepAllAboveCP = value; }
+        }
+
+        public int TransferPokemonKeepAllAboveCPValue
+        {
+            get { return UserSettings.Default.TransferPokemonKeepAllAboveCPValue; }
+            set { UserSettings.Default.TransferPokemonKeepAllAboveCPValue = value; }
+        }
+
+        public bool UseTransferPokemonKeepAllAboveIV
+        {
+            get { return UserSettings.Default.UseTransferPokemonKeepAllAboveIV; }
+            set { UserSettings.Default.UseTransferPokemonKeepAllAboveIV = value; }
+        }
+
+        public float TransferPokemonKeepAllAboveIVValue
+        {
+            get { return UserSettings.Default.TransferPokemonKeepAllAboveIVValue; }
+            set { UserSettings.Default.TransferPokemonKeepAllAboveIVValue = value; }
+        }
+
+        public int TransferPokemonKeepAmountHighestCP
+        {
+            get { return UserSettings.Default.TransferPokemonKeepAmountHighestCP; }
+            set { UserSettings.Default.TransferPokemonKeepAmountHighestCP = value; }
+        }
+
+        public int TransferPokemonKeepAmountHighestIV
+        {
+            get { return UserSettings.Default.TransferPokemonKeepAmountHighestIV; }
+            set { UserSettings.Default.TransferPokemonKeepAmountHighestIV = value; }
+        }
+
+        public bool UseLuckyEggs
+        {
+            get { return UserSettings.Default.UseLuckyEggs; }
+            set { UserSettings.Default.UseLuckyEggs = value; }
+        }
+
+        public bool HatchEggs
+        {
+            get { return UserSettings.Default.HatchEggs; }
+            set { UserSettings.Default.HatchEggs = value; }
+        }
+
+        public bool UseOnlyBasicIncubator
+        {
+            get { return UserSettings.Default.UseOnlyBasicIncubator; }
+            set { UserSettings.Default.UseOnlyBasicIncubator = value; }
+        }
+
+        public bool PrioritizeIVOverCP
+        {
+            get { return UserSettings.Default.PrioritizeIVOverCP; }
+            set { UserSettings.Default.PrioritizeIVOverCP = value; }
+        }
+
+        public int ExportPokemonToCsvEveryMinutes
+        {
+            get { return UserSettings.Default.ExportPokemonToCsvEveryMinutes; }
+            set { UserSettings.Default.ExportPokemonToCsvEveryMinutes = value; }
+        }
+
+        public bool DebugMode
+        {
+            get { return UserSettings.Default.DebugMode; }
+            set { UserSettings.Default.DebugMode = value; }
+        }
+        public string DevicePackageName
+        {
+            get { return UserSettings.Default.DevicePackageName; }
+            set { UserSettings.Default.DevicePackageName = value; }
+        }
+
+        [XmlIgnore]
+        public string DeviceId = "8525f5d8201f78b5";
+        [XmlIgnore]
+        public string AndroidBoardName = "msm8996";
+        [XmlIgnore]
+        public string AndroidBootloader = "1.0.0.0000";
+        [XmlIgnore]public string DeviceBrand = "HTC";
+        [XmlIgnore]
+        public string DeviceModel = "HTC 10";
+        [XmlIgnore]
+        public string DeviceModelIdentifier = "pmewl_00531";
+        [XmlIgnore]
+        public string DeviceModelBoot = "qcom";
+        [XmlIgnore]
+        public string HardwareManufacturer = "HTC";
+        [XmlIgnore]
+        public string HardwareModel = "HTC 10";
+        [XmlIgnore]
+        public string FirmwareBrand = "pmewl_00531";
+        [XmlIgnore]
+        public string FirmwareTags = "release - keys";
+        [XmlIgnore]
+        public string FirmwareType = "user";
+        [XmlIgnore]
+        public string FirmwareFingerprint = "htc/pmewl_00531/htc_pmewl:6.0.1/MMB29M/770927.1:user/release-keys";
+
+        [XmlIgnore]
         private ICollection<PokemonId> _pokemonsToEvolve;
+
+        [XmlIgnore]
         private ICollection<PokemonId> _pokemonsToNotTransfer;
+
+        [XmlIgnore]
         private ICollection<PokemonId> _pokemonsToNotCatch;
 
-        // Create our group of inventory items
+        [XmlIgnore]
         private readonly SortedList<int, ItemId> _inventoryBalls = new SortedList<int, ItemId>();
         private readonly SortedList<int, ItemId> _inventoryBerries = new SortedList<int, ItemId>();
         private readonly SortedList<int, ItemId> _inventoryPotions = new SortedList<int, ItemId>();
-
-        //TODO: make these configurable settings
-        // Set our maximum value for all items in this group
         private const int MaxBalls = 200;
         private const int MaxBerries = 20;
         private const int MaxPotions = 50;
-
         public Settings()
         {
             _inventoryBalls.Add(1, ItemId.ItemMasterBall);
@@ -96,7 +316,6 @@ namespace PokemonGo.RocketAPI.Console
             _inventoryBerries.Add(3, ItemId.ItemBlukBerry);
             _inventoryBerries.Add(4, ItemId.ItemRazzBerry);
         }
-
         private IDictionary<ItemId, int> _itemRecycleFilter;
         public ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter(IEnumerable<ItemData> myItems)
         {
@@ -105,24 +324,6 @@ namespace PokemonGo.RocketAPI.Console
                 _itemRecycleFilter = new Dictionary<ItemId, int>
                 {
                     {ItemId.ItemUnknown, 0},
-
-                    // These will be overwritten by the CalculateGroupAmounts calculations below
-                    /*
-                    {ItemId.ItemPokeBall, 25},
-                    {ItemId.ItemGreatBall, 50},
-                    {ItemId.ItemUltraBall, 75},
-                    {ItemId.ItemMasterBall, 100},
-                    {ItemId.ItemPotion, 0},
-                    {ItemId.ItemSuperPotion, 10},
-                    {ItemId.ItemHyperPotion, 25},
-                    {ItemId.ItemMaxPotion, 25},
-                    {ItemId.ItemRazzBerry, 20},
-                    {ItemId.ItemBlukBerry, 10},
-                    {ItemId.ItemNanabBerry, 10},
-                    {ItemId.ItemWeparBerry, 30},
-                    {ItemId.ItemPinapBerry, 30},
-                    */
-
                     {ItemId.ItemRevive, 15},
                     {ItemId.ItemMaxRevive, 25},
                     {ItemId.ItemLuckyEgg, 200},
@@ -142,18 +343,12 @@ namespace PokemonGo.RocketAPI.Console
                 };
             }
 
-            // Calculate how many balls of each type we should keep
             CalculateGroupAmounts(_inventoryBalls, MaxBalls, myItems);
-
-            // Calculate how many berries of each type we should keep
             CalculateGroupAmounts(_inventoryBerries, MaxBerries, myItems);
-
-            // Calculate how many potions of each type we should keep
             CalculateGroupAmounts(_inventoryPotions, MaxPotions, myItems);
 
             return _itemRecycleFilter;
         }
-
         private void CalculateGroupAmounts(SortedList<int, ItemId> inventoryGroup, int maxQty, IEnumerable<ItemData> myItems)
         {
             var amountRemaining = maxQty;
@@ -187,9 +382,9 @@ namespace PokemonGo.RocketAPI.Console
                     // ignored
                 }
             }
-
         }
 
+        [XmlIgnore]
         public ICollection<PokemonId> PokemonsToEvolve
         {
             get
@@ -203,19 +398,21 @@ namespace PokemonGo.RocketAPI.Console
             }
         }
 
+        [XmlIgnore]
         public ICollection<PokemonId> PokemonsToNotTransfer
         {
             get
             {
                 //Type of pokemons not to transfer
                 var defaultPokemon = new List<PokemonId> {
-                    PokemonId.Farfetchd, PokemonId.Kangaskhan, PokemonId.Tauros, PokemonId.MrMime , PokemonId.Dragonite, PokemonId.Charizard, PokemonId.Zapdos, PokemonId.Snorlax, PokemonId.Alakazam, PokemonId.Mew, PokemonId.Mewtwo
+                    PokemonId.Dragonite, PokemonId.Charizard, PokemonId.Zapdos, PokemonId.Snorlax, PokemonId.Alakazam, PokemonId.Mew, PokemonId.Mewtwo
                 };
                 _pokemonsToNotTransfer = _pokemonsToNotTransfer ?? LoadPokemonList("PokemonsToNotTransfer.ini", defaultPokemon);
                 return _pokemonsToNotTransfer;
             }
         }
 
+        [XmlIgnore]
         public ICollection<PokemonId> PokemonsToNotCatch
         {
             get
@@ -232,9 +429,9 @@ namespace PokemonGo.RocketAPI.Console
         private ICollection<PokemonId> LoadPokemonList(string filename, List<PokemonId> defaultPokemon)
         {
             ICollection<PokemonId> result = new List<PokemonId>();
-            if (!Directory.Exists(ConfigsPath))
-                Directory.CreateDirectory(ConfigsPath);
-            var pokemonlistFile = Path.Combine(ConfigsPath, filename);
+            if (!Directory.Exists(_configsPath))
+                Directory.CreateDirectory(_configsPath);
+            var pokemonlistFile = Path.Combine(_configsPath, filename);
             if (!File.Exists(pokemonlistFile))
             {
                 Logger.Write($"Settings File: \"{filename}\" not found, creating new...", LogLevel.Warning);
@@ -271,7 +468,6 @@ namespace PokemonGo.RocketAPI.Console
                     pokemonName = tr.ReadLine();
                 }
             }
-
             return result;
         }
     }

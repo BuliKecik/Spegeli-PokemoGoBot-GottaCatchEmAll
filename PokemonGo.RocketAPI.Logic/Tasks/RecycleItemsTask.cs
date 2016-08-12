@@ -24,8 +24,8 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
             Logger.Write($"Found {items.Count()} Recyclable {(items.Count() == 1 ? "Item" : "Items")}:", LogLevel.Debug);
             foreach (var item in items)
             {
-                await Logic._client.Inventory.RecycleItem((ItemId)item.ItemId, item.Count);
-                Logger.Write($"{item.Count}x {(ItemId)item.ItemId}", LogLevel.Recycling);
+                await Logic._client.Inventory.RecycleItem(item.ItemId, item.Count);
+                Logger.Write($"{item.Count}x {item.ItemId}", LogLevel.Recycling);
 
                 BotStats.ItemsRemovedThisSession += item.Count;
             }

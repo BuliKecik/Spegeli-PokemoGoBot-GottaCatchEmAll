@@ -24,7 +24,7 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
             if (Logic._client.Settings.UsePokemonToNotCatchList &&
                 Logic._client.Settings.PokemonsToNotCatch.Contains(pokemonId))
             {
-                Logger.Write($"Pokemon - {pokemonId} - is on ToNotCatch List", LogLevel.Warning);
+                Logger.Write($"Ignore Pokemon - {pokemonId} - is on ToNotCatch List", LogLevel.Debug);
                 return;
             }
 

@@ -38,7 +38,7 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
                         File.Delete(pokelistFile);
 
                     CsvExport myExport = new CsvExport();
-                    var allPokemon = await Inventory.GetHighestsPerfect();
+                    var allPokemon = await Inventory.GetHighestsIv();
                     var myPokemonSettings = await Inventory.GetPokemonSettings();
                     var pokemonSettings = myPokemonSettings.ToList();
                     var myPokemonFamilies = await Inventory.GetPokemonFamilies();

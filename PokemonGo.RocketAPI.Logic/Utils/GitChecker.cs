@@ -38,7 +38,7 @@ namespace PokemonGo.RocketAPI.Logic.Utils
                     return;
                 }
 
-                Logger.Write("There is a new Version available: https://github.com/Spegeli/Pokemon-Go-Rocket-API", LogLevel.Info);
+                Logger.Write("There is a new Version available: https://github.com/Spegeli/PokemoGoBot-GottaCatchEmAll", LogLevel.Info);
                 Logger.Write($"GitHub Version: {gitVersion} | Local Version: {CurrentVersion}", LogLevel.Info);
                 Thread.Sleep(1000);
             }
@@ -54,7 +54,7 @@ namespace PokemonGo.RocketAPI.Logic.Utils
             using (var wC = new WebClient())
                 return
                     wC.DownloadString(
-                        "https://raw.githubusercontent.com/Spegeli/Pokemon-Go-Rocket-API/master/PokemonGo.RocketAPI.Logic/Properties/AssemblyInfo.cs");
+                        "https://raw.githubusercontent.com/Spegeli/PokemoGoBot-GottaCatchEmAll/master/PokemonGo.RocketAPI.Logic/Properties/AssemblyInfo.cs");
         }
     }
 }

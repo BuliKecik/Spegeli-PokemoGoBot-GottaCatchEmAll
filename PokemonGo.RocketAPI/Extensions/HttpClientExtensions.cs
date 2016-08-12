@@ -37,9 +37,9 @@ namespace PokemonGo.RocketAPI.Extensions
                     throw new ArgumentException($"ResponseType {i} is not an IMessage");
                 }
             }
-
             var loopsOnBadRepsonse = 1;
 
+            await RandomHelper.RandomDelay(500);
             ResponseEnvelope response = await PostProto<TRequest>(client, url, requestEnvelope);
             while (response.Returns.Count != responseTypes.Length && loopsOnBadRepsonse <= 5)
             {
@@ -67,6 +67,7 @@ namespace PokemonGo.RocketAPI.Extensions
             Debug.WriteLine($"Requesting {typeof(TResponsePayload).Name}");
             var loopsOnBadRepsonse = 1;
 
+            await RandomHelper.RandomDelay(500);
             var response = await PostProto<TRequest>(client, url, requestEnvelope);
             while (response.Returns.Count == 0 && loopsOnBadRepsonse <= 5)
             {

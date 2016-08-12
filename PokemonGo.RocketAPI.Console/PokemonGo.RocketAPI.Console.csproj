@@ -71,6 +71,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>UserSettings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Xml\XmlSerialize.cs" />
+    <Compile Include="Xml\XmlSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

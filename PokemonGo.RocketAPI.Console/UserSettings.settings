@@ -5,11 +5,11 @@
     <Setting Name="DefaultAltitude" Type="System.Double" Scope="User">
       <Value Profile="(Default)">10</Value>
     </Setting>
-    <Setting Name="TransferPokemonKeepAllAboveIV" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">95</Value>
+    <Setting Name="TransferPokemonKeepAllAboveIVValue" Type="System.Single" Scope="User">
+      <Value Profile="(Default)">99</Value>
     </Setting>
-    <Setting Name="TransferPokemonKeepAllAboveCP" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">2000</Value>
+    <Setting Name="TransferPokemonKeepAllAboveCPValue" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">2500</Value>
     </Setting>
     <Setting Name="WalkingSpeedInKilometerPerHour" Type="System.Double" Scope="User">
       <Value Profile="(Default)">10</Value>
@@ -24,7 +24,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="AuthType" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Ptc</Value>
+      <Value Profile="(Default)">Google</Value>
     </Setting>
     <Setting Name="PtcUsername" Type="System.String" Scope="User">
       <Value Profile="(Default)">PtcUsername</Value>
@@ -36,13 +36,13 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="MaxTravelDistanceInMeters" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1000</Value>
+      <Value Profile="(Default)">1500</Value>
     </Setting>
     <Setting Name="UseGPXPathing" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="GPXFile" Type="System.String" Scope="User">
-      <Value Profile="(Default)">AmsterdamTest.gpx</Value>
+      <Value Profile="(Default)">GPXFile.gpx</Value>
     </Setting>
     <Setting Name="UseLuckyEggs" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
@@ -99,7 +99,7 @@
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="TransferPokemonKeepAmountHighestCP" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)">1</Value>
     </Setting>
     <Setting Name="TransferPokemonKeepAmountHighestIV" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1</Value>
@@ -114,7 +114,10 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="UseOnlyBasicIncubator" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="DevicePackageName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">random</Value>
     </Setting>
   </Settings>
 </SettingsFile>

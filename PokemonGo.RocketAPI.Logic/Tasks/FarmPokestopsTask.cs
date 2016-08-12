@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -71,31 +72,38 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
                             i =>
                                 LocationUtils.CalculateDistanceInMeters(Logic._client.CurrentLatitude,
                                     Logic._client.CurrentLongitude, i.Latitude, i.Longitude)).First();
-                pokestops.Remove(pokestop);
 
+                var lured = string.Empty;
                 var distance = LocationUtils.CalculateDistanceInMeters(Logic._client.CurrentLatitude, Logic._client.CurrentLongitude, pokestop.Latitude, pokestop.Longitude);
                 if (distance > 100)
                 {
                     var lurePokestop = pokestops.FirstOrDefault(x => x.LureInfo != null);
                     if (lurePokestop != null)
                     {
-                        Logger.Write("Lured Pokestop found", LogLevel.Debug);
-                        pokestop = lurePokestop;
                         distance = LocationUtils.CalculateDistanceInMeters(Logic._client.CurrentLatitude, Logic._client.CurrentLongitude, pokestop.Latitude, pokestop.Longitude);
+                        if (distance < 200)
+                        {
+                            lured = " is Lured";
+                            pokestop = lurePokestop;
+                        }
+                        else
+                            pokestops.Remove(pokestop);
                     }
-                }
+                } else
+                    pokestops.Remove(pokestop);
 
                 var fortInfo = await Logic._client.Fort.GetFort(pokestop.Id, pokestop.Latitude, pokestop.Longitude);
                 var latlngDebug = string.Empty;
                 if (Logic._client.Settings.DebugMode)
-                    latlngDebug = $"| Latitude: {pokestop.Latitude} - Longitude: {pokestop.Longitude}";
-                Logger.Write($"Name: {fortInfo.Name} in {distance:0.##} m distance {latlngDebug}", LogLevel.Pokestop);
+                    latlngDebug = $" | Latitude: {pokestop.Latitude} - Longitude: {pokestop.Longitude}";
+                Logger.Write($"Name: {fortInfo.Name} in {distance:0.##} m distance{lured}{latlngDebug}", LogLevel.Pokestop);
 
                 if (Logic._client.Settings.UseTeleportInsteadOfWalking)
                 {
                     await
                         Logic._client.Player.UpdatePlayerLocation(pokestop.Latitude, pokestop.Longitude,
                             Logic._client.Settings.DefaultAltitude);
+                    await RandomHelper.RandomDelay(500);
                     Logger.Write($"Using Teleport instead of Walking!", LogLevel.Navigation);
                 }
                 else

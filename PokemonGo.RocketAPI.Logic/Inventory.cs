@@ -86,7 +86,8 @@ namespace PokemonGo.RocketAPI.Logic
                 .SelectMany(
                     p =>
                         p.OrderByDescending(x => x.Cp)
-                            .ThenBy(n => n.StaminaMax)
+                            .ThenByDescending(PokemonInfo.CalculateMaxCp)
+                            .ThenByDescending(PokemonInfo.CalculatePokemonPerfection)
                             .Take(Logic._client.Settings.TransferPokemonKeepAmountHighestCP)
                             .Select(n => n.Id)
                             .ToList()));
@@ -96,7 +97,8 @@ namespace PokemonGo.RocketAPI.Logic
                 .SelectMany(
                     p =>
                         p.OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
-                            .ThenBy(n => n.StaminaMax)
+                            .ThenByDescending(x => x.Cp)
+                            .ThenByDescending(PokemonInfo.CalculateMaxCp)
                             .Take(Logic._client.Settings.TransferPokemonKeepAmountHighestIV)
                             .Select(n => n.Id)
                             .ToList()));
@@ -132,7 +134,7 @@ namespace PokemonGo.RocketAPI.Logic
                     keepEvolveList.AddRange(myPokemons.Where(x => x.PokemonId == pokemon.Key)
                         .OrderByDescending(
                             x => (prioritizeIVoverCp) ? PokemonInfo.CalculatePokemonPerfection(x) : x.Cp)
-                        .ThenBy(n => n.StaminaMax)
+                        .ThenByDescending(n => n.StaminaMax)
                         .Take(amountToSkip)
                         .Select(n => n.Id)
                         .ToList());
@@ -147,11 +149,11 @@ namespace PokemonGo.RocketAPI.Logic
 
             // Keep any that have CP higher than my KeepAboveCP setting
             if (Logic._client.Settings.UseTransferPokemonKeepAllAboveCP)
-                keepPokemonsList = keepPokemonsList.Union(myPokemons.Where(p => p.Cp >= Logic._client.Settings.TransferPokemonKeepAllAboveCP).Select(n => n.Id).ToList());
+                keepPokemonsList = keepPokemonsList.Union(myPokemons.Where(p => p.Cp >= Logic._client.Settings.TransferPokemonKeepAllAboveCPValue).Select(n => n.Id).ToList());
 
             // Keep any that have higher IV than my KeepAboveIV setting
             if (Logic._client.Settings.UseTransferPokemonKeepAllAboveIV)
-                keepPokemonsList = keepPokemonsList.Union(myPokemons.Where(p => PokemonInfo.CalculatePokemonPerfection(p) >= Logic._client.Settings.TransferPokemonKeepAllAboveIV).Select(n => n.Id).ToList());
+                keepPokemonsList = keepPokemonsList.Union(myPokemons.Where(p => PokemonInfo.CalculatePokemonPerfection(p) >= Logic._client.Settings.TransferPokemonKeepAllAboveIVValue).Select(n => n.Id).ToList());
 
             // Remove any that are not in my Keep list
             IEnumerable<PokemonData> pokemonList = myPokemons.Where(p => !keepPokemonsList.Contains(p.Id)).OrderBy(p => p.PokemonId).ToList();
@@ -163,14 +165,22 @@ namespace PokemonGo.RocketAPI.Logic
         {
             var myPokemon = await GetPokemons();
             var pokemons = myPokemon.ToList();
-            return pokemons.OrderByDescending(x => x.Cp).ThenBy(n => n.StaminaMax).Take(limit);
+            return
+                pokemons.OrderByDescending(x => x.Cp)
+                    .ThenByDescending(PokemonInfo.CalculateMaxCp)
+                    .ThenByDescending(PokemonInfo.CalculatePokemonPerfection)
+                    .Take(limit);
         }
 
-        public static async Task<IEnumerable<PokemonData>> GetHighestsPerfect(int limit = 1000)
+        public static async Task<IEnumerable<PokemonData>> GetHighestsIv(int limit = 1000)
         {
             var myPokemon = await GetPokemons();
             var pokemons = myPokemon.ToList();
-            return pokemons.OrderByDescending(PokemonInfo.CalculatePokemonPerfection).Take(limit);
+            return
+                pokemons.OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
+                    .ThenByDescending(x => x.Cp)
+                    .ThenByDescending(PokemonInfo.CalculateMaxCp)
+                    .Take(limit);
         }
 
         public static async Task<PokemonData> GetHighestPokemonOfTypeByCp(PokemonData pokemon)
@@ -179,6 +189,8 @@ namespace PokemonGo.RocketAPI.Logic
             var pokemons = myPokemon.ToList();
             return pokemons.Where(x => x.PokemonId == pokemon.PokemonId)
                 .OrderByDescending(x => x.Cp)
+                .ThenByDescending(PokemonInfo.CalculateMaxCp)
+                .ThenByDescending(PokemonInfo.CalculatePokemonPerfection)
                 .FirstOrDefault();
         }
 
@@ -188,6 +200,8 @@ namespace PokemonGo.RocketAPI.Logic
             var pokemons = myPokemon.ToList();
             return pokemons.Where(x => x.PokemonId == pokemon.PokemonId)
                 .OrderByDescending(PokemonInfo.CalculatePokemonPerfection)
+                .ThenByDescending(x => x.Cp)
+                .ThenByDescending(PokemonInfo.CalculateMaxCp)
                 .FirstOrDefault();
         }
 
@@ -290,7 +304,6 @@ namespace PokemonGo.RocketAPI.Logic
                 inventory.InventoryDelta.InventoryItems.Select(i => i.InventoryItemData?.PokemonData)
                     .Where(p => p != null && p.IsEgg);
         }
-
         public static async Task<GetInventoryResponse> GetCachedInventory(bool request = false)
         {
             var now = DateTime.UtcNow;

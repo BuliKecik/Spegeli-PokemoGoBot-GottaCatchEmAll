@@ -27,7 +27,6 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
             var Cp = encounter is EncounterResponse ? encounter.WildPokemon?.PokemonData?.Cp : encounter?.PokemonData?.Cp ?? 0;
             var MaxCp = PokemonInfo.CalculateMaxCp(encounter is EncounterResponse ? encounter.WildPokemon?.PokemonData : encounter?.PokemonData);
             var Iv = PokemonInfo.CalculatePokemonPerfection(encounter is EncounterResponse ? encounter.WildPokemon?.PokemonData : encounter?.PokemonData);
-            var Perfection = Math.Round(PokemonInfo.CalculatePokemonPerfection(encounter is EncounterResponse ? encounter.WildPokemon?.PokemonData : encounter?.PokemonData));
             var Probability = Math.Round(probability * 100, 2);
             var distance = LocationUtils.CalculateDistanceInMeters(Logic._client.CurrentLatitude,
                 Logic._client.CurrentLongitude,
@@ -93,7 +92,9 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
                         ? $"and received XP {caughtPokemonResponse.CaptureAward.Xp.Sum()}"
                         : $"";
 
-                    Logger.Write($"({catchStatus} / {catchType}) | {Id} - Lvl {Level} [CP {Cp}/{MaxCp} | IV: {Perfection.ToString("0.00")}% perfect] | Chance: {Probability} | {distance:0.##}m dist | with a {returnRealBallName(pokeball)}Ball {receivedXp}", LogLevel.Pokemon);
+                    await Inventory.GetCachedInventory(true);
+                    var BallAmount = await Inventory.GetItemAmountByType(pokeball);
+                    Logger.Write($"({catchStatus} / {catchType}) | {Id} - Lvl {Level} [CP {Cp}/{MaxCp} | IV: {Iv.ToString("0.00")}% perfect] | Chance: {Probability} | {distance:0.##}m dist | with a {returnRealBallName(pokeball)}Ball [Remaining: {BallAmount}] {receivedXp}", LogLevel.Pokemon);
                 }
 
                 attemptCounter++;
@@ -106,10 +107,10 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
             var iV = Math.Round(PokemonInfo.CalculatePokemonPerfection(encounter is EncounterResponse ? encounter.WildPokemon?.PokemonData : encounter?.PokemonData));
 
             var items = await Inventory.GetItems();
-            var balls = items.Where(i => ((ItemId)i.ItemId == ItemId.ItemPokeBall
-                                      || (ItemId)i.ItemId == ItemId.ItemGreatBall
-                                      || (ItemId)i.ItemId == ItemId.ItemUltraBall
-                                      || (ItemId)i.ItemId == ItemId.ItemMasterBall) && i.Count > 0).GroupBy(i => ((ItemId)i.ItemId)).ToList();
+            var balls = items.Where(i => (i.ItemId == ItemId.ItemPokeBall
+                                      || i.ItemId == ItemId.ItemGreatBall
+                                      || i.ItemId == ItemId.ItemUltraBall
+                                      || i.ItemId == ItemId.ItemMasterBall) && i.Count > 0).GroupBy(i => i.ItemId).ToList();
             if (balls.Count == 0) return ItemId.ItemUnknown;
 
             var pokeBalls = balls.Any(g => g.Key == ItemId.ItemPokeBall);
@@ -120,10 +121,10 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
             if (masterBalls && pokemonCp >= 1500)
                 return ItemId.ItemMasterBall;
 
-            if (ultraBalls && (pokemonCp >= 1000 || (iV >= Logic._client.Settings.TransferPokemonKeepAllAboveIV && probability < 0.40)))
+            if (ultraBalls && (pokemonCp >= 1000 || (iV >= Logic._client.Settings.TransferPokemonKeepAllAboveIVValue && probability < 0.40)))
                 return ItemId.ItemUltraBall;
 
-            if (greatBalls && (pokemonCp >= 300 || (iV >= Logic._client.Settings.TransferPokemonKeepAllAboveIV && probability < 0.50)))
+            if (greatBalls && (pokemonCp >= 300 || (iV >= Logic._client.Settings.TransferPokemonKeepAllAboveIVValue && probability < 0.50)))
                 return ItemId.ItemGreatBall;
 
             return balls.OrderBy(g => g.Key).First().Key;
@@ -131,27 +132,29 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
 
         private static async Task UseBerry(ulong encounterId, string spawnPointId)
         {
-            var inventoryberries = await Inventory.GetItems();
-            var berry = inventoryberries.FirstOrDefault(p => p.ItemId == ItemId.ItemRazzBerry);
+            await Inventory.GetCachedInventory(true);
+            var inventoryitems = await Inventory.GetItems();
+            var berry = inventoryitems.FirstOrDefault(p => p.ItemId == ItemId.ItemRazzBerry);
             if (berry == null || berry.Count <= 0)
                 return;
 
             await Logic._client.Encounter.UseCaptureItem(encounterId, ItemId.ItemRazzBerry, spawnPointId);
             berry.Count -= 1;
-            Logger.Write($"Used Razz Berry, remaining: {berry.Count}", LogLevel.Berry);
+            Logger.Write($"Used Razz Berry [Remaining: {berry.Count}]", LogLevel.Berry);
         }
 
+        //Currently not used, because only ItemRazzBerry is available InGame
         public static async Task<ItemId> GetBestBerry(dynamic encounter, float probability)
         {
             var pokemonCp = encounter is EncounterResponse ? encounter.WildPokemon?.PokemonData?.Cp : encounter?.PokemonData?.Cp ?? 0;
             var iV = Math.Round(PokemonInfo.CalculatePokemonPerfection(encounter is EncounterResponse ? encounter.WildPokemon?.PokemonData : encounter?.PokemonData));
 
             var items = await Inventory.GetItems();
-            var berries = items.Where(i => ((ItemId)i.ItemId == ItemId.ItemRazzBerry
-                                        || (ItemId)i.ItemId == ItemId.ItemBlukBerry
-                                        || (ItemId)i.ItemId == ItemId.ItemNanabBerry
-                                        || (ItemId)i.ItemId == ItemId.ItemWeparBerry
-                                        || (ItemId)i.ItemId == ItemId.ItemPinapBerry) && i.Count > 0).GroupBy(i => ((ItemId)i.ItemId)).ToList();
+            var berries = items.Where(i => (i.ItemId == ItemId.ItemRazzBerry
+                                        || i.ItemId == ItemId.ItemBlukBerry
+                                        || i.ItemId == ItemId.ItemNanabBerry
+                                        || i.ItemId == ItemId.ItemWeparBerry
+                                        || i.ItemId == ItemId.ItemPinapBerry) && i.Count > 0).GroupBy(i => i.ItemId).ToList();
             if (berries.Count == 0 || pokemonCp < 150) return ItemId.ItemUnknown;
 
             var razzBerryCount = await Inventory.GetItemAmountByType(ItemId.ItemRazzBerry);
@@ -166,10 +169,10 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
             if (weparBerryCount > 0 && pokemonCp >= 1500)
                 return ItemId.ItemWeparBerry;
 
-            if (nanabBerryCount > 0 && (pokemonCp >= 1000 || (iV >= Logic._client.Settings.TransferPokemonKeepAllAboveIV && probability < 0.40)))
+            if (nanabBerryCount > 0 && (pokemonCp >= 1000 || (iV >= Logic._client.Settings.TransferPokemonKeepAllAboveIVValue && probability < 0.40)))
                 return ItemId.ItemNanabBerry;
 
-            if (blukBerryCount > 0 && (pokemonCp >= 500 || (iV >= Logic._client.Settings.TransferPokemonKeepAllAboveIV && probability < 0.50)))
+            if (blukBerryCount > 0 && (pokemonCp >= 500 || (iV >= Logic._client.Settings.TransferPokemonKeepAllAboveIVValue && probability < 0.50)))
                 return ItemId.ItemBlukBerry;
 
             if (razzBerryCount > 0 && pokemonCp >= 300)

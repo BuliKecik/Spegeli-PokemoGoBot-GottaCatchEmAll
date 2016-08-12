@@ -27,7 +27,7 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
             if (UseEgg.Result == UseItemXpBoostResponse.Types.Result.Success)
             {
                 _lastLuckyEggTime = DateTime.Now;
-                Logger.Write($"Used Lucky Egg, remaining: {currentAmountOfLuckyEggs - 1}", LogLevel.Egg);
+                Logger.Write($"Used Lucky Egg [Remaining: {currentAmountOfLuckyEggs - 1}]", LogLevel.Egg);
             }
             else if (UseEgg.Result == UseItemXpBoostResponse.Types.Result.ErrorNoItemsRemaining)
             {

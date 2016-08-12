@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using PokemonGo.RocketAPI.Enums;
+using PokemonGo.RocketAPI.Helpers;
 using PokemonGo.RocketAPI.HttpClient;
 using POGOProtos.Networking.Envelopes;
 
@@ -34,9 +35,25 @@ namespace PokemonGo.RocketAPI
         internal readonly PokemonHttpClient PokemonHttpClient = new PokemonHttpClient();
         internal string ApiUrl { get; set; }
         internal AuthTicket AuthTicket { get; set; }
+        internal static string DeviceId { get; set; }
+        internal static string AndroidBoardName { get; set; }
+        internal static string AndroidBootloader { get; set; }
+        internal static string DeviceBrand { get; set; }
+        internal static string DeviceModel { get; set; }
+        internal static string DeviceModelBoot { get; set; }
+        internal static string DeviceModelIdentifier { get; set; }
+        internal static string FirmwareBrand { get; set; }
+        internal static string FirmwareFingerprint { get; set; }
+        internal static string FirmwareTags { get; set; }
+        internal static string FirmwareType { get; set; }
+        internal static string HardwareManufacturer { get; set; }
+        internal static string HardwareModel { get; set; }
 
         public Client(ISettings settings)
         {
+            DeviceId = RequestBuilder.GetDeviceId();
+            RequestBuilder.SetDevice(settings);
+
             Settings = settings;
 
             Login = new Rpc.Login(this);

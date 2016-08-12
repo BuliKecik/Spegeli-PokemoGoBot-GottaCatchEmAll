@@ -28,7 +28,7 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
                 await Inventory.GetCachedInventory(true);
 
                 Logger.Write(evolvePokemonOutProto.Result == EvolvePokemonResponse.Types.Result.Success
-                        ? $"{pokemon.PokemonId} successfully for {evolvePokemonOutProto.ExperienceAwarded} xp"
+                        ? $"{pokemon.PokemonId} [CP: {pokemon.Cp}/{PokemonInfo.CalculateMaxCp(pokemon)} | IV: { PokemonInfo.CalculatePokemonPerfection(pokemon).ToString("0.00")}% perfect] | received XP {evolvePokemonOutProto.ExperienceAwarded}"
                         : $"Failed: {pokemon.PokemonId}. EvolvePokemonOutProto.Result was {evolvePokemonOutProto.Result}, stopping evolving {pokemon.PokemonId}"
                     , LogLevel.Evolve);
 

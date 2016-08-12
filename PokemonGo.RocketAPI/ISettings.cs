@@ -41,9 +41,9 @@ namespace PokemonGo.RocketAPI
         bool TransferPokemon { get; }
         bool NotTransferPokemonsThatCanEvolve { get; }
         bool UseTransferPokemonKeepAllAboveCP { get; }
-        int TransferPokemonKeepAllAboveCP { get; }
+        int TransferPokemonKeepAllAboveCPValue { get; }
         bool UseTransferPokemonKeepAllAboveIV { get; }
-        float TransferPokemonKeepAllAboveIV { get; }
+        float TransferPokemonKeepAllAboveIVValue { get; }
         int TransferPokemonKeepAmountHighestCP { get; }
         int TransferPokemonKeepAmountHighestIV { get; }
 
@@ -53,6 +53,7 @@ namespace PokemonGo.RocketAPI
         bool PrioritizeIVOverCP { get; }
         int ExportPokemonToCsvEveryMinutes { get; }
         bool DebugMode { get; }
+        string DevicePackageName { get; }
 
         ICollection<KeyValuePair<ItemId, int>> ItemRecycleFilter(IEnumerable<ItemData> myItems);
         ICollection<PokemonId> PokemonsToEvolve { get; }

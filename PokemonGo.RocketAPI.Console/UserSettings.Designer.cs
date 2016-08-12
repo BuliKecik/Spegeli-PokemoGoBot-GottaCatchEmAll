@@ -37,25 +37,25 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("95")]
-        public float TransferPokemonKeepAllAboveIV {
+        [global::System.Configuration.DefaultSettingValueAttribute("99")]
+        public float TransferPokemonKeepAllAboveIVValue {
             get {
-                return ((float)(this["TransferPokemonKeepAllAboveIV"]));
+                return ((float)(this["TransferPokemonKeepAllAboveIVValue"]));
             }
             set {
-                this["TransferPokemonKeepAllAboveIV"] = value;
+                this["TransferPokemonKeepAllAboveIVValue"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("2000")]
-        public int TransferPokemonKeepAllAboveCP {
+        [global::System.Configuration.DefaultSettingValueAttribute("2500")]
+        public int TransferPokemonKeepAllAboveCPValue {
             get {
-                return ((int)(this["TransferPokemonKeepAllAboveCP"]));
+                return ((int)(this["TransferPokemonKeepAllAboveCPValue"]));
             }
             set {
-                this["TransferPokemonKeepAllAboveCP"] = value;
+                this["TransferPokemonKeepAllAboveCPValue"] = value;
             }
         }
         
@@ -109,7 +109,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Ptc")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Google")]
         public string AuthType {
             get {
                 return ((string)(this["AuthType"]));
@@ -157,7 +157,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1500")]
         public int MaxTravelDistanceInMeters {
             get {
                 return ((int)(this["MaxTravelDistanceInMeters"]));
@@ -181,7 +181,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("AmsterdamTest.gpx")]
+        [global::System.Configuration.DefaultSettingValueAttribute("GPXFile.gpx")]
         public string GPXFile {
             get {
                 return ((string)(this["GPXFile"]));
@@ -409,7 +409,7 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
         public int TransferPokemonKeepAmountHighestCP {
             get {
                 return ((int)(this["TransferPokemonKeepAmountHighestCP"]));
@@ -469,13 +469,25 @@ namespace PokemonGo.RocketAPI.Console {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool UseOnlyBasicIncubator {
             get {
                 return ((bool)(this["UseOnlyBasicIncubator"]));
             }
             set {
                 this["UseOnlyBasicIncubator"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("random")]
+        public string DevicePackageName {
+            get {
+                return ((string)(this["DevicePackageName"]));
+            }
+            set {
+                this["DevicePackageName"] = value;
             }
         }
     }

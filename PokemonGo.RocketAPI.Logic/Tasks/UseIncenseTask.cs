@@ -28,7 +28,7 @@ namespace PokemonGo.RocketAPI.Logic.Tasks
             if (UseIncense.Result == UseIncenseResponse.Types.Result.Success)
             {
                 _lastIncenseTime = DateTime.Now;
-                Logger.Write($"Used Incense, remaining: {currentAmountOfIncense - 1}", LogLevel.Incense);
+                Logger.Write($"Used Incense [Remaining: {currentAmountOfIncense - 1}]", LogLevel.Incense);
             }
             else if (UseIncense.Result == UseIncenseResponse.Types.Result.NoneInInventory)
             {
